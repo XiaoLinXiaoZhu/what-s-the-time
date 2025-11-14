@@ -12,13 +12,11 @@ export class TimeChoiceService {
    * 处理时间匹配
    * @param time 输入的时间
    * @param lineId timeChoice 行的 ID
-   * @param inputLineId 输入行的 ID（如果存在，表示 timeChoice 前面有 input 行，此时应该移除 timeChoice 而不是转换）
    */
-  handleTimeChoice(time: string, lineId: string, inputLineId?: string): void {
+  handleTimeChoice(time: string, lineId: string): void {
     console.log('[TimeChoiceService] handleTimeChoice called', {
       time,
       lineId,
-      inputLineId,
       timestamp: new Date().toISOString()
     })
 
@@ -89,14 +87,10 @@ export class TimeChoiceService {
     })
     stateStore.updateGameState({ choiceHistory })
 
-    // 判断处理方式：
-    // 1. 如果前面有 input 行，则移除 timeChoice（因为 input 已经转换为 timeDisplay 了）
-    // 2. 如果前面没有 input 行，则将 timeChoice 转换为 timeDisplay
+    // 将 timeChoice 转换为 timeDisplay
     const lineIndex = displayState.displayedLines.findIndex(l => l.id === lineId)
     console.log('[TimeChoiceService] Processing conversion', {
       lineIndex,
-      hasInputLine: inputLineId !== undefined,
-      inputLineId,
       displayedLinesCount: displayState.displayedLines.length
     })
 
@@ -105,53 +99,29 @@ export class TimeChoiceService {
       return
     }
 
-    const hasInputLine = inputLineId !== undefined
-    let displayedLines: DisplayedLine[]
-    let insertIndex: number
-
-    if (hasInputLine) {
-      // 情况1：前面有 input 行，移除 timeChoice 行（input 已经转换为 timeDisplay）
-      console.log('[TimeChoiceService] Case 1: Has input line, removing timeChoice')
-      
-      // 先找到 input 行（已经转换为 timeDisplay）的位置
-      const inputLineIndex = displayState.displayedLines.findIndex(l => l.id === inputLineId)
-      console.log('[TimeChoiceService] Input line (timeDisplay) index:', inputLineIndex)
-      
-      // 移除 timeChoice 行
-      displayedLines = displayState.displayedLines.filter(l => l.id !== lineId)
-      
-      // 插入位置：在 input 行（timeDisplay）之后
-      // 因为移除了 timeChoice，如果 timeChoice 在 input 之后，insertIndex 应该是 inputLineIndex + 1
-      // 如果 timeChoice 在 input 之前，insertIndex 应该是 inputLineIndex + 1（因为移除了 timeChoice）
-      insertIndex = inputLineIndex + 1
-      console.log('[TimeChoiceService] Removed timeChoice, insertIndex after input line:', insertIndex)
-    } else {
-      // 情况2：独立的 timeChoice 行，转换为 timeDisplay
-      console.log('[TimeChoiceService] Case 2: Standalone timeChoice, converting to timeDisplay')
-      console.log('[TimeChoiceService] Before conversion:', {
-        lineIndex,
-        lineType: displayState.displayedLines[lineIndex]?.type,
-        lineId: displayState.displayedLines[lineIndex]?.id
-      })
-      
-      // 执行转换
-      lineConversionService.convertTimeChoiceToTimeDisplay(lineIndex, time)
-      
-      // 重新获取更新后的状态
-      const updatedDisplayState = stateStore._internalDisplayState
-      displayedLines = [...updatedDisplayState.displayedLines] // 创建新数组以确保响应式更新
-      
-      console.log('[TimeChoiceService] After conversion:', {
-        lineIndex,
-        lineType: displayedLines[lineIndex]?.type,
-        lineId: displayedLines[lineIndex]?.id,
-        value: (displayedLines[lineIndex] as any)?.value,
-        displayedLinesCount: displayedLines.length
-      })
-      
-      insertIndex = lineIndex + 1
-      console.log('[TimeChoiceService] Converted to timeDisplay, insertIndex:', insertIndex)
-    }
+    console.log('[TimeChoiceService] Converting timeChoice to timeDisplay', {
+      lineIndex,
+      lineType: displayState.displayedLines[lineIndex]?.type,
+      lineId: displayState.displayedLines[lineIndex]?.id
+    })
+    
+    // 执行转换
+    lineConversionService.convertTimeChoiceToTimeDisplay(lineIndex, time)
+    
+    // 重新获取更新后的状态
+    const updatedDisplayState = stateStore._internalDisplayState
+    const displayedLines = [...updatedDisplayState.displayedLines] // 创建新数组以确保响应式更新
+    
+    console.log('[TimeChoiceService] After conversion:', {
+      lineIndex,
+      lineType: displayedLines[lineIndex]?.type,
+      lineId: displayedLines[lineIndex]?.id,
+      value: (displayedLines[lineIndex] as any)?.value,
+      displayedLinesCount: displayedLines.length
+    })
+    
+    const insertIndex = lineIndex + 1
+    console.log('[TimeChoiceService] Converted to timeDisplay, insertIndex:', insertIndex)
 
     // 插入后续内容
     const newLines = this._createDisplayedLines(matchedChoice.lines, insertIndex)

@@ -4,6 +4,9 @@ import type { ScriptSegment } from '@/types'
  * P09-02：开头句的轻微变体（循环或重置）
  * 真实时间：重开时刻
  * 建议输入：新一周目启动
+ * 
+ * 设计说明：
+ * - 游戏再次出现"时间是……？"，但文本细节略有变化（例如"不是他在问我，是你在问我"），暗示循环但不解释
  */
 export const P09_02: ScriptSegment = {
   id: 'P09-02',
@@ -27,10 +30,6 @@ export const P09_02: ScriptSegment = {
     {
       type: 'input',
       placeholder: '输入时间 (HH:MM)'
-    },
-    {
-      type: 'narration',
-      text: '游戏再次出现"时间是……？"，{br}但文本细节略有变化（例如"不是他在问我，是你在问我"），{br}暗示循环但不解释。'
     }
   ]
 }

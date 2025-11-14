@@ -4,7 +4,7 @@ import type { DisplayedLine, TimeDisplayLine, LineStatus } from '@/types'
 /**
  * 行转换服务
  * 统一处理交互行到显示行的转换逻辑
- * 解决系统性问题：不同类型的交互行在完成后应该有一致的转换行为
+ * 确保不同类型的交互行（input、timeChoice）在完成后都有一致的转换行为
  */
 export class LineConversionService {
   /**
@@ -73,7 +73,7 @@ export class LineConversionService {
 
   /**
    * 将 timeChoice 行转换为 timeDisplay 行
-   * 解决系统性问题：timeChoice 完成后应该显示输入的时间，而不是消失
+   * timeChoice 完成后应该显示输入的时间，保持与 input 行一致的转换行为
    */
   convertTimeChoiceToTimeDisplay(lineIndex: number, time: string): void {
     console.log('[LineConversionService] convertTimeChoiceToTimeDisplay called', {

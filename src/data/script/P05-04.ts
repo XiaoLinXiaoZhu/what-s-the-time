@@ -26,7 +26,7 @@ export const P05_04: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '和 A 案不同，{br}这次没有人会冲上来。{br}我有时间，{br}有时间处理一切。'
+      text: '四周很安静。{br}没有人会来。{br}我有时间，{br}有时间处理一切。'
     },
     {
       type: 'narration',

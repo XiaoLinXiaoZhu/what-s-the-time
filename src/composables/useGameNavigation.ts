@@ -105,7 +105,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
   /**
    * 处理时间匹配分支
    */
-  const handleTimeChoice = (time: string, lineIndex: number, inputLineIndex?: number) => {
+  const handleTimeChoice = (time: string, lineIndex: number) => {
     const line = displayedLines.value[lineIndex]
     if (line?.type !== 'timeChoice') return
 
@@ -160,9 +160,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
       displayedLines.value.splice(lineIndex, 1)
 
       // 插入后续内容
-      // 注意：删除 timeChoice 行后，如果 inputLineIndex < lineIndex，插入位置应该是 lineIndex - 1
-      // 如果 inputLineIndex >= lineIndex，插入位置应该是 lineIndex（因为删除的是 lineIndex）
-      const insertIndex = inputLineIndex !== undefined && inputLineIndex < lineIndex ? lineIndex - 1 : lineIndex
+      const insertIndex = lineIndex
       insertLines(insertIndex, matchedChoice.lines)
 
       // 移动到下一行（插入后的第一行）

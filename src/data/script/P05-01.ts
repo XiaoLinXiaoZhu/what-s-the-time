@@ -4,6 +4,10 @@ import type { ScriptSegment } from '@/types'
  * P05-01：早上 08:xx，B 约"放学聊聊"
  * 真实时间：Day Bx 早晨
  * 建议输入：08:20/08:30
+ * 
+ * 设计说明：
+ * - 这个时间（15:10）会成为一个锚点，用于两问一锁机制
+ * - 当有人问"那天从几点开始不对劲"时，这就是答案
  */
 export const P05_01: ScriptSegment = {
   id: 'P05-01',
@@ -40,7 +44,7 @@ export const P05_01: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '时间：15:10。{br}这个时间，会成为一个锚点。{br}在未来的某个时刻，{br}当有人问"那天从几点开始不对劲"时，{br}这就是答案。'
+      text: '三点一十。{br}这个时间，{br}我会记住的。'
     }
   ]
 }

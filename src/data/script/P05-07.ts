@@ -36,7 +36,7 @@ export const P05_07: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: 'E 戴上手套，{br}走向那个袋子。{br}她说的 C，{br}既指现在这具 B 的尸体，{br}也指一年前死去的 A，{br}更指围绕这个名字的一切罪与纠缠。'
+      text: 'E 戴上手套，{br}走向那个袋子。{br}她说的 C，{br}是那个名字，{br}是那个影子，{br}是一切纠缠的根源。'
     },
     {
       type: 'dialogue',
@@ -49,7 +49,7 @@ export const P05_07: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '把 A/B/名字/罪全部压缩成一个 C。{br}然后，{br}一起处理掉。'
+      text: '那个名字，{br}那个影子，{br}那个罪，{br}全部压缩成一个 C。{br}然后，{br}一起处理掉。'
     }
   ]
 }

@@ -110,11 +110,10 @@ const handleChoice = (choice: any, lineIndex: number, choiceIndex: number) => {
   }
 }
 
-const handleTimeChoice = (time: string, lineIndex: number, inputLineIndex?: number) => {
+const handleTimeChoice = (time: string, lineIndex: number) => {
   const line = displayState.value.displayedLines[lineIndex]
-  const inputLine = inputLineIndex !== undefined ? displayState.value.displayedLines[inputLineIndex] : undefined
   if (line) {
-    timeChoiceService.handleTimeChoice(time, line.id, inputLine?.id)
+    timeChoiceService.handleTimeChoice(time, line.id)
   }
 }
 

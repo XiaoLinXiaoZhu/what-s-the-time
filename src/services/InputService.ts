@@ -1,6 +1,5 @@
 import { stateStore } from '@/stores/StateStore'
 import { navigationService } from './NavigationService'
-import { timeChoiceService } from './TimeChoiceService'
 import { lineConversionService } from './LineConversionService'
 
 /**
@@ -22,15 +21,8 @@ export class InputService {
     // 将 input 行转换为 timeDisplay 行（显示输入的值）
     this._convertInputToTimeDisplay(lineIndex, time)
 
-    // 检查下一行是否是 timeChoice
-    const nextLine = displayState.displayedLines[lineIndex + 1]
-    if (nextLine?.type === 'timeChoice') {
-      // 如果下一行是 timeChoice，直接使用刚才输入的时间处理 timeChoice
-      timeChoiceService.handleTimeChoice(time, nextLine.id, lineId)
-    } else {
-      // 否则，执行原来的逻辑：查找匹配的片段
-      navigationService.navigateToTime(time)
-    }
+    // 执行导航逻辑：查找匹配的片段
+    navigationService.navigateToTime(time)
   }
 
   /**

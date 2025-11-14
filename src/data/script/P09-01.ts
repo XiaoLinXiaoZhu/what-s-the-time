@@ -4,6 +4,9 @@ import type { ScriptSegment } from '@/types'
  * P09-01：最终 meta 问答
  * 真实时间：叙事层，玩家当前现实时间
  * 建议输入：系统时间
+ * 
+ * 设计说明：
+ * - 这一步将"叙事时间 / 游戏时间 / 现实时间"折叠到一起，把玩家也拖入"你在重播这场暴力"的责任之中
  */
 export const P09_01: ScriptSegment = {
   id: 'P09-01',
@@ -13,17 +16,13 @@ export const P09_01: ScriptSegment = {
   unlockFlags: [],
   lines: [
     {
-      type: 'narration',
-      text: '"她"让玩家输入现在时间。'
-    },
-    {
       type: 'dialogue',
       text: '现在，是几点？'
     },
-    {
-      type: 'input',
-      placeholder: '输入现在的时间 (HH:MM)'
-    },
+    // {
+    //   type: 'input',
+    //   placeholder: '输入现在的时间 (HH:MM)'
+    // },
     {
       type: 'timeChoice',
       choices: [
@@ -40,7 +39,7 @@ export const P09_01: ScriptSegment = {
             },
             {
               type: 'narration',
-              text: '这一步将"叙事时间 / 游戏时间 / 现实时间"折叠到一起，{br}把玩家也拖入"你在重播这场暴力"的责任之中。'
+              text: '你也在重播这场暴力。{br}一遍，又一遍。{br}时间，{br}把我们所有人都困住了。'
             }
           ]
         }

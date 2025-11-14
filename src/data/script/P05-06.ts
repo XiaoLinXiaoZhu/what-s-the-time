@@ -30,7 +30,7 @@ export const P05_06: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '文字用"还有一分钟"强调心理准备。{br}我知道，接下来要做什么。{br}我知道，这是必须的。{br}但我也知道，{br}这一分钟，是我最后的犹豫。'
+      text: '还有一分钟。{br}我知道，接下来要做什么。{br}我知道，这是必须的。{br}但我也知道，{br}这一分钟，是我最后的犹豫。'
     },
     {
       type: 'dialogue',

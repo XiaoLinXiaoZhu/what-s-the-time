@@ -40,7 +40,20 @@ export const P06_01: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '和 P03-01 对照，{br}同样的时间，{br}同样的路，{br}但 B 不在了。{br}就像，{br}从来没有存在过。'
+      text: '同样的时间，{br}同样的路，{br}但 B 不在了。{br}就像，{br}从来没有存在过。'
+    },
+    {
+      type: 'dialogue',
+      character: 'D',
+      text: '她昨天还说，{bold}下午三点一十{/bold}要来教室找你。{br}你...{delay:1}你见到她了吗？'
+    },
+    {
+      type: 'dialogue',
+      text: '...没有。'
+    },
+    {
+      type: 'narration',
+      text: 'D 盯着我看了一会儿，{br}然后摇摇头，快步走开了。{br}我站在原地，{br}看着空荡荡的路。{br}心里有个声音在问：{br}下午三点一十...{delay:1}那时候，发生了什么？'
     }
   ]
 }
