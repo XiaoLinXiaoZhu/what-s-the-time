@@ -1,4 +1,4 @@
-import { ref, type Ref } from 'vue'
+import { ref } from 'vue'
 import { findSegment, startSegment } from '@/data/script'
 import type { ScriptSegment, ScriptLine, ChoiceLine } from '@/types'
 import { useGameState } from './useGameState'
