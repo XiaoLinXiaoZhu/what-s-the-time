@@ -79,7 +79,16 @@ const { currentSegment, displayTime, handleTimeInput, handleChoice, handleTimeCh
 // 将 currentSegment 同步到 useScriptDisplay
 watch(currentSegment, (newSegment) => {
   if (newSegment) {
-    setDisplayedLines([...newSegment.lines])
+    // 清除所有行的状态，确保重新进入时状态是干净的
+    const cleanLines = newSegment.lines.map(line => {
+      const cleanLine = { ...line }
+      // 移除可能存在的状态属性
+      if ('status' in cleanLine) {
+        delete (cleanLine as any).status
+      }
+      return cleanLine
+    })
+    setDisplayedLines(cleanLines)
     scriptDisplay.currentLineIndex.value = 0
     scriptDisplay.typingRefs.value.clear()
     

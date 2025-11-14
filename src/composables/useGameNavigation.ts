@@ -71,14 +71,8 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
       timestamp: Date.now()
     })
 
-    // 显示选择的选项（作为对话）
-    const choiceLine: ScriptLine = {
-      type: 'dialogue',
-      text: `{italic}你选择了：{/italic} ${choice.text}`
-    }
-
-    // 在当前行之后插入选择的选项和后续内容
-    insertLines(lineIndex, [choiceLine, ...choice.lines])
+    // 直接插入选择的后续内容（不再显示"你选择了"的提示文本）
+    insertLines(lineIndex, choice.lines)
 
     // 移动到下一行
     moveToLine(lineIndex + 1)
