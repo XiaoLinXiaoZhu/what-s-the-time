@@ -521,7 +521,7 @@ export const scriptSegments: ScriptSegment[] = [
 export function findSegment(
   time: string,
   unlockedFlags: Set<string> = new Set(),
-  viewedSegments: Set<string> = new Set()
+  _viewedSegments?: Set<string>
 ): ScriptSegment | null {
   // 时间匹配
   const timeMatch = scriptSegments.find(

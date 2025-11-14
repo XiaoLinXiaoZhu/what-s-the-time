@@ -1,4 +1,4 @@
-import { ref, reactive } from 'vue'
+import { ref } from 'vue'
 import type { GameState } from '@/types'
 
 const gameState = ref<GameState>({
