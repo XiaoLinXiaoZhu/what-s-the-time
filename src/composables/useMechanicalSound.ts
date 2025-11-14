@@ -3,7 +3,7 @@ import { ref } from 'vue'
 /**
  * 机械音效音量（0-1之间）
  */
-const SOUND_VOLUME = 0.2
+const SOUND_VOLUME = 0.15
 
 /**
  * 机械音效管理 Composable
