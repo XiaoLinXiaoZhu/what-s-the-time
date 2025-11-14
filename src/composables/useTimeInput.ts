@@ -85,6 +85,7 @@ export function useTimeInput(options: UseTimeInputOptions) {
 
     // 只允许数字（除了分隔符位置）
     if (index !== TIME_INPUT_SEPARATOR_INDEX) {
+      const hadValue = !!chars.value[index]
       value = value.replace(/\D/g, '')
       if (value) {
         chars.value[index] = value
@@ -104,6 +105,11 @@ export function useTimeInput(options: UseTimeInputOptions) {
         // 检查是否输入完成
         checkComplete()
       } else {
+        // 如果之前有值但现在为空，说明是删除操作
+        if (hadValue) {
+          // 播放机械音效
+          playRandomSound()
+        }
         chars.value[index] = ''
       }
     } else {
@@ -126,8 +132,10 @@ export function useTimeInput(options: UseTimeInputOptions) {
     if (e.key === 'Backspace' && !chars.value[index] && index > 0) {
       e.preventDefault()
       const prevIndex = getPrevIndex(index)
-      if (prevIndex >= 0) {
+      if (prevIndex >= 0 && chars.value[prevIndex]) {
         chars.value[prevIndex] = ''
+        // 播放机械音效
+        playRandomSound()
         nextTick(() => {
           refs.value[prevIndex]?.focus()
         })

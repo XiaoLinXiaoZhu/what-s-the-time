@@ -3,7 +3,7 @@ import type { ScriptSegment } from '@/types'
 /**
  * 开场片段（特殊片段，time 为 'START'）
  */
-export const startFirstSegment: ScriptSegment = {
+export const startASegment: ScriptSegment = {
   id: 'START',
   time: 'START',
   description: '游戏开场',
@@ -16,11 +16,11 @@ export const startFirstSegment: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '不，是{delay:1}  {bold}她{/bold}  在问我。'
+      text: '不，是{delay:1}  {animateText:ta|她|他|它|祂}  在问我。'
     },
     {
       type: "narration",
-      text: "现在……现在……{br}我抬起手，看了看手表。时间是……{br}{delay:1}上午八点零五……{br}{delay:1}应该吧……{br}于是我张口"
+      text: "现在……现在……{br}我抬起手，看了看手表。时间是……{br}{delay:1}……{br}{delay:1}应该吧……{br}于是我张口"
     },
     {
       type: 'dialogue',

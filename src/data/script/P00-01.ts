@@ -41,11 +41,7 @@ export const P00_01: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '我看了看她，然后说——'
-    },
-    {
-      type: 'dialogue',
-      text: '还是老样子吧。三明治和牛奶，对胃好。'
+      text: '我看了看她，然后说——{br}还是老样子吧。{delay:1}三明治和牛奶，对胃好。'
     },
     {
       type: 'dialogue',

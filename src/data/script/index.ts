@@ -8,6 +8,7 @@ import { P09_02 } from './P09-02'
 export { startSegment }
 export { blankSegment } from './blank'
 
+let isFirstStart = true
 /**
  * 根据当前 loop 获取对应的开头片段
  * @param loop 当前游戏阶段（loop）
@@ -16,7 +17,11 @@ export { blankSegment } from './blank'
 export function getStartSegment(loop?: string): ScriptSegment {
   // Loop G（meta 终局阶段）使用循环变体
   if (loop === 'A') {
-    return startFirstSegment as ScriptSegment
+    if (isFirstStart) {
+      isFirstStart = false
+      return startFirstSegment as ScriptSegment
+    }
+    return startASegment
   }
   if (loop === 'G') {
     return P09_02
@@ -70,6 +75,7 @@ import { P09_01 } from './P09-01'
 import { TEST_CHOICE } from './TEST-CHOICE'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
 import { startFirstSegment } from './start-first'
+import { startASegment } from './start-a'
 
 
 /**
