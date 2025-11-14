@@ -35,6 +35,17 @@
     :current-line-index="currentLineIndex"
     @input-complete="$emit('input-complete', $event, index)"
   />
+  <TimeDisplayLine
+    v-else-if="line.type === 'timeDisplay'"
+    :line="line"
+    :index="index"
+  />
+  <CommandLine
+    v-else-if="line.type === 'command'"
+    :line="line"
+    :index="index"
+    @command-execute="$emit('command-execute', $event, index)"
+  />
 </template>
 
 <script setup lang="ts">
@@ -44,6 +55,8 @@ import DialogueLine from './DialogueLine.vue'
 import ChoiceLine from './ChoiceLine.vue'
 import TimeChoiceLine from './TimeChoiceLine.vue'
 import InputLine from './InputLine.vue'
+import TimeDisplayLine from './TimeDisplayLine.vue'
+import CommandLine from './CommandLine.vue'
 
 defineProps<{
   line: ScriptLine
@@ -57,6 +70,7 @@ defineEmits<{
   'choice-select': [choice: any, lineIndex: number]
   'time-choice-complete': [time: string, lineIndex: number]
   'input-complete': [time: string, lineIndex: number]
+  'command-execute': [command: any, lineIndex: number]
 }>()
 </script>
 

@@ -2,6 +2,7 @@
   <div class="input-line">
     <TimeInput
       :auto-focus="shouldAutoFocus"
+      :disabled="isDisabled"
       @complete="(time) => $emit('input-complete', time)"
     />
   </div>
@@ -23,6 +24,12 @@ defineEmits<{
 }>()
 
 const shouldAutoFocus = computed(() => props.index === props.currentLineIndex)
+
+// 根据行状态决定是否禁用
+const isDisabled = computed(() => {
+  const status = props.line.status
+  return status === 'completed' || status === 'disabled'
+})
 </script>
 
 <style scoped>

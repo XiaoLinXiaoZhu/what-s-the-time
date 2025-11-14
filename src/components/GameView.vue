@@ -8,7 +8,7 @@
       <div class="text-content" v-if="currentSegment">
         <template v-for="(line, index) in displayedLines" :key="`${currentSegment.id}-${index}`">
           <ScriptLineRenderer
-            v-if="index <= currentLineIndex || line.type === 'choice'"
+            v-if="shouldShowLine(line, index)"
             :line="line"
             :index="index"
             :current-line-index="currentLineIndex"
@@ -17,6 +17,7 @@
             @choice-select="handleChoice"
             @time-choice-complete="handleTimeChoice"
             @input-complete="handleInputComplete"
+            @command-execute="handleCommandExecute"
           />
         </template>
 
@@ -57,8 +58,19 @@ const {
   setDisplayedLines
 } = scriptDisplay
 
+// 判断是否应该显示行
+const shouldShowLine = (line: any, index: number) => {
+  // choice 行总是显示
+  if (line.type === 'choice') {
+    return true
+  }
+  
+  // 其他行根据 currentLineIndex 显示
+  return index <= currentLineIndex.value
+}
+
 // 游戏导航
-const { currentSegment, displayTime, handleTimeInput, handleChoice, handleTimeChoice, backToStart, init } = useGameNavigation({
+const { currentSegment, displayTime, handleTimeInput, handleChoice, handleTimeChoice, handleCommand, convertInputToTimeDisplay, backToStart, init } = useGameNavigation({
   insertLines,
   moveToLine,
   displayedLines
@@ -99,14 +111,37 @@ const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
 
 // 处理输入完成
 const handleInputComplete = (time: string, lineIndex: number) => {
+  // 将 input 行转换为 timeDisplay 行（显示输入的值）
+  convertInputToTimeDisplay(lineIndex, time)
+  
   // 检查下一行是否是 timeChoice
   const nextLine = displayedLines.value[lineIndex + 1]
   if (nextLine?.type === 'timeChoice') {
     // 如果下一行是 timeChoice，直接使用刚才输入的时间处理 timeChoice
-    handleTimeChoice(time, lineIndex + 1)
+    handleTimeChoice(time, lineIndex + 1, lineIndex)
   } else {
     // 否则，执行原来的逻辑：查找匹配的片段
     handleTimeInput(time)
+  }
+}
+
+// 处理命令执行
+const handleCommandExecute = (command: any, lineIndex: number) => {
+  handleCommand(command, lineIndex)
+  
+  // 如果命令是 jump，需要更新显示的行
+  if (command.command === 'jump' && currentSegment.value) {
+    setDisplayedLines([...currentSegment.value.lines])
+    scriptDisplay.currentLineIndex.value = 0
+    scriptDisplay.typingRefs.value.clear()
+    
+    // 等待 DOM 更新后启动第一行的打字效果
+    nextTick(() => {
+      const typingComponent = getTypingComponent(0)
+      if (typingComponent && typeof typingComponent.startTyping === 'function') {
+        typingComponent.startTyping()
+      }
+    })
   }
 }
 

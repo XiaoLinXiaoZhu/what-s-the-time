@@ -14,7 +14,7 @@
             'text-bold': false,
             'text-italic': false
           }"
-        >{{ index === currentIndex ? systemTimeDisplay : systemTime }}<span
+        >{{ getSystemTimeDisplay(index) }}<span
             v-if="
               isTyping &&
               index === currentIndex &&
@@ -45,6 +45,7 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { parseText } from '@/utils/textParser'
+import { useSystemTime } from '@/composables/useSystemTime'
 
 const props = defineProps<{
   text: string
@@ -63,30 +64,17 @@ const currentCharIndex = ref(0)
 const isTyping = ref(false)
 const isComplete = ref(false)
 const typingTimer = ref<number | null>(null)
-const systemTime = ref<string>('')
-const systemTimeTimer = ref<number | null>(null)
 
-/**
- * 获取当前系统时间（HH:MM格式）
- */
-const getCurrentSystemTime = (): string => {
-  const now = new Date()
-  const hours = now.getHours().toString().padStart(2, '0')
-  const minutes = now.getMinutes().toString().padStart(2, '0')
-  return `${hours}:${minutes}`
-}
-
-/**
- * 更新系统时间显示
- */
-const updateSystemTime = () => {
-  systemTime.value = getCurrentSystemTime()
-}
+// 使用全局系统时间
+const { systemTime, getCurrentSystemTime } = useSystemTime()
 
 /**
  * 系统时间显示（用于打字效果）
  */
 const systemTimeDisplay = computed(() => {
+  // 使用全局 systemTime，确保始终有值
+  const currentTime = systemTime.value || getCurrentSystemTime()
+  
   // 检查当前节点是否是 systemTime 节点且正在显示
   const currentNode = parsedNodes.value[currentIndex.value]
   const isSystemTimeNode = currentNode?.type === 'systemTime'
@@ -94,12 +82,29 @@ const systemTimeDisplay = computed(() => {
   if (isSystemTimeNode && isTyping.value) {
     // 如果正在显示 systemTime 节点，根据 currentCharIndex 显示部分内容
     const displayLength = Math.min(currentCharIndex.value, 5) // HH:MM 是 5 个字符
-    return systemTime.value.substring(0, displayLength)
+    return currentTime.substring(0, displayLength)
   }
   
   // 非打字状态或已完成，显示完整时间
-  return systemTime.value
+  return currentTime
 })
+
+/**
+ * 获取指定索引的 systemTime 节点显示值
+ * 确保打字完成后也能正确显示
+ */
+const getSystemTimeDisplay = (index: number): string => {
+  // 使用全局 systemTime，确保始终有值
+  const currentTime = systemTime.value || getCurrentSystemTime()
+  
+  // 如果正在打字且是当前节点，使用 systemTimeDisplay（部分显示）
+  if (isTyping.value && index === currentIndex.value) {
+    return systemTimeDisplay.value
+  }
+  
+  // 打字完成或节点已完成，显示完整时间
+  return currentTime
+}
 
 // 默认速度：每个字符 30ms
 const typingSpeed = computed(() => props.speed || 30)
@@ -242,7 +247,9 @@ const skipToEnd = () => {
   })
   
   // 对于 systemTime 节点，确保显示完整
-  parsedNodes.value.forEach((node, index) => {
+  // 注意：getSystemTimeDisplay 函数已经处理了打字完成后的显示逻辑
+  // 这里设置 currentCharIndex 是为了保持状态一致性
+  parsedNodes.value.forEach((node) => {
     if (node.type === 'systemTime') {
       currentCharIndex.value = 5 // 确保显示完整
     }
@@ -259,6 +266,7 @@ watch(() => props.text, () => {
     clearTimeout(typingTimer.value)
     typingTimer.value = null
   }
+  
   isTyping.value = false
   isComplete.value = false
   displayTexts.value = []
@@ -274,23 +282,6 @@ watch(() => props.text, () => {
 }, { immediate: true })
 
 onMounted(() => {
-  // 初始化系统时间
-  updateSystemTime()
-  
-  // 设置定时器，每分钟更新一次系统时间（在分钟变化时更新）
-  const updateTimer = () => {
-    updateSystemTime()
-    // 计算到下一分钟的毫秒数
-    const now = new Date()
-    const msUntilNextMinute = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds())
-    systemTimeTimer.value = window.setTimeout(() => {
-      updateSystemTime()
-      // 之后每分钟更新一次
-      systemTimeTimer.value = window.setInterval(updateSystemTime, 60000)
-    }, msUntilNextMinute)
-  }
-  updateTimer()
-  
   if (props.autoStart !== false) {
     startTyping()
   }
@@ -299,10 +290,6 @@ onMounted(() => {
 onUnmounted(() => {
   if (typingTimer.value) {
     clearTimeout(typingTimer.value)
-  }
-  if (systemTimeTimer.value) {
-    clearTimeout(systemTimeTimer.value)
-    clearInterval(systemTimeTimer.value)
   }
 })
 

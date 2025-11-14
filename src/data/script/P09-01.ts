@@ -7,7 +7,7 @@ import type { ScriptSegment } from '@/types'
  */
 export const P09_01: ScriptSegment = {
   id: 'P09-01',
-  time: '26:84',
+  time: '99:99',
   description: '最终 meta 问答',
   loop: 'A',
   unlockFlags: [],

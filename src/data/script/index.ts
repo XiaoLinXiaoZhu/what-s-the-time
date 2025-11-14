@@ -64,6 +64,8 @@ import { P08_01 } from './P08-01'
 import { P08_02 } from './P08-02'
 import { P08_03 } from './P08-03'
 import { P09_01 } from './P09-01'
+import { TEST_CHOICE } from './TEST-CHOICE'
+import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
 
 
 /**
@@ -73,6 +75,12 @@ export const scriptSegments: ScriptSegment[] = [
   // 特殊片段
   startSegment,
   blankSegment,
+  
+  // 测试片段
+  TEST_CHOICE,
+  TEST_COMMAND,
+  TEST_COMMAND_2,
+  TEST_COMMAND_END,
   
   // 阶段 0：A 案前
   P00_01,
@@ -165,6 +173,13 @@ export function findSegment(
 
   // 返回空白片段
   return scriptSegments.find(seg => seg.id === 'BLANK') || null
+}
+
+/**
+ * 根据片段 ID 查找片段
+ */
+export function findSegmentById(segmentId: string): ScriptSegment | null {
+  return scriptSegments.find(seg => seg.id === segmentId) || null
 }
 
 /**

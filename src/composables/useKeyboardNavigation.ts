@@ -91,6 +91,10 @@ export function useKeyboardNavigation(options: UseKeyboardNavigationOptions) {
     } else {
       // 如果没有 TypingText 组件（比如选择分支、输入框或时间匹配分支），检查是否需要等待输入
       const currentLine = displayedLines.value[currentLineIndex.value]
+      // choice 行不能被跳过，必须做出选择
+      if (currentLine?.type === 'choice') {
+        return // 阻止跳过选择
+      }
       if (currentLine?.type !== 'input' && currentLine?.type !== 'timeChoice') {
         showNextLine()
       }

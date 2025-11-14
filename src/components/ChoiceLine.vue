@@ -3,8 +3,10 @@
     <button
       v-for="(choice, choiceIndex) in line.choices"
       :key="choiceIndex"
-      @click.stop="$emit('choice-select', choice, index)"
+      @click.stop="handleChoiceClick(choice)"
+      :disabled="isDisabled"
       class="choice-button"
+      :class="{ 'choice-button-disabled': isDisabled }"
     >
       {{ choice.text }}
     </button>
@@ -12,16 +14,30 @@
 </template>
 
 <script setup lang="ts">
+import { computed } from 'vue'
 import type { ChoiceLine } from '@/types'
 
-defineProps<{
+const props = defineProps<{
   line: ChoiceLine
   index: number
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'choice-select': [choice: ChoiceLine['choices'][0], lineIndex: number]
 }>()
+
+// 根据行状态决定是否禁用
+const isDisabled = computed(() => {
+  const status = (props.line as any).status
+  return status === 'completed' || status === 'disabled'
+})
+
+// 处理选择点击
+const handleChoiceClick = (choice: ChoiceLine['choices'][0]) => {
+  if (!isDisabled.value) {
+    emit('choice-select', choice, props.index)
+  }
+}
 </script>
 
 <style scoped>
@@ -43,9 +59,16 @@ defineEmits<{
   transition: all 0.2s;
 }
 
-.choice-button:hover {
+.choice-button:hover:not(:disabled) {
   background: rgba(74, 158, 255, 0.4);
   transform: translateX(8px);
+}
+
+.choice-button:disabled,
+.choice-button-disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
 }
 </style>
 

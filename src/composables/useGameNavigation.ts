@@ -1,6 +1,6 @@
 import { ref } from 'vue'
-import { findSegment, getStartSegment } from '@/data/script'
-import type { ScriptSegment, ScriptLine, ChoiceLine } from '@/types'
+import { findSegment, findSegmentById, getStartSegment } from '@/data/script'
+import type { ScriptSegment, ScriptLine, ChoiceLine, CommandLine } from '@/types'
 import { useGameState } from './useGameState'
 
 export interface UseGameNavigationOptions {
@@ -49,6 +49,17 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     choice: ChoiceLine['choices'][0],
     lineIndex: number
   ) => {
+    const line = displayedLines.value[lineIndex]
+    if (line?.type !== 'choice') return
+
+    // 检查是否已经选择过（防止重复选择）
+    if ((line as any).status === 'completed' || (line as any).status === 'disabled') {
+      return
+    }
+
+    // 标记行为已完成，防止重复选择
+    ;(line as any).status = 'completed'
+
     // 设置 flag
     if (choice.setFlag) {
       gameState.value.unlockedFlags.add(choice.setFlag)
@@ -84,11 +95,30 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
   }
 
   /**
+   * 将 input 行转换为 timeDisplay 行（显示输入的值）
+   */
+  const convertInputToTimeDisplay = (lineIndex: number, time: string) => {
+    const line = displayedLines.value[lineIndex]
+    if (line?.type === 'input') {
+      // 将 input 行替换为 timeDisplay 行，显示输入的时间
+      displayedLines.value[lineIndex] = {
+        type: 'timeDisplay',
+        value: time
+      }
+    }
+  }
+
+  /**
    * 处理时间匹配分支
    */
-  const handleTimeChoice = (time: string, lineIndex: number) => {
+  const handleTimeChoice = (time: string, lineIndex: number, inputLineIndex?: number) => {
     const line = displayedLines.value[lineIndex]
     if (line?.type !== 'timeChoice') return
+
+    // 检查是否已经选择过（防止重复选择）
+    if ((line as any).status === 'completed' || (line as any).status === 'disabled') {
+      return
+    }
 
     // 获取当前系统时间
     const systemTime = getCurrentSystemTime()
@@ -114,6 +144,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     }
 
     if (matchedChoice) {
+      // 标记行为已完成，防止重复选择
+      ;(line as any).status = 'completed'
+
       // 设置 flag
       if (matchedChoice.setFlag) {
         gameState.value.unlockedFlags.add(matchedChoice.setFlag)
@@ -125,17 +158,98 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
         timestamp: Date.now()
       })
 
-      // 显示匹配的时间（作为对话）
-      const timeLine: ScriptLine = {
-        type: 'dialogue',
-        text: `{italic}时间：{/italic} ${time}`
+      // timeChoice 行是匹配逻辑行，匹配完成后应该被移除
+      // 只有用户实际输入的 input 行才显示为 timeDisplay
+      // input 行已经在 handleInputComplete 中转换为 timeDisplay 了
+      
+      // 移除 timeChoice 行（它是逻辑控制行，不需要显示）
+      displayedLines.value.splice(lineIndex, 1)
+
+      // 插入后续内容
+      // 注意：删除 timeChoice 行后，如果 inputLineIndex < lineIndex，插入位置应该是 lineIndex - 1
+      // 如果 inputLineIndex >= lineIndex，插入位置应该是 lineIndex（因为删除的是 lineIndex）
+      const insertIndex = inputLineIndex !== undefined && inputLineIndex < lineIndex ? lineIndex - 1 : lineIndex
+      insertLines(insertIndex, matchedChoice.lines)
+
+      // 移动到下一行（插入后的第一行）
+      moveToLine(insertIndex + 1)
+    }
+  }
+
+  /**
+   * 处理命令
+   */
+  const handleCommand = (command: CommandLine, lineIndex: number) => {
+    const { command: cmd, params } = command
+
+    switch (cmd) {
+      case 'setFlag': {
+        const flag = params.flag as string
+        if (flag) {
+          gameState.value.unlockedFlags.add(flag)
+        }
+        break
       }
 
-      // 在当前行之后插入时间显示和后续内容
-      insertLines(lineIndex, [timeLine, ...matchedChoice.lines])
+      case 'unsetFlag': {
+        const flag = params.flag as string
+        if (flag) {
+          gameState.value.unlockedFlags.delete(flag)
+        }
+        break
+      }
 
-      // 移动到下一行
-      moveToLine(lineIndex + 1)
+      case 'jump': {
+        // 支持通过 segmentId 或 time 跳转
+        const segmentId = params.segmentId as string | undefined
+        const time = params.time as string | undefined
+
+        if (segmentId) {
+          // 根据 segmentId 查找片段
+          const segment = findSegmentById(segmentId)
+          if (segment) {
+            currentSegment.value = segment
+            displayTime.value = segment.time === 'START' ? '' : segment.time
+            gameState.value.viewedSegments.add(segment.id)
+            
+            // 重置显示的行，切换到新片段
+            // 注意：这里需要外部调用 setDisplayedLines 来更新显示
+            // 但为了保持接口简洁，我们只更新 currentSegment
+            // 实际的显示更新应该在 GameView 中处理
+          }
+        } else if (time) {
+          // 根据时间查找片段
+          const segment = findSegment(time, gameState.value.unlockedFlags, gameState.value.viewedSegments)
+          if (segment) {
+            currentSegment.value = segment
+            displayTime.value = time
+            gameState.value.viewedSegments.add(segment.id)
+          }
+        }
+        break
+      }
+
+      case 'end': {
+        // 结束游戏：可以显示结束信息或重置游戏
+        const message = params.message as string | undefined
+        
+        // 可以插入结束对话
+        if (message) {
+          const endLine: ScriptLine = {
+            type: 'dialogue',
+            text: message
+          }
+          insertLines(lineIndex, [endLine])
+        }
+        
+        // 如果需要重置游戏，可以调用 resetGame
+        // const { resetGame } = useGameState()
+        // resetGame()
+        break
+      }
+
+      default:
+        console.warn(`未知命令: ${cmd}`)
     }
   }
 
@@ -160,6 +274,8 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     handleTimeInput,
     handleChoice,
     handleTimeChoice,
+    handleCommand,
+    convertInputToTimeDisplay,
     backToStart,
     init
   }

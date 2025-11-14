@@ -4,6 +4,7 @@ import { TIME_INPUT_FORMAT, TIME_INPUT_SEPARATOR_INDEX, TIME_SUBMIT_DELAY } from
 export interface UseTimeInputOptions {
   onComplete: (time: string) => void
   onCharChange?: (index: number, value: string) => void
+  disabled?: () => boolean
 }
 
 /**
@@ -11,7 +12,7 @@ export interface UseTimeInputOptions {
  * 管理时间输入的状态和交互逻辑
  */
 export function useTimeInput(options: UseTimeInputOptions) {
-  const { onComplete, onCharChange } = options
+  const { onComplete, onCharChange, disabled } = options
 
   // 状态
   const chars = ref<string[]>([...TIME_INPUT_FORMAT])
@@ -69,6 +70,12 @@ export function useTimeInput(options: UseTimeInputOptions) {
    * 处理单个字符输入
    */
   const handleInput = (e: Event, index: number) => {
+    // 如果禁用，不处理输入
+    if (disabled && disabled()) {
+      e.preventDefault()
+      return
+    }
+
     const input = e.target as HTMLInputElement
     let value = input.value
 
@@ -102,6 +109,12 @@ export function useTimeInput(options: UseTimeInputOptions) {
    * 处理键盘事件
    */
   const handleKeydown = (e: KeyboardEvent, index: number) => {
+    // 如果禁用，不处理键盘事件
+    if (disabled && disabled()) {
+      e.preventDefault()
+      return
+    }
+
     // 处理退格键
     if (e.key === 'Backspace' && !chars.value[index] && index > 0) {
       e.preventDefault()
@@ -138,6 +151,12 @@ export function useTimeInput(options: UseTimeInputOptions) {
    * 处理粘贴
    */
   const handlePaste = (e: ClipboardEvent) => {
+    // 如果禁用，不处理粘贴
+    if (disabled && disabled()) {
+      e.preventDefault()
+      return
+    }
+
     e.preventDefault()
     const pastedText = e.clipboardData?.getData('text') || ''
     const cleaned = pastedText.replace(/\D/g, '').slice(0, 4)

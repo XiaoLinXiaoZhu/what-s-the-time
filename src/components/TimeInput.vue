@@ -44,7 +44,8 @@ const {
   setRef,
   focus
 } = useTimeInput({
-  onComplete: (time) => emit('complete', time)
+  onComplete: (time) => emit('complete', time),
+  disabled: () => props.disabled
 })
 
 // 自动聚焦
@@ -74,8 +75,13 @@ onMounted(() => {
   background: rgba(26, 26, 26, 0.6);
   border: 1px solid rgba(255, 255, 255, 0.2);
   color: #fff;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   font-size: 24px;
   font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   border-radius: 4px;
   outline: none;
   transition: all 0.2s;
@@ -92,7 +98,13 @@ onMounted(() => {
   border: none;
   background: transparent;
   pointer-events: none;
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
+    sans-serif;
   font-size: 24px;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
   color: rgba(255, 255, 255, 0.5);
 }
 

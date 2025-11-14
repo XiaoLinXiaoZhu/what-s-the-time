@@ -1,4 +1,9 @@
 /**
+ * 行的状态
+ */
+export type LineStatus = 'pending' | 'active' | 'completed' | 'disabled'
+
+/**
  * 剧本行类型
  */
 export type ScriptLine = 
@@ -8,6 +13,15 @@ export type ScriptLine =
   | TimeChoiceLine    // 时间匹配分支
   | CommandLine       // 命令（如设置 flag、跳转等）
   | InputLine         // 输入框
+  | TimeDisplayLine   // 时间显示（只读）
+
+/**
+ * 带状态的行（用于运行时）
+ */
+export interface ScriptLineWithStatus extends ScriptLine {
+  /** 行的状态（可选，默认为 'pending'） */
+  status?: LineStatus
+}
 
 /**
  * 对话行
@@ -59,6 +73,8 @@ export interface TimeChoiceLine {
     /** 匹配后设置的 flag（可选） */
     setFlag?: string
   }>
+  /** 行的状态（可选，默认为 'pending'） */
+  status?: LineStatus
 }
 
 /**
@@ -79,6 +95,17 @@ export interface InputLine {
   type: 'input'
   /** 提示文本 */
   placeholder?: string
+  /** 行的状态（可选，默认为 'pending'） */
+  status?: LineStatus
+}
+
+/**
+ * 时间显示行（只读，用于显示已输入的时间）
+ */
+export interface TimeDisplayLine {
+  type: 'timeDisplay'
+  /** 要显示的时间值（HH:MM格式） */
+  value: string
 }
 
 /**
