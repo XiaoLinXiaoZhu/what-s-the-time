@@ -57,8 +57,17 @@ export const P01_06: ScriptSegment = {
       text: '好。'
     },
     {
+      type: 'dialogue',
+      character: 'F',
+      text: '对了，{bold}中午十二点三十{/bold}，{br}警官会来做个正式笔录。{br}你准备一下。'
+    },
+    {
+      type: 'dialogue',
+      text: '...好。'
+    },
+    {
       type: 'narration',
-      text: '我走出办公室，靠在墙上。{br}手还在抖。{br}但我知道，第一关，过了。'
+      text: '我走出办公室，靠在墙上。{br}手还在抖。{br}但我知道，第一关，过了。{br}接下来，{br}还有更多要面对。'
     }
   ]
 }

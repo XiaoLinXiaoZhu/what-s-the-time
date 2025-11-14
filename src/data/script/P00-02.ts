@@ -18,8 +18,21 @@ export const P00_02: ScriptSegment = {
     },
     {
       type: 'dialogue',
+      text: '我看了看表。{br}十二点一十。'
+    },
+    {
+      type: 'dialogue',
       character: 'A',
-      text: '最近...{delay:1}有点累。'
+      text: '你又在看时间？{br}最近...{delay:1}你好像总是在看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '...有吗？'
+    },
+    {
+      type: 'dialogue',
+      character: 'A',
+      text: '嗯。{br}感觉你最近...{delay:1}有点累。'
     },
     {
       type: 'dialogue',

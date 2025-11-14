@@ -14,6 +14,14 @@ export const P03_04: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我抬起手腕，看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '二十三点...{delay:1}二十三点一十五。'
+    },
+    {
+      type: 'narration',
       text: '夜晚。我躺在床上。'
     },
     {
@@ -31,6 +39,46 @@ export const P03_04: ScriptSegment = {
     {
       type: 'narration',
       text: '我没有说下去。{br}有些问题，不需要答案。{br}有些时间，不需要记住。'
+    },
+    {
+      type: 'choice',
+      choices: [
+        {
+          text: '回想今天发生的事',
+          lines: [
+            {
+              type: 'narration',
+              text: '今天...{delay:1}今天发生了什么？{br}早上{bold}八点零五{/bold}，{br}和 B 一起上学。{br}中午{bold}十二点一十{/bold}，{br}在教室吃便当。{br}傍晚{bold}六点四十{/bold}，{br}处理了一些东西。{br}现在，{bold}十一点一十五{/bold}。'
+            },
+            {
+              type: 'dialogue',
+              text: '时间...{delay:1}时间过得真快。'
+            }
+          ]
+        },
+        {
+          text: '思考明天要做什么',
+          lines: [
+            {
+              type: 'narration',
+              text: '明天...{br}明天还要继续。{br}同样的时间，{br}同样的路，{br}同样的日常。'
+            },
+            {
+              type: 'dialogue',
+              text: '明天，{bold}早上八点零五{/bold}，{br}还要和 B 一起上学。'
+            }
+          ]
+        },
+        {
+          text: '什么都不想',
+          lines: [
+            {
+              type: 'narration',
+              text: '我闭上眼睛，{br}什么都不想。{br}让时间，{br}就这样过去。'
+            }
+          ]
+        }
+      ]
     }
   ]
 }

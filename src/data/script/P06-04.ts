@@ -34,6 +34,15 @@ export const P06_04: ScriptSegment = {
             {
               type: 'dialogue',
               character: 'D',
+              text: '她昨天说，{bold}下午三点一十{/bold}要去教室找你。{br}你见到她了吗？'
+            },
+            {
+              type: 'dialogue',
+              text: '...没有。{br}她没来。'
+            },
+            {
+              type: 'dialogue',
+              character: 'D',
               text: '如果这次也是因为你，{br}我永远不会原谅你。'
             },
             {
@@ -57,11 +66,29 @@ export const P06_04: ScriptSegment = {
             {
               type: 'dialogue',
               character: 'E',
-              text: '那就好。'
+              text: '那就好。{br}我...{delay:1}我只是想确认一下。'
+            },
+            {
+              type: 'dialogue',
+              text: '确认什么？'
+            },
+            {
+              type: 'dialogue',
+              character: 'E',
+              text: '没什么。{br}只是...{delay:1}只是担心你。'
             },
             {
               type: 'narration',
               text: 'E 什么也没问，{br}却在门口站了很久。{br}我知道，{br}她什么都知道。{br}但她选择，{br}什么都不说。'
+            },
+            {
+              type: 'dialogue',
+              character: 'E',
+              text: '明天{bold}上午十一点{/bold}，{br}警官可能会找你。{br}你...{delay:1}你做好准备。'
+            },
+            {
+              type: 'dialogue',
+              text: '...我知道了。'
             }
           ]
         }

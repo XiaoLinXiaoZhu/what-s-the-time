@@ -14,6 +14,14 @@ export const P03_03: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我抬起手腕，看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '十八点...{delay:1}十八点四十。'
+    },
+    {
+      type: 'narration',
       text: '我提着垃圾袋，旁边放着锯子。'
     },
     {
@@ -27,6 +35,18 @@ export const P03_03: ScriptSegment = {
     {
       type: 'narration',
       text: '垃圾袋很重。{br}锯子很干净。{br}一切都看起来，很正常。{br}只是...{delay:1}只是心里，有种说不出的违和感。'
+    },
+    {
+      type: 'dialogue',
+      text: '18:40...{delay:1}时间到了。'
+    },
+    {
+      type: 'narration',
+      text: '我看了看表，{br}确认时间。{br}然后，{br}继续手里的动作。{br}一切，{br}都很正常。'
+    },
+    {
+      type: 'narration',
+      text: '处理完这些，{br}我该回去了。{br}晚上{bold}十一点一十五{/bold}，{br}还有别的事要做。'
     }
   ]
 }

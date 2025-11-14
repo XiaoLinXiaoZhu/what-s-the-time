@@ -14,11 +14,15 @@ export const P05_02: ScriptSegment = {
   lines: [
     {
       type: 'narration',
-      text: '约定地点。{br}我站在这里，等着 B。'
+      text: '我抬起手腕，看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '十点...{delay:1}十点零五。'
     },
     {
       type: 'narration',
-      text: '我抬起手腕，看表。{br}10:05。'
+      text: '约定地点。{br}我站在这里，等着 B。'
     },
     {
       type: 'dialogue',

@@ -17,6 +17,10 @@ export const P06_02: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我看了看表。{br}十二点一十。'
+    },
+    {
+      type: 'narration',
       text: 'B 的座位空着。{br}桌上留着一张便利贴。'
     },
     {

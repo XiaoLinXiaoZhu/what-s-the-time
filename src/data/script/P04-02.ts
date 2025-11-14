@@ -53,6 +53,24 @@ export const P04_02: ScriptSegment = {
       text: '我只是提醒你。{br}如果你真的在乎她，就别伤害她。'
     },
     {
+      type: 'dialogue',
+      character: 'D',
+      text: '她约了你，{br}今天{bold}下午三点一十{/bold}，{br}在教室见面，对吧？'
+    },
+    {
+      type: 'dialogue',
+      text: '...你怎么知道？'
+    },
+    {
+      type: 'dialogue',
+      character: 'D',
+      text: '她告诉我的。{br}她说，{br}想和你好好谈谈。{br}我希望...{delay:1}我希望你能认真听她说。'
+    },
+    {
+      type: 'dialogue',
+      text: '我会的。'
+    },
+    {
       type: 'narration',
       text: 'D 看了我一眼，转身走了。{br}我站在原地，心里五味杂陈。{br}我知道，她说的是对的。{br}但我...{delay:1}但我已经停不下来了。'
     }

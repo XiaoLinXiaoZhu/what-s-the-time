@@ -20,3 +20,14 @@ body {
   height: 100vh;
 }
 
+/* 文本选中样式 - 黑白反色效果 */
+::selection {
+  background-color: #fff;
+  color: #000;
+}
+
+::-moz-selection {
+  background-color: #fff;
+  color: #000;
+}
+

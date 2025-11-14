@@ -19,7 +19,25 @@ export const P00_01: ScriptSegment = {
     {
       type: 'dialogue',
       character: 'A',
-      text: '今天想吃什么早餐？'
+      text: '你刚才说...{delay:1}八点零五？'
+    },
+    {
+      type: 'dialogue',
+      text: '嗯，{delay:1}我看了看表。{br}应该是这个时间。'
+    },
+    {
+      type: 'dialogue',
+      character: 'A',
+      text: '时间过得真快呢。{br}感觉才刚起床，{br}就已经这个点了。'
+    },
+    {
+      type: 'dialogue',
+      text: '是啊...{delay:1}时间总是这样。'
+    },
+    {
+      type: 'dialogue',
+      character: 'A',
+      text: '对了，今天想吃什么早餐？'
     },
     {
       type: 'dialogue',

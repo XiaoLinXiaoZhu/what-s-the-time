@@ -14,6 +14,14 @@ export const P06_01: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我抬起手，看了看手表。'
+    },
+    {
+      type: 'dialogue',
+      text: '八点...{delay:1}八点零五。'
+    },
+    {
+      type: 'narration',
       text: '空荡荡的路。B 不在。'
     },
     {

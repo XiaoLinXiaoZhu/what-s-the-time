@@ -46,6 +46,7 @@
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { parseText } from '@/utils/textParser'
 import { useSystemTime } from '@/composables/useSystemTime'
+import { useMechanicalSound } from '@/composables/useMechanicalSound'
 
 const props = defineProps<{
   text: string
@@ -67,6 +68,9 @@ const typingTimer = ref<number | null>(null)
 
 // 使用全局系统时间
 const { systemTime, getCurrentSystemTime } = useSystemTime()
+
+// 使用机械音效
+const { playRandomSound } = useMechanicalSound()
 
 /**
  * 系统时间显示（用于打字效果）
@@ -170,6 +174,8 @@ const typeNextChar = () => {
   if (currentNode.type === 'systemTime') {
     // systemTime 节点：显示 5 个字符（HH:MM）
     if (currentCharIndex.value < 5) {
+      // 播放机械音效
+      playRandomSound()
       currentCharIndex.value++
       typingTimer.value = window.setTimeout(() => {
         typeNextChar()
@@ -189,6 +195,19 @@ const typeNextChar = () => {
     displayTexts.value[currentIndex.value] = newText
     const currentChar = currentNode.content[currentCharIndex.value]
     currentCharIndex.value++
+    
+    // 只在非空白字符时播放音效（空格、制表符等不播放）
+    if (currentChar && !/[\s\t]/.test(currentChar)) {
+      // 对于标点符号，降低播放频率（50%概率播放）
+      if (/[！？。，、；：]/.test(currentChar)) {
+        if (Math.random() < 0.5) {
+          playRandomSound()
+        }
+      } else {
+        // 普通字符，正常播放
+        playRandomSound()
+      }
+    }
     
     // 计算下一个字符的显示时间（根据字符类型调整）
     let delay = typingSpeed.value

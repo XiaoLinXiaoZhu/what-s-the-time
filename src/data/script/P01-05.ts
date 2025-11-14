@@ -14,15 +14,19 @@ export const P01_05: ScriptSegment = {
   lines: [
     {
       type: 'narration',
-      text: '楼顶只剩我一个人。'
+      text: '我抬起手腕，看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '十点...{delay:1}十点零七？'
     },
     {
       type: 'narration',
-      text: '我抬起手腕，看表。{br}10:07。'
+      text: '不对，应该已经过去了。{br}楼顶只剩我一个人。'
     },
     {
       type: 'narration',
-      text: '不对，应该已经过去了。{br}我再看一次。{br}10:08。'
+      text: '我再看一次。{br}10:08。'
     },
     {
       type: 'dialogue',

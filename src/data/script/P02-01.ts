@@ -48,8 +48,57 @@ export const P02_01: ScriptSegment = {
       text: '谢谢。{br}我只希望...{delay:1}能找出真相。'
     },
     {
+      type: 'choice',
+      choices: [
+        {
+          text: '询问调查进展',
+          lines: [
+            {
+              type: 'dialogue',
+              text: '那个...{delay:1}调查有进展吗？'
+            },
+            {
+              type: 'dialogue',
+              character: 'G',
+              text: '还在进行中。{br}不过，{br}我们已经掌握了一些线索。{br}你不用担心，{br}我们会找出真相的。'
+            },
+            {
+              type: 'dialogue',
+              text: '谢谢。'
+            },
+            {
+              type: 'narration',
+              text: '我低下头，{br}掩饰住内心的紧张。'
+            }
+          ]
+        },
+        {
+          text: '保持沉默',
+          lines: [
+            {
+              type: 'narration',
+              text: '我保持沉默，{br}没有说话。{br}G 继续写着笔录，{br}房间里只有笔尖划过纸张的声音。'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type: 'dialogue',
+      character: 'G',
+      text: '你可以回去了。{br}如果想起什么，{br}随时联系我们。'
+    },
+    {
+      type: 'dialogue',
+      text: '好。'
+    },
+    {
       type: 'narration',
-      text: '我低下头，做出痛苦的样子。{br}G 在笔录上写着什么。{br}我知道，替罪羊已经被锁定了。'
+      text: '我走出办公室，{br}靠在墙上。{br}G 在笔录上写着什么。{br}我知道，替罪羊已经被锁定了。{br}接下来，{br}只需要等待结果。'
+    },
+    {
+      type: 'narration',
+      text: '走廊里，{br}有人提到{bold}十点三十{/bold}的课间，{br}说那时候好像发生了什么。{br}我加快脚步，{br}离开了那里。'
     }
   ]
 }

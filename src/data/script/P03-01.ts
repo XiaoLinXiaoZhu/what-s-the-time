@@ -14,6 +14,24 @@ export const P03_01: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我抬起手，看了看手表。{br}八点零五。'
+    },
+    {
+      type: 'dialogue',
+      character: 'B',
+      text: '你又在看时间？{br}刚才你说了"八点零五"对吧？'
+    },
+    {
+      type: 'dialogue',
+      text: '嗯...{delay:1}应该是这个时间。'
+    },
+    {
+      type: 'dialogue',
+      character: 'B',
+      text: '时间过得真快呢。{br}感觉才刚起床。'
+    },
+    {
+      type: 'narration',
       text: '早晨的上学路。阳光透过树叶洒下来。'
     },
     {
@@ -50,6 +68,19 @@ export const P03_01: ScriptSegment = {
     {
       type: 'narration',
       text: '我看着她，阳光照在她脸上。{br}有那么一瞬间，我几乎以为...{br}但我知道，那只是错觉。'
+    },
+    {
+      type: 'dialogue',
+      character: 'B',
+      text: '对了，{bold}中午十二点一十{/bold}，记得来教室。{br}我带了便当，分你一份。'
+    },
+    {
+      type: 'dialogue',
+      text: '好，我会去的。'
+    },
+    {
+      type: 'narration',
+      text: '她笑了笑，继续往前走。{br}我看着她离开的背影，{br}心里有种说不出的感觉。'
     }
   ]
 }

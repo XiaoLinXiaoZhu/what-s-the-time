@@ -14,6 +14,10 @@ export const P01_02: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我抬起手腕，看了一眼表。{br}十点零五。'
+    },
+    {
+      type: 'narration',
       text: '楼顶的风很大。{br}我们站在栏杆边，看着远处的操场。'
     },
     {
@@ -24,10 +28,6 @@ export const P01_02: ScriptSegment = {
     {
       type: 'dialogue',
       text: '嗯。'
-    },
-    {
-      type: 'narration',
-      text: '我抬起手腕，看了一眼表。'
     },
     {
       type: 'dialogue',

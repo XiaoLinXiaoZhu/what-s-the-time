@@ -14,6 +14,14 @@ export const P01_03: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我努力回想...{br}那时候，{br}是几点？'
+    },
+    {
+      type: 'dialogue',
+      text: '十点...{delay:1}十点零七。'
+    },
+    {
+      type: 'narration',
       text: '楼顶。模糊的记忆。'
     },
     {

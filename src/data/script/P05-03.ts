@@ -14,7 +14,15 @@ export const P05_03: ScriptSegment = {
   lines: [
     {
       type: 'narration',
-      text: '10:07。'
+      text: '我看了看表。'
+    },
+    {
+      type: 'dialogue',
+      text: '十点...{delay:1}十点零七。'
+    },
+    {
+      type: 'narration',
+      text: '和一年前，{br}一模一样的时间。'
     },
     {
       type: 'dialogue',

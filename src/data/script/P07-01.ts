@@ -35,6 +35,18 @@ export const P07_01: ScriptSegment = {
     {
       type: 'narration',
       text: '我路过他们身边，{br}听着这些讨论。{br}就像一年前一样，{br}替罪羊被钉死了。{br}只是，{br}这次是 E。'
+    },
+    {
+      type: 'dialogue',
+      text: '听说，{bold}中午十一点三十{/bold}，{br}警官会宣布结果。'
+    },
+    {
+      type: 'dialogue',
+      text: '是吗...{br}那我们去看看吧。'
+    },
+    {
+      type: 'narration',
+      text: '我默默地听着，{br}没有说话。{br}一切，{br}都在按计划进行。'
     }
   ]
 }

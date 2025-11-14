@@ -48,8 +48,57 @@ export const P08_01: ScriptSegment = {
       text: '...谢谢。'
     },
     {
+      type: 'choice',
+      choices: [
+        {
+          text: '问她为什么要这样做',
+          lines: [
+            {
+              type: 'dialogue',
+              text: '为什么...{delay:1}为什么要这样做？'
+            },
+            {
+              type: 'dialogue',
+              character: 'E',
+              text: '因为，{br}我想成为你的 C。{br}那个，{br}可以为你做任何事的人。'
+            },
+            {
+              type: 'dialogue',
+              text: '...'
+            },
+            {
+              type: 'narration',
+              text: '我看着她，{br}说不出话。'
+            }
+          ]
+        },
+        {
+          text: '保持沉默',
+          lines: [
+            {
+              type: 'narration',
+              text: '我保持沉默，{br}没有说话。{br}E 看着我，{br}也没有再说什么。'
+            }
+          ]
+        }
+      ]
+    },
+    {
+      type: 'dialogue',
+      character: 'E',
+      text: '这样，你就自由了。'
+    },
+    {
+      type: 'dialogue',
+      text: '...谢谢。'
+    },
+    {
       type: 'narration',
       text: '但我知道，{br}我永远不可能自由。{br}时间，{br}还停在 10:07。'
+    },
+    {
+      type: 'narration',
+      text: '探视时间结束了。{br}我走出探视室，{br}看了看表。{br}时间，{br}还停在 10:07。{br}但现实，{br}已经是{bold}六点一十{/bold}了。'
     }
   ]
 }

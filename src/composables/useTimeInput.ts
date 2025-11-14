@@ -1,5 +1,6 @@
 import { ref, nextTick } from 'vue'
 import { TIME_INPUT_FORMAT, TIME_INPUT_SEPARATOR_INDEX, TIME_SUBMIT_DELAY } from '@/constants'
+import { useMechanicalSound } from '@/composables/useMechanicalSound'
 
 export interface UseTimeInputOptions {
   onComplete: (time: string) => void
@@ -13,6 +14,9 @@ export interface UseTimeInputOptions {
  */
 export function useTimeInput(options: UseTimeInputOptions) {
   const { onComplete, onCharChange, disabled } = options
+
+  // 机械音效
+  const { playRandomSound } = useMechanicalSound()
 
   // 状态
   const chars = ref<string[]>([...TIME_INPUT_FORMAT])
@@ -85,6 +89,9 @@ export function useTimeInput(options: UseTimeInputOptions) {
       if (value) {
         chars.value[index] = value
         onCharChange?.(index, value)
+
+        // 播放机械音效
+        playRandomSound()
 
         // 自动移动到下一个输入框
         const nextIndex = getNextIndex(index)

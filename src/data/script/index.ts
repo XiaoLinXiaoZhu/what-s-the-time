@@ -15,6 +15,9 @@ export { blankSegment } from './blank'
  */
 export function getStartSegment(loop?: string): ScriptSegment {
   // Loop G（meta 终局阶段）使用循环变体
+  if (loop === 'A') {
+    return startFirstSegment as ScriptSegment
+  }
   if (loop === 'G') {
     return P09_02
   }
@@ -66,6 +69,7 @@ import { P08_03 } from './P08-03'
 import { P09_01 } from './P09-01'
 import { TEST_CHOICE } from './TEST-CHOICE'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
+import { startFirstSegment } from './start-first'
 
 
 /**

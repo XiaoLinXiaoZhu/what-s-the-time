@@ -66,8 +66,21 @@ export const P01_07: ScriptSegment = {
       text: '没有了。{br}我只希望...{delay:1}能找出真相。'
     },
     {
+      type: 'dialogue',
+      character: 'G',
+      text: '之后几天，{br}我们可能还会再找你。{br}如果想起什么，{br}随时联系我。'
+    },
+    {
+      type: 'dialogue',
+      text: '我知道了。'
+    },
+    {
       type: 'narration',
-      text: '我低下头，做出悲伤的样子。{br}G 看了我一眼，在笔录上写了什么。{br}我知道，种子已经种下了。'
+      text: '我低下头，做出悲伤的样子。{br}G 看了我一眼，在笔录上写了什么。{br}我知道，种子已经种下了。{br}接下来，{br}只需要等待。'
+    },
+    {
+      type: 'narration',
+      text: '走出警局，{br}我看了看表。{br}时间还在往前走。{br}但在我心里，{br}有些东西，{br}已经停住了。'
     }
   ]
 }

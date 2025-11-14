@@ -14,6 +14,10 @@ export const P01_01: ScriptSegment = {
   lines: [
     {
       type: 'narration',
+      text: '我看了看表。{br}八点二十。'
+    },
+    {
+      type: 'narration',
       text: '手机屏幕上显示一条消息：'
     },
     {
