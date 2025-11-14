@@ -16,6 +16,16 @@
         {{ systemTimeDisplay }}
       </span>
       <span
+        v-else-if="node.type === 'animateText'"
+        :class="{
+          'text-red': false,
+          'text-bold': false,
+          'text-italic': false
+        }"
+      >
+        {{ getAnimateText(node, index) }}
+      </span>
+      <span
         v-else
         :class="{
           'text-red': node.type === 'red',
@@ -30,9 +40,10 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, watch } from 'vue'
 import { parseText } from '@/utils/textParser'
 import { useSystemTime } from '@/composables/useSystemTime'
+import { useAnimateText } from '@/composables/useAnimateText'
 
 const props = defineProps<{
   text: string
@@ -47,6 +58,27 @@ const { systemTime, getCurrentSystemTime } = useSystemTime()
 const systemTimeDisplay = computed(() => {
   return systemTime.value || getCurrentSystemTime()
 })
+
+// 使用动画文本管理
+const { getAnimateText, startAnimation, cleanup } = useAnimateText()
+
+// 初始化动画文本的函数
+const initializeAnimateTexts = () => {
+  // 先清理旧的定时器
+  cleanup()
+  
+  // 为新的 animateText 节点启动定时器
+  parsedNodes.value.forEach((node, index) => {
+    if (node.type === 'animateText') {
+      startAnimation(node, index)
+    }
+  })
+}
+
+// 监听 parsedNodes 的变化，重新初始化动画
+watch(parsedNodes, () => {
+  initializeAnimateTexts()
+}, { immediate: true })
 </script>
 
 <style scoped>

@@ -4,11 +4,12 @@
     <WatchDisplay :display-time="displayTime" />
 
     <!-- 文本显示区域 -->
-    <div class="text-container" @click="handleTextClick">
+    <div class="text-container" ref="textContainerRef" @click="handleTextClick">
       <div class="text-content" v-if="displayState.currentSegment">
         <template v-for="(line, index) in displayState.displayedLines" :key="line.id">
           <ScriptLineRenderer
             v-if="shouldShowLine(line, index)"
+            :ref="(el) => setLineRef(el, index)"
             :line="line"
             :index="index"
             :current-line-index="displayState.currentLineIndex"
@@ -29,7 +30,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted } from 'vue'
+import { computed, onMounted, onUnmounted, ref, watch, nextTick, type ComponentPublicInstance } from 'vue'
 import { stateStore } from '@/stores/StateStore'
 import { navigationService } from '@/services/NavigationService'
 import { choiceService } from '@/services/ChoiceService'
@@ -46,6 +47,10 @@ import BackToStartButton from './BackToStartButton.vue'
 // 响应式状态（只读）
 const displayState = computed(() => stateStore.displayState)
 const gameState = computed(() => stateStore.gameState)
+
+// 滚动相关
+const textContainerRef = ref<HTMLElement | null>(null)
+const lineRefs = ref<Map<number, ComponentPublicInstance>>(new Map())
 
 // 计算显示时间
 const displayTime = computed(() => {
@@ -97,6 +102,70 @@ const shouldShowLine = (line: any, index: number) => {
 const shouldShowBackButton = computed(() => {
   return displayService.isAllLinesComplete() && displayState.value.currentSegment?.id !== 'START'
 })
+
+// 设置行 ref
+const setLineRef = (el: any, index: number) => {
+  if (el) {
+    lineRefs.value.set(index, el)
+  }
+}
+
+// 滚动到指定行
+const scrollToLine = (lineIndex: number) => {
+  if (!textContainerRef.value) return
+
+  const lineComponent = lineRefs.value.get(lineIndex)
+  if (!lineComponent) return
+
+  // 获取行组件的 DOM 元素
+  // ScriptLineRenderer 没有根元素，$el 会指向第一个子组件
+  let lineElement: HTMLElement | null = null
+  
+  if (lineComponent.$el) {
+    lineElement = lineComponent.$el as HTMLElement
+  } else if ((lineComponent as any).$el) {
+    lineElement = (lineComponent as any).$el as HTMLElement
+  }
+  
+  if (!lineElement) return
+
+  // 计算滚动位置
+  const container = textContainerRef.value
+  const containerRect = container.getBoundingClientRect()
+  const lineRect = lineElement.getBoundingClientRect()
+  
+  // 计算目标滚动位置（让行显示在容器中间偏上的位置，留出 100px 的顶部空间）
+  const scrollTop = container.scrollTop + lineRect.top - containerRect.top - containerRect.height / 2
+
+  // 平滑滚动
+  container.scrollTo({
+    top: Math.max(0, scrollTop),
+    behavior: 'smooth'
+  })
+}
+
+// 监听 currentLineIndex 变化，自动滚动到当前行
+watch(
+  () => displayState.value.currentLineIndex,
+  (newIndex) => {
+    if (newIndex >= 0) {
+      // 等待 DOM 更新后再滚动
+      nextTick(() => {
+        setTimeout(() => {
+          scrollToLine(newIndex)
+        }, 100) // 稍微延迟，确保打字动画已开始
+      })
+    }
+  }
+)
+
+// 监听片段变化，清理行 refs
+watch(
+  () => displayState.value.currentSegment?.id,
+  () => {
+    lineRefs.value.clear()
+  }
+)
 
 // 事件处理
 const handleSetTypingRef = (el: any, index: number) => {
@@ -193,5 +262,7 @@ onUnmounted(() => {
   margin: 0 auto;
   line-height: 1.8;
   font-size: 18px;
+
+  padding-bottom: 50%;
 }
 </style>

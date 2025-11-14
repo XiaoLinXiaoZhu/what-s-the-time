@@ -9,6 +9,7 @@ import type { TextNode } from '@/types'
  * - {br} - 换行
  * - {delay:1.2} - 延时（秒）
  * - {systemTime} - 系统当前时间（HH:MM格式，实时更新）
+ * - {animateText:string1|string2|string3} - 动画文本（每0.5秒切换）
  * - 可以嵌套使用（简化处理：只支持最外层格式）
  */
 export function parseText(text: string): TextNode[] {
@@ -28,7 +29,7 @@ export function parseText(text: string): TextNode[] {
   }
   
   // 使用正则表达式匹配所有标记，转义斜杠
-  const tagPattern = /\{(red|bold|italic|br|systemTime|\/red|\/bold|\/italic|delay:[\d.]+)\}/g
+  const tagPattern = /\{(red|bold|italic|br|systemTime|\/red|\/bold|\/italic|delay:[\d.]+|animateText:[^}]+)\}/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   
@@ -51,6 +52,18 @@ export function parseText(text: string): TextNode[] {
       // delay 标记
       const delayTime = parseFloat(tag.substring(6))
       nodes.push({ type: 'delay', content: '', delayTime })
+      lastIndex = matchIndex + match[0].length
+    } else if (tag.startsWith('animateText:')) {
+      // animateText 标记：{animateText:string1|string2|string3}
+      const animateContent = tag.substring(12) // 去掉 'animateText:' 前缀
+      const animateTexts = animateContent.split('|').map(s => s.trim()).filter(s => s.length > 0)
+      if (animateTexts.length > 0) {
+        nodes.push({ 
+          type: 'animateText', 
+          content: animateTexts[0], // 默认显示第一个
+          animateTexts 
+        })
+      }
       lastIndex = matchIndex + match[0].length
     } else if (tag === 'br') {
       nodes.push({ type: 'linebreak', content: '' })

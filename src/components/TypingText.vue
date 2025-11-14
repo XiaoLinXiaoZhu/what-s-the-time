@@ -24,6 +24,21 @@
           >▮</span></span>
       </template>
       <span
+        v-else-if="node.type === 'animateText'"
+        :class="{
+          'text-red': false,
+          'text-bold': false,
+          'text-italic': false
+        }"
+      >{{ getAnimateTextDisplayForTyping(index) }}<span
+          v-if="
+            isTyping &&
+            index === currentIndex &&
+            currentCharIndex < getAnimateTextContentForTyping(index).length
+          "
+          class="typing-cursor"
+        >▮</span></span>
+      <span
         v-else
         :class="{
           'text-red': node.type === 'red',
@@ -47,6 +62,7 @@ import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { parseText } from '@/utils/textParser'
 import { useSystemTime } from '@/composables/useSystemTime'
 import { useMechanicalSound } from '@/composables/useMechanicalSound'
+import { useAnimateText } from '@/composables/useAnimateText'
 
 const props = defineProps<{
   text: string
@@ -71,6 +87,16 @@ const { systemTime, getCurrentSystemTime } = useSystemTime()
 
 // 使用机械音效
 const { playRandomSound } = useMechanicalSound()
+
+// 使用动画文本管理
+const {
+  getAnimateTextContent,
+  getAnimateTextDisplay,
+  initTypingIndex,
+  completeTyping,
+  skipToComplete,
+  cleanup: cleanupAnimateText
+} = useAnimateText()
 
 /**
  * 系统时间显示（用于打字效果）
@@ -108,6 +134,35 @@ const getSystemTimeDisplay = (index: number): string => {
   
   // 打字完成或节点已完成，显示完整时间
   return currentTime
+}
+
+/**
+ * 获取 animateText 节点在打字时使用的文本内容（包装函数）
+ */
+const getAnimateTextContentForTyping = (index: number): string => {
+  const node = parsedNodes.value[index]
+  return getAnimateTextContent(
+    node,
+    index,
+    isTyping.value,
+    index === currentIndex.value
+  )
+}
+
+/**
+ * 获取 animateText 节点的显示内容（包装函数）
+ */
+const getAnimateTextDisplayForTyping = (index: number): string => {
+  const node = parsedNodes.value[index]
+  const isCompleted = index < currentIndex.value
+  return getAnimateTextDisplay(
+    node,
+    index,
+    displayTexts.value[index] || '',
+    isTyping.value,
+    index === currentIndex.value,
+    isCompleted
+  )
 }
 
 // 默认速度：每个字符 30ms
@@ -189,6 +244,55 @@ const typeNextChar = () => {
     return
   }
   
+  // 处理 animateText 节点
+  if (currentNode.type === 'animateText') {
+    // 初始化打字时使用的文本索引（选择第一个文本）
+    initTypingIndex(currentIndex.value, 0)
+    
+    const currentText = getAnimateTextContentForTyping(currentIndex.value)
+    
+    if (currentCharIndex.value < currentText.length) {
+      // 显示下一个字符
+      const newText = currentText.substring(0, currentCharIndex.value + 1)
+      displayTexts.value[currentIndex.value] = newText
+      const currentChar = currentText[currentCharIndex.value]
+      currentCharIndex.value++
+      
+      // 只在非空白字符时播放音效
+      if (currentChar && !/[\s\t]/.test(currentChar)) {
+        if (/[！？。，、；：]/.test(currentChar)) {
+          if (Math.random() < 0.5) {
+            playRandomSound()
+          }
+        } else {
+          playRandomSound()
+        }
+      }
+      
+      // 计算下一个字符的显示时间
+      let delay = typingSpeed.value
+      if (/[！？]/.test(currentChar)) {
+        delay = typingSpeed.value * 4
+      } else if (/[。]/.test(currentChar)) {
+        delay = typingSpeed.value * 3
+      } else if (/[，、；：]/.test(currentChar)) {
+        delay = typingSpeed.value * 2
+      }
+      
+      typingTimer.value = window.setTimeout(() => {
+        typeNextChar()
+      }, delay)
+    } else {
+      // animateText 节点打字完成，启动动态切换
+      completeTyping(currentNode, currentIndex.value)
+      // 移动到下一个节点
+      currentIndex.value++
+      currentCharIndex.value = 0
+      typeNextChar()
+    }
+    return
+  }
+  
   if (currentCharIndex.value < currentNode.content.length) {
     // 显示下一个字符
     const newText = currentNode.content.substring(0, currentCharIndex.value + 1)
@@ -258,16 +362,18 @@ const skipToEnd = () => {
     typingTimer.value = null
   }
   
-  // 立即显示所有剩余文本（跳过 delay 节点，systemTime 节点会自动显示）
+  // 立即显示所有剩余文本（跳过 delay 节点，systemTime 和 animateText 节点需要特殊处理）
   parsedNodes.value.forEach((node, index) => {
-    if (node.type !== 'linebreak' && node.type !== 'delay' && node.type !== 'systemTime') {
+    if (node.type === 'animateText') {
+      // 对于 animateText 节点，使用 composable 的方法
+      const displayText = skipToComplete(node, index)
+      displayTexts.value[index] = displayText
+    } else if (node.type !== 'linebreak' && node.type !== 'delay' && node.type !== 'systemTime') {
       displayTexts.value[index] = node.content
     }
   })
   
   // 对于 systemTime 节点，确保显示完整
-  // 注意：getSystemTimeDisplay 函数已经处理了打字完成后的显示逻辑
-  // 这里设置 currentCharIndex 是为了保持状态一致性
   parsedNodes.value.forEach((node) => {
     if (node.type === 'systemTime') {
       currentCharIndex.value = 5 // 确保显示完整
@@ -285,6 +391,9 @@ watch(() => props.text, () => {
     clearTimeout(typingTimer.value)
     typingTimer.value = null
   }
+  
+  // 清理 animateText 定时器
+  cleanupAnimateText()
   
   isTyping.value = false
   isComplete.value = false
@@ -310,6 +419,8 @@ onUnmounted(() => {
   if (typingTimer.value) {
     clearTimeout(typingTimer.value)
   }
+  // 清理所有 animateText 定时器
+  cleanupAnimateText()
 })
 
 // 暴露方法供父组件调用
