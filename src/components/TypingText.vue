@@ -1,28 +1,27 @@
 <template>
   <span>
     <template v-for="(node, index) in parsedNodes" :key="index">
-      <br v-if="node.type === 'linebreak'" />
+      <template v-if="node.type === 'linebreak'">
+        <br />
+      </template>
+      <template v-else-if="node.type === 'delay'">
+        <!-- delay节点不渲染任何内容 -->
+      </template>
       <span
-        v-else-if="node.type !== 'delay'"
+        v-else
         :class="{
           'text-red': node.type === 'red',
           'text-bold': node.type === 'bold',
           'text-italic': node.type === 'italic'
         }"
-      >
-        {{ displayTexts[index] || '' }}
-        <!-- 光标：在当前正在显示的节点且还有未显示字符时显示 -->
-        <span
+      >{{ displayTexts[index] || '' }}<span
           v-if="
             isTyping &&
             index === currentIndex &&
             currentCharIndex < node.content.length
           "
           class="typing-cursor"
-        >
-          ▮ 
-        </span>
-      </span>
+        >▮</span></span>
     </template>
   </span>
 </template>

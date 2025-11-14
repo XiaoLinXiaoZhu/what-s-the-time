@@ -10,6 +10,31 @@ import type { ScriptSegment } from '@/types'
  * - ChoiceLine: { type: 'choice', choices: [...] }
  * - 文本格式标记：{red}红色文本{/red} {bold}粗体{/bold} {italic}斜体{/italic} {br}换行
  */
+/**
+ * 开场片段（特殊片段，time 为 'START'）
+ */
+export const startSegment: ScriptSegment = {
+  id: 'START',
+  time: 'START',
+  description: '游戏开场',
+  loop: 'START',
+  unlockFlags: [],
+  lines: [
+    {
+      type: 'narration',
+      text: '时间是……？'
+    },
+    {
+      type: 'dialogue',
+      text: '不，是{delay:1}  {bold}他{/bold}  在问我。'
+    },
+    {
+      type: 'input',
+      placeholder: '输入时间 (HH:MM)'
+    }
+  ]
+}
+
 export const scriptSegments: ScriptSegment[] = [
   // 阶段 0：A 案前（普通恋爱期 & 预兆）
   {
@@ -68,7 +93,7 @@ export const scriptSegments: ScriptSegment[] = [
       }
     ]
   },
-  
+
   // Loop A: 完全伪日常
   {
     id: 'P03-01',
@@ -157,7 +182,7 @@ export const scriptSegments: ScriptSegment[] = [
       }
     ]
   },
-  
+
   // Loop B: B 消失后的日常错位
   {
     id: 'P06-01',
@@ -194,7 +219,7 @@ export const scriptSegments: ScriptSegment[] = [
       }
     ]
   },
-  
+
   // Loop C: 假闪回与旧案影子
   {
     id: 'P01-03',
@@ -239,7 +264,7 @@ export const scriptSegments: ScriptSegment[] = [
       }
     ]
   },
-  
+
   // 两问一锁：10:07 真相版
   {
     id: 'P01-04',
@@ -264,7 +289,193 @@ export const scriptSegments: ScriptSegment[] = [
       }
     ]
   },
-  
+
+  // ========== 示例：多分支选择 ==========
+  {
+    id: 'EXAMPLE-01',
+    time: '09:00',
+    description: '示例：选择分支',
+    loop: 'A',
+    unlockFlags: [],
+    lines: [
+      {
+        type: 'narration',
+        text: '你站在十字路口，不知道该往哪里走。'
+      },
+      {
+        type: 'choice',
+        choices: [
+          {
+            text: '向左走',
+            targetSegmentId: 'EXAMPLE-02',
+            setFlag: 'went_left'
+          },
+          {
+            text: '向右走',
+            targetSegmentId: 'EXAMPLE-03',
+            setFlag: 'went_right'
+          },
+          {
+            text: '站在原地',
+            targetSegmentId: 'EXAMPLE-04'
+          }
+        ]
+      }
+    ]
+  },
+  {
+    id: 'EXAMPLE-02',
+    time: '09:05',
+    description: '向左走的结果',
+    loop: 'A',
+    unlockFlags: ['went_left'],
+    lines: [
+      {
+        type: 'narration',
+        text: '你选择了向左走。'
+      },
+      {
+        type: 'dialogue',
+        text: '这条路看起来很熟悉...'
+      }
+    ]
+  },
+  {
+    id: 'EXAMPLE-03',
+    time: '09:05',
+    description: '向右走的结果',
+    loop: 'A',
+    unlockFlags: ['went_right'],
+    lines: [
+      {
+        type: 'narration',
+        text: '你选择了向右走。'
+      },
+      {
+        type: 'dialogue',
+        text: '这里似乎有什么不对劲...'
+      }
+    ]
+  },
+  {
+    id: 'EXAMPLE-04',
+    time: '09:05',
+    description: '站在原地',
+    loop: 'A',
+    unlockFlags: [],
+    lines: [
+      {
+        type: 'narration',
+        text: '你决定站在原地。'
+      },
+      {
+        type: 'dialogue',
+        text: '也许等待是最好的选择...'
+      }
+    ]
+  },
+
+  // ========== 示例：选择分支 + 时间匹配分支组合 ==========
+  {
+    id: 'SCENE-01',
+    time: '14:00',
+    description: '发现线索',
+    loop: 'B',
+    unlockFlags: [],
+    lines: [
+      {
+        type: 'narration',
+        text: '你发现了一张纸条。'
+      },
+      {
+        type: 'dialogue',
+        text: '上面写着：{bold}今晚8点，老地方见{/bold}'
+      },
+      {
+        type: 'choice',
+        choices: [
+          {
+            text: '去赴约',
+            setFlag: 'decided_to_meet',
+            lines: [
+              {
+                type: 'narration',
+                text: '你决定去赴约。'
+              },
+              {
+                type: 'dialogue',
+                text: '晚上8点，你准时到达了约定地点。'
+              },
+              {
+                type: 'timeChoice',
+                choices: [
+                  {
+                    time: '20:00',
+                    setFlag: 'saw_scene_02',
+                    lines: [
+                      {
+                        type: 'narration',
+                        text: '但是...{delay:1}没有人。'
+                      },
+                      {
+                        type: 'dialogue',
+                        text: '你意识到，这可能是一个陷阱。'
+                      }
+                    ]
+                  },
+                  {
+                    time: '14:00',
+                    lines: [
+                      {
+                        type: 'narration',
+                        text: '你想起了发现纸条的时间。'
+                      },
+                      {
+                        type: 'dialogue',
+                        text: '也许线索就在那里...'
+                      }
+                    ]
+                  },
+                  {
+                    time: '*',
+                    lines: [
+                      {
+                        type: 'narration',
+                        text: '时间不对。'
+                      },
+                      {
+                        type: 'dialogue',
+                        text: '你意识到自己来错了时间。'
+                      }
+                    ]
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            text: '不去',
+            setFlag: 'decided_not_to_meet',
+            lines: [
+              {
+                type: 'narration',
+                text: '你决定不去赴约。'
+              },
+              {
+                type: 'dialogue',
+                text: '也许这是正确的选择...'
+              },
+              {
+                type: 'dialogue',
+                text: '但心中总有一丝不安。'
+              }
+            ]
+          }
+        ]
+      }
+    ]
+  },
+
   // 记忆空白片段（用于未匹配的时间）
   {
     id: 'BLANK',
@@ -282,7 +493,7 @@ export const scriptSegments: ScriptSegment[] = [
         text: '我不想想得太清楚。'
       }
     ]
-  }
+  },
 ]
 
 /**
@@ -290,28 +501,16 @@ export const scriptSegments: ScriptSegment[] = [
  */
 export function findSegment(
   time: string,
-  secondTime?: string,
   unlockedFlags: Set<string> = new Set(),
   viewedSegments: Set<string> = new Set()
 ): ScriptSegment | null {
-  // 精确匹配：时间 + 第二问时间
-  if (secondTime) {
-    const exactMatch = scriptSegments.find(
-      seg => seg.time === time && 
-             seg.secondTime === secondTime &&
-             checkUnlockConditions(seg, unlockedFlags)
-    )
-    if (exactMatch) return exactMatch
-  }
-  
-  // 时间匹配（无第二问要求）
+  // 时间匹配
   const timeMatch = scriptSegments.find(
-    seg => seg.time === time && 
-           !seg.secondTime &&
-           checkUnlockConditions(seg, unlockedFlags)
+    seg => seg.time === time &&
+      checkUnlockConditions(seg, unlockedFlags)
   )
   if (timeMatch) return timeMatch
-  
+
   // 返回空白片段
   return scriptSegments.find(seg => seg.id === 'BLANK') || null
 }
@@ -326,7 +525,7 @@ function checkUnlockConditions(
   if (!segment.unlockFlags || segment.unlockFlags.length === 0) {
     return true
   }
-  
+
   return segment.unlockFlags.every(flag => unlockedFlags.has(flag))
 }
 
@@ -337,13 +536,13 @@ export function getAvailableTimes(
   unlockedFlags: Set<string> = new Set()
 ): string[] {
   const times = new Set<string>()
-  
+
   scriptSegments.forEach(seg => {
     if (seg.time !== '*' && checkUnlockConditions(seg, unlockedFlags)) {
       times.add(seg.time)
     }
   })
-  
+
   return Array.from(times).sort()
 }
 

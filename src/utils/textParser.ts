@@ -68,20 +68,21 @@ export function parseText(text: string): TextNode[] {
         if (innerText) {
           // 递归解析内部文本（处理嵌套）
           const innerNodes = parseText(innerText)
+          const formatType = tag as 'red' | 'bold' | 'italic'
           
-          // 如果内部有节点，应用当前格式；否则直接创建
+          // 如果内部有节点，对每个文本节点应用格式
           if (innerNodes.length > 0) {
-            // 简化：只对第一个文本节点应用格式
             for (const innerNode of innerNodes) {
-              if (innerNode.type === 'text' && nodes.length === 0) {
-                const formatType = tag as 'red' | 'bold' | 'italic'
+              if (innerNode.type === 'text') {
+                // 对文本节点应用格式
                 nodes.push({ type: formatType, content: innerNode.content })
               } else {
+                // 其他类型节点（如delay、linebreak）直接添加
                 nodes.push(innerNode)
               }
             }
           } else {
-            const formatType = tag as 'red' | 'bold' | 'italic'
+            // 如果没有内部节点，直接创建格式节点
             nodes.push({ type: formatType, content: innerText })
           }
         }

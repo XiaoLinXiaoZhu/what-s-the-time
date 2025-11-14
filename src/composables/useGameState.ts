@@ -6,7 +6,7 @@ const gameState = ref<GameState>({
   unlockedFlags: new Set(),
   viewedSegments: new Set(),
   currentTime: undefined,
-  needsSecondQuestion: false
+  choiceHistory: []
 })
 
 export function useGameState() {
@@ -32,7 +32,7 @@ export function useGameState() {
       unlockedFlags: new Set(),
       viewedSegments: new Set(),
       currentTime: undefined,
-      needsSecondQuestion: false
+      choiceHistory: []
     }
   }
 
