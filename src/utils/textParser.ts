@@ -14,14 +14,16 @@ export function parseText(text: string): TextNode[] {
   
   if (!text) return nodes
   
-  // 使用正则表达式匹配所有标记
-  const tagPattern = /\{(red|bold|italic|br|/red|/bold|/italic)\}/g
+  // 使用正则表达式匹配所有标记，转义斜杠
+  const tagPattern = /\{(red|bold|italic|br|\/red|\/bold|\/italic)\}/g
   let lastIndex = 0
-  let match
+  let match: RegExpExecArray | null
   
   while ((match = tagPattern.exec(text)) !== null) {
     const tag = match[1]
     const matchIndex = match.index
+    
+    if (matchIndex === undefined) break
     
     // 添加标记前的文本
     if (matchIndex > lastIndex) {
@@ -55,13 +57,15 @@ export function parseText(text: string): TextNode[] {
             // 简化：只对第一个文本节点应用格式
             for (const innerNode of innerNodes) {
               if (innerNode.type === 'text' && nodes.length === 0) {
-                nodes.push({ type: tag as 'red' | 'bold' | 'italic', content: innerNode.content })
+                const formatType = tag as 'red' | 'bold' | 'italic'
+                nodes.push({ type: formatType, content: innerNode.content })
               } else {
                 nodes.push(innerNode)
               }
             }
           } else {
-            nodes.push({ type: tag as 'red' | 'bold' | 'italic', content: innerText })
+            const formatType = tag as 'red' | 'bold' | 'italic'
+            nodes.push({ type: formatType, content: innerText })
           }
         }
         lastIndex = endIndex + endTag.length

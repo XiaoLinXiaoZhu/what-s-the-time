@@ -9,35 +9,52 @@
     </div>
 
     <!-- 文本显示区域 -->
-    <div class="text-container">
+    <div class="text-container" @click="handleTextClick">
       <div class="text-content" v-if="currentSegment">
-        <template v-for="(line, index) in currentSegment.lines" :key="index">
-          <!-- 场景描述 -->
-          <div v-if="line.type === 'narration'" class="narration">
-            <FormattedText :text="line.text" />
-          </div>
-          
-          <!-- 对话 -->
-          <div v-else-if="line.type === 'dialogue'" class="dialogue">
-            <span v-if="line.character" class="character-name">
-              {{ line.character }}
-            </span>
-            <span class="dialogue-text">
-              <FormattedText :text="line.text" />
-            </span>
-          </div>
-          
-          <!-- 选择分支 -->
-          <div v-else-if="line.type === 'choice'" class="choices">
-            <button
-              v-for="(choice, choiceIndex) in line.choices"
-              :key="choiceIndex"
-              @click="handleChoice(choice)"
-              class="choice-button"
-            >
-              {{ choice.text }}
-            </button>
-          </div>
+        <template v-for="(line, index) in displayedLines" :key="`${currentSegment.id}-${index}`">
+          <!-- 只显示当前行和已完成的行 -->
+          <template v-if="index <= currentLineIndex || line.type === 'choice'">
+            <!-- 场景描述 -->
+            <div v-if="line.type === 'narration'" class="narration">
+              <TypingText
+                v-if="index === currentLineIndex"
+                :text="line.text"
+                :ref="(el) => setTypingRef(el, index)"
+                :auto-start="false"
+                @complete="onLineComplete"
+              />
+              <FormattedText v-else-if="index < currentLineIndex" :text="line.text" />
+            </div>
+            
+            <!-- 对话 -->
+            <div v-else-if="line.type === 'dialogue'" class="dialogue">
+              <span v-if="line.character" class="character-name">
+                {{ line.character }}
+              </span>
+              <span class="dialogue-text">
+                <TypingText
+                  v-if="index === currentLineIndex"
+                  :text="line.text"
+                  :ref="(el) => setTypingRef(el, index)"
+                  :auto-start="false"
+                  @complete="onLineComplete"
+                />
+                <FormattedText v-else-if="index < currentLineIndex" :text="line.text" />
+              </span>
+            </div>
+            
+            <!-- 选择分支 -->
+            <div v-else-if="line.type === 'choice'" class="choices">
+              <button
+                v-for="(choice, choiceIndex) in line.choices"
+                :key="choiceIndex"
+                @click.stop="handleChoice(choice)"
+                class="choice-button"
+              >
+                {{ choice.text }}
+              </button>
+            </div>
+          </template>
         </template>
       </div>
     </div>
@@ -65,12 +82,14 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch, nextTick } from 'vue'
 import { findSegment } from '@/data/script'
-import type { ScriptSegment } from '@/types'
+import type { ScriptSegment, ScriptLine } from '@/types'
 import FormattedText from './FormattedText.vue'
+import TypingText from './TypingText.vue'
 import { useGameState } from '@/composables/useGameState'
 import watchImage from '@/img/watch.png'
+import type { ComponentPublicInstance } from 'vue'
 
 const { gameState, updateGameState } = useGameState()
 
@@ -79,6 +98,11 @@ const currentSegment = ref<ScriptSegment | null>(null)
 const displayTime = ref<string>('')
 const isProcessing = ref(false)
 const needsSecondQuestion = computed(() => gameState.value.needsSecondQuestion)
+
+// 逐行显示相关
+const currentLineIndex = ref(0)
+const displayedLines = ref<ScriptLine[]>([])
+const typingRefs = ref<Map<number, ComponentPublicInstance>>(new Map())
 
 const handleTimeInput = () => {
   if (!timeInput.value.trim() || isProcessing.value) return
@@ -145,6 +169,79 @@ const handleTimeInput = () => {
   timeInput.value = ''
   isProcessing.value = false
 }
+
+// 设置 TypingText 组件的 ref
+const setTypingRef = (el: ComponentPublicInstance | null, index: number) => {
+  if (el) {
+    typingRefs.value.set(index, el)
+  }
+}
+
+// 处理文本区域点击
+const handleTextClick = (event: MouseEvent) => {
+  // 如果点击的是选择按钮，不处理
+  if ((event.target as HTMLElement).closest('.choice-button')) {
+    return
+  }
+  
+  const typingComponent = typingRefs.value.get(currentLineIndex.value) as any
+  
+  if (typingComponent) {
+    // 检查是否正在显示
+    if (typingComponent.isTyping === true) {
+      // 如果正在显示，快速显示完当前行
+      if (typeof typingComponent.skipToEnd === 'function') {
+        typingComponent.skipToEnd()
+      }
+    } else if (typingComponent.isComplete === true) {
+      // 如果当前行已完成，显示下一行
+      showNextLine()
+    }
+  } else {
+    // 如果没有 TypingText 组件（比如选择分支），直接显示下一行
+    showNextLine()
+  }
+}
+
+// 显示下一行
+const showNextLine = () => {
+  if (!currentSegment.value) return
+  
+  if (currentLineIndex.value < displayedLines.value.length - 1) {
+    currentLineIndex.value++
+    
+    // 等待 DOM 更新后启动下一行的打字效果
+    nextTick(() => {
+      const typingComponent = typingRefs.value.get(currentLineIndex.value) as any
+      if (typingComponent && typeof typingComponent.startTyping === 'function') {
+        typingComponent.startTyping()
+      }
+    })
+  }
+}
+
+// 当前行显示完成
+const onLineComplete = () => {
+  // 自动显示下一行（可选，如果不需要自动，可以注释掉）
+  // showNextLine()
+}
+
+// 监听片段变化，重置显示状态
+watch(currentSegment, (newSegment) => {
+  if (newSegment) {
+    displayedLines.value = newSegment.lines
+    currentLineIndex.value = 0
+    typingRefs.value.clear()
+    
+    // 等待 DOM 更新后启动第一行的打字效果
+    nextTick(() => {
+      const typingComponent = typingRefs.value.get(0) as any
+      if (typingComponent && typeof typingComponent.startTyping === 'function') {
+        typingComponent.startTyping()
+      }
+    })
+  }
+}, { immediate: true })
 
 const handleChoice = (choice: { targetSegmentId: string; setFlag?: string }) => {
   if (choice.setFlag) {
