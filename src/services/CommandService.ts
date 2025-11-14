@@ -1,6 +1,5 @@
 import { stateStore } from '@/stores/StateStore'
 import { navigationService } from './NavigationService'
-import { findSegmentById, findSegment } from '@/data/script'
 import type { CommandLine, ScriptLine, DisplayedLine } from '@/types'
 
 /**

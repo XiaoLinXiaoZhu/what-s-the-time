@@ -88,7 +88,7 @@ export class SideEffectExecutor {
   /**
    * 聚焦输入框
    */
-  private _focusInput(lineIndex: number): void {
+  private _focusInput(_lineIndex: number): void {
     setTimeout(() => {
       // TimeInput 组件会自动处理聚焦
       // 这里可以添加额外的聚焦逻辑
@@ -98,7 +98,7 @@ export class SideEffectExecutor {
   /**
    * 滚动到指定行
    */
-  private _scrollToLine(lineIndex: number): void {
+  private _scrollToLine(_lineIndex: number): void {
     // 可以添加滚动逻辑
   }
 }

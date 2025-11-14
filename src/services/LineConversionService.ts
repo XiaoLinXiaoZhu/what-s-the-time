@@ -1,5 +1,5 @@
 import { stateStore } from '@/stores/StateStore'
-import type { DisplayedLine, TimeDisplayLine, InputLine, TimeChoiceLine, LineStatus } from '@/types'
+import type { DisplayedLine, TimeDisplayLine, LineStatus } from '@/types'
 
 /**
  * 行转换服务

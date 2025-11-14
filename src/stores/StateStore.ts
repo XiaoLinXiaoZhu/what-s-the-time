@@ -1,5 +1,5 @@
 import { reactive, readonly } from 'vue'
-import type { GameState, DisplayState, LineStateMap, LineStatus } from '@/types'
+import type { GameState, DisplayState, LineStatus } from '@/types'
 
 /**
  * 统一的状态管理 Store
@@ -29,15 +29,15 @@ class StateStore {
 
   // Getters (只读访问)
   get gameState(): Readonly<GameState> {
-    return readonly(this._gameState)
+    return readonly(this._gameState) as Readonly<GameState>
   }
 
   get displayState(): Readonly<DisplayState> {
-    return readonly(this._displayState)
+    return readonly(this._displayState) as Readonly<DisplayState>
   }
 
   get lineStates(): Readonly<Map<string, LineStatus>> {
-    return readonly(this._lineStates)
+    return readonly(this._lineStates) as Readonly<Map<string, LineStatus>>
   }
 
   // 内部访问（用于 Service 层修改）

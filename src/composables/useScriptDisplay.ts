@@ -12,7 +12,7 @@ export interface UseScriptDisplayOptions {
  * 管理剧本行的显示进度和状态
  */
 export function useScriptDisplay(options: UseScriptDisplayOptions) {
-  const { currentSegment, onLineComplete } = options
+  const { currentSegment } = options
 
   // 状态
   const currentLineIndex = ref(0)
