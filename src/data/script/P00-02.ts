@@ -63,6 +63,19 @@ export const P00_02: ScriptSegment = {
     {
       type: 'narration',
       text: '我点点头，装作没注意到她眼中的复杂。{br}她没再说什么，只是低头继续吃饭。{br}午休的铃声很快响起，这个话题就这样被搁置了。'
+    },
+    {
+      type: 'dialogue',
+      character: 'A',
+      text: '那...{delay:1}那之后几天，{br}我们找个时间，{br}好好谈谈吧。{br}比如...{delay:1}比如{bold}早上八点二十{/bold}左右，{br}楼顶应该没人。'
+    },
+    {
+      type: 'dialogue',
+      text: '...好。'
+    },
+    {
+      type: 'narration',
+      text: '我看着她，{br}心里有种不祥的预感。{br}但那时候，{br}我还不知道，{br}那会是我们最后一次，{br}这样平静地对话。'
     }
   ]
 }

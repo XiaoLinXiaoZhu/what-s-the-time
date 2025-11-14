@@ -45,6 +45,10 @@ export const P05_01: ScriptSegment = {
     {
       type: 'narration',
       text: '三点一十。{br}这个时间，{br}我会记住的。'
+    },
+    {
+      type: 'narration',
+      text: '我看了看表。{br}时间还早。{br}在那之前，{br}我还可以准备一下。{br}比如，{br}在{bold}十点零五{/bold}左右，{br}去约定地点看看。'
     }
   ]
 }

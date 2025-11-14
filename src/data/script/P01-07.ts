@@ -81,6 +81,10 @@ export const P01_07: ScriptSegment = {
     {
       type: 'narration',
       text: '走出警局，{br}我看了看表。{br}时间还在往前走。{br}但在我心里，{br}有些东西，{br}已经停住了。'
+    },
+    {
+      type: 'narration',
+      text: '之后几天，{br}可能还会再找我。{br}比如{bold}十一点{/bold}的第二次问话，{br}比如{bold}十点三十{/bold}的走廊流言。{br}一切，{br}都在按计划进行。'
     }
   ]
 }

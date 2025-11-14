@@ -35,6 +35,10 @@ export const P05_04: ScriptSegment = {
     {
       type: 'dialogue',
       text: '这次...{delay:1}这次要做得更干净。'
+    },
+    {
+      type: 'narration',
+      text: '我看了看表。{br}时间还早。{br}处理这些，{br}需要等到晚上。{br}比如，{br}{bold}十八点三十九{/bold}，{br}或者{bold}十八点四十{/bold}。{br}那时候，{br}才是真正开始的时候。'
     }
   ]
 }

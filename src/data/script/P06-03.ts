@@ -64,6 +64,19 @@ export const P06_03: ScriptSegment = {
     {
       type: 'narration',
       text: '他问的是"她"，{br}但没说，{br}是哪一个"她"。{br}是那一年，{br}还是现在？{br}我分不清。{br}也许，{br}他也分不清。'
+    },
+    {
+      type: 'dialogue',
+      character: 'G',
+      text: '之后，{br}我们可能还会再找你。{br}如果想起什么，{br}随时联系我。'
+    },
+    {
+      type: 'dialogue',
+      text: '...我知道了。'
+    },
+    {
+      type: 'narration',
+      text: '我走出办公室，{br}看了看表。{br}时间还在往前走。{br}但在我心里，{br}有些东西，{br}已经停住了。{br}晚上{bold}十一点一十五{/bold}，{br}可能还会有人来找我。'
     }
   ]
 }

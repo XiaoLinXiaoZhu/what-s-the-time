@@ -35,7 +35,7 @@ defineEmits<{
 
 <style scoped>
 .dialogue {
-  margin-bottom: 20px;
+  margin-bottom: 25px;
 }
 
 .character-name {

@@ -59,6 +59,10 @@ export const P01_05: ScriptSegment = {
     {
       type: 'narration',
       text: '我一遍遍地看表，确认时间还在流动。{br}确认这个世界还在运转。{br}确认...{delay:1}我还在。'
+    },
+    {
+      type: 'narration',
+      text: '之后，{br}还有更多要面对。{br}比如{bold}十一点{/bold}的问话，{br}比如{bold}十二点三十{/bold}的笔录。{br}但时间，{br}还在往前走。'
     }
   ]
 }

@@ -79,6 +79,10 @@ export const P03_04: ScriptSegment = {
           ]
         }
       ]
+    },
+    {
+      type: 'narration',
+      text: '明天，{br}明天{bold}早上八点零五{/bold}，{br}还要和 B 一起上学。{br}一切，{br}都会继续。{br}就像，{br}从来没有改变过。'
     }
   ]
 }

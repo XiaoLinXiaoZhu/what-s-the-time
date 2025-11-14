@@ -86,6 +86,10 @@ export const P01_04: ScriptSegment = {
             {
               type: 'narration',
               text: '但已经来不及了。{br}她掉了下去。{br}我站在原地，看着空荡荡的栏杆。{br}表盘上，指针停在 10:07。'
+            },
+            {
+              type: 'narration',
+              text: '我看了看表。{br}10:08。{br}时间还在往前走。{br}之后，{br}还有更多要面对。{br}比如{bold}十一点{/bold}的问话，{br}比如{bold}十二点三十{/bold}的笔录。'
             }
           ]
         },

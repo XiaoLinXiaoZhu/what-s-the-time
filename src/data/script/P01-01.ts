@@ -40,6 +40,10 @@ export const P01_01: ScriptSegment = {
     {
       type: 'narration',
       text: '一个字就够了。{br}我知道这意味着什么。{br}也知道，这是机会。'
+    },
+    {
+      type: 'narration',
+      text: '我看了看表。{br}时间还早。{br}我们约在楼顶，{br}大概{bold}十点零五{/bold}左右见面。{br}还有时间准备。'
     }
   ]
 }

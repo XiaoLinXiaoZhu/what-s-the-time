@@ -54,6 +54,14 @@ export const P01_02: ScriptSegment = {
     {
       type: 'narration',
       text: '我看着她，等着她开口。{br}表盘上的指针，还在慢慢往前走。'
+    },
+    {
+      type: 'dialogue',
+      text: '十点...{delay:1}十点零五...{delay:1}十点零六...{delay:1}十点零七...'
+    },
+    {
+      type: 'narration',
+      text: '时间，{br}终于到了。'
     }
   ]
 }

@@ -47,6 +47,10 @@ export const P03_03: ScriptSegment = {
     {
       type: 'narration',
       text: '处理完这些，{br}我该回去了。{br}晚上{bold}十一点一十五{/bold}，{br}还有别的事要做。'
+    },
+    {
+      type: 'narration',
+      text: '我看了看表，{br}确认时间。{br}明天，{br}明天{bold}早上八点零五{/bold}，{br}还要和 B 一起上学。{br}一切，{br}都会继续。'
     }
   ]
 }

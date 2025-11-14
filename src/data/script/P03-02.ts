@@ -118,6 +118,15 @@ export const P03_02: ScriptSegment = {
     {
       type: 'narration',
       text: '午休时间很快过去。{br}铃声响起，{br}大家各自回到座位上。{br}我看了看表，{br}时间还在往前走。'
+    },
+    {
+      type: 'dialogue',
+      character: 'B',
+      text: '对了，{bold}下午六点四十{/bold}左右，{br}我要去处理一些东西。{br}如果你有空，{br}可以来找我。'
+    },
+    {
+      type: 'dialogue',
+      text: '好，我知道了。'
     }
   ]
 }

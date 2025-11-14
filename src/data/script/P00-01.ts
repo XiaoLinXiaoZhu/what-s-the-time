@@ -76,6 +76,19 @@ export const P00_01: ScriptSegment = {
     {
       type: 'narration',
       text: '我牵起她的手，继续往前走。{br}她的手很软，很温暖。{br}就像这段关系一样，看起来完美无缺。'
+    },
+    {
+      type: 'dialogue',
+      character: 'A',
+      text: '对了，{bold}中午十二点一十{/bold}，{br}我们在教室见吧。{br}我想...{delay:1}我想和你聊聊。'
+    },
+    {
+      type: 'dialogue',
+      text: '好，我会去的。'
+    },
+    {
+      type: 'narration',
+      text: '她看着我，{br}眼神里有种说不出的复杂。{br}但我没有多想。{br}那时候，{br}我还以为，{br}一切都会一直这样下去。'
     }
   ]
 }
