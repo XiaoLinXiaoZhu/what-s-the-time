@@ -20,7 +20,7 @@ export const startASegment: ScriptSegment = {
     },
     {
       type: "narration",
-      text: "现在……现在……{br}我抬起手，看了看手表。时间是……{br}{delay:1}……{br}{delay:1}应该吧……{br}于是我张口"
+      text: "现在……现在……{br}我抬起手，看了看手表。时间是……{br}{delay:1}▮▮▮▮……{br}{delay:1}应该吧……{br}于是我张口"
     },
     {
       type: 'dialogue',
