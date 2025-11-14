@@ -1,5 +1,5 @@
 import { ref } from 'vue'
-import { findSegment, startSegment } from '@/data/script'
+import { findSegment, getStartSegment } from '@/data/script'
 import type { ScriptSegment, ScriptLine, ChoiceLine } from '@/types'
 import { useGameState } from './useGameState'
 
@@ -74,16 +74,40 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
   }
 
   /**
+   * 获取当前系统时间（HH:MM格式）
+   */
+  const getCurrentSystemTime = (): string => {
+    const now = new Date()
+    const hours = now.getHours().toString().padStart(2, '0')
+    const minutes = now.getMinutes().toString().padStart(2, '0')
+    return `${hours}:${minutes}`
+  }
+
+  /**
    * 处理时间匹配分支
    */
   const handleTimeChoice = (time: string, lineIndex: number) => {
     const line = displayedLines.value[lineIndex]
     if (line?.type !== 'timeChoice') return
 
+    // 获取当前系统时间
+    const systemTime = getCurrentSystemTime()
+
     // 查找匹配的时间选项
     let matchedChoice = null
     for (const choice of line.choices) {
-      if (choice.time === '*' || choice.time === time) {
+      if (choice.time === '*') {
+        // 通配符匹配
+        matchedChoice = choice
+        break
+      } else if (choice.time === 'NOW') {
+        // 特殊值 NOW：匹配当前系统时间
+        if (time === systemTime) {
+          matchedChoice = choice
+          break
+        }
+      } else if (choice.time === time) {
+        // 精确匹配
         matchedChoice = choice
         break
       }
@@ -119,7 +143,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
    * 回到开始
    */
   const backToStart = () => {
-    currentSegment.value = startSegment
+    currentSegment.value = getStartSegment(gameState.value.currentLoop)
     displayTime.value = ''
   }
 
@@ -127,7 +151,7 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
    * 初始化
    */
   const init = () => {
-    currentSegment.value = startSegment
+    currentSegment.value = getStartSegment(gameState.value.currentLoop)
   }
 
   return {

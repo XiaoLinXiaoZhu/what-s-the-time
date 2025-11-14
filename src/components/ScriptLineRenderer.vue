@@ -33,7 +33,7 @@
     :line="line"
     :index="index"
     :current-line-index="currentLineIndex"
-    @input-complete="$emit('input-complete', $event)"
+    @input-complete="$emit('input-complete', $event, index)"
   />
 </template>
 
@@ -56,7 +56,7 @@ defineEmits<{
   'line-complete': []
   'choice-select': [choice: any, lineIndex: number]
   'time-choice-complete': [time: string, lineIndex: number]
-  'input-complete': [time: string]
+  'input-complete': [time: string, lineIndex: number]
 }>()
 </script>
 

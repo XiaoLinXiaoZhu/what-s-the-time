@@ -16,7 +16,7 @@
             @line-complete="onLineComplete"
             @choice-select="handleChoice"
             @time-choice-complete="handleTimeChoice"
-            @input-complete="handleTimeInput"
+            @input-complete="handleInputComplete"
           />
         </template>
 
@@ -96,6 +96,19 @@ const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
   currentLineIndex,
   displayedLines
 })
+
+// 处理输入完成
+const handleInputComplete = (time: string, lineIndex: number) => {
+  // 检查下一行是否是 timeChoice
+  const nextLine = displayedLines.value[lineIndex + 1]
+  if (nextLine?.type === 'timeChoice') {
+    // 如果下一行是 timeChoice，直接使用刚才输入的时间处理 timeChoice
+    handleTimeChoice(time, lineIndex + 1)
+  } else {
+    // 否则，执行原来的逻辑：查找匹配的片段
+    handleTimeInput(time)
+  }
+}
 
 // 当前行显示完成
 const onLineComplete = () => {

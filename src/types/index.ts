@@ -103,7 +103,7 @@ export interface ScriptSegment {
  * 解析后的文本节点（用于渲染）
  */
 export interface TextNode {
-  type: 'text' | 'bold' | 'italic' | 'red' | 'linebreak' | 'delay'
+  type: 'text' | 'bold' | 'italic' | 'red' | 'linebreak' | 'delay' | 'systemTime'
   content: string
   /** delay 类型的延时时间（秒） */
   delayTime?: number

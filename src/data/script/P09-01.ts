@@ -7,9 +7,9 @@ import type { ScriptSegment } from '@/types'
  */
 export const P09_01: ScriptSegment = {
   id: 'P09-01',
-  time: 'META',
+  time: '26:84',
   description: '最终 meta 问答',
-  loop: 'G',
+  loop: 'A',
   unlockFlags: [],
   lines: [
     {
@@ -28,7 +28,7 @@ export const P09_01: ScriptSegment = {
       type: 'timeChoice',
       choices: [
         {
-          time: '*',
+          time: 'NOW',
           lines: [
             {
               type: 'dialogue',

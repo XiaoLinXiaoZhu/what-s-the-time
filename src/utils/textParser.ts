@@ -8,6 +8,7 @@ import type { TextNode } from '@/types'
  * - {italic}...{/italic} - 斜体
  * - {br} - 换行
  * - {delay:1.2} - 延时（秒）
+ * - {systemTime} - 系统当前时间（HH:MM格式，实时更新）
  * - 可以嵌套使用（简化处理：只支持最外层格式）
  */
 export function parseText(text: string): TextNode[] {
@@ -27,7 +28,7 @@ export function parseText(text: string): TextNode[] {
   }
   
   // 使用正则表达式匹配所有标记，转义斜杠
-  const tagPattern = /\{(red|bold|italic|br|\/red|\/bold|\/italic|delay:[\d.]+)\}/g
+  const tagPattern = /\{(red|bold|italic|br|systemTime|\/red|\/bold|\/italic|delay:[\d.]+)\}/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   
@@ -54,6 +55,10 @@ export function parseText(text: string): TextNode[] {
     } else if (tag === 'br') {
       nodes.push({ type: 'linebreak', content: '' })
       lastIndex = matchIndex + 4 // {br} 的长度
+    } else if (tag === 'systemTime') {
+      // 系统时间占位符
+      nodes.push({ type: 'systemTime', content: '' })
+      lastIndex = matchIndex + 12 // {systemTime} 的长度
     } else if (tag.startsWith('/')) {
       // 结束标记，暂时忽略（简化处理）
       lastIndex = matchIndex + tag.length + 2

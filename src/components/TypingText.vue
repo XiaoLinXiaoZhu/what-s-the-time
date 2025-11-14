@@ -7,6 +7,22 @@
       <template v-else-if="node.type === 'delay'">
         <!-- delay节点不渲染任何内容 -->
       </template>
+      <template v-else-if="node.type === 'systemTime'">
+        <span
+          :class="{
+            'text-red': false,
+            'text-bold': false,
+            'text-italic': false
+          }"
+        >{{ index === currentIndex ? systemTimeDisplay : systemTime }}<span
+            v-if="
+              isTyping &&
+              index === currentIndex &&
+              currentCharIndex < 5
+            "
+            class="typing-cursor"
+          >▮</span></span>
+      </template>
       <span
         v-else
         :class="{
@@ -47,6 +63,43 @@ const currentCharIndex = ref(0)
 const isTyping = ref(false)
 const isComplete = ref(false)
 const typingTimer = ref<number | null>(null)
+const systemTime = ref<string>('')
+const systemTimeTimer = ref<number | null>(null)
+
+/**
+ * 获取当前系统时间（HH:MM格式）
+ */
+const getCurrentSystemTime = (): string => {
+  const now = new Date()
+  const hours = now.getHours().toString().padStart(2, '0')
+  const minutes = now.getMinutes().toString().padStart(2, '0')
+  return `${hours}:${minutes}`
+}
+
+/**
+ * 更新系统时间显示
+ */
+const updateSystemTime = () => {
+  systemTime.value = getCurrentSystemTime()
+}
+
+/**
+ * 系统时间显示（用于打字效果）
+ */
+const systemTimeDisplay = computed(() => {
+  // 检查当前节点是否是 systemTime 节点且正在显示
+  const currentNode = parsedNodes.value[currentIndex.value]
+  const isSystemTimeNode = currentNode?.type === 'systemTime'
+  
+  if (isSystemTimeNode && isTyping.value) {
+    // 如果正在显示 systemTime 节点，根据 currentCharIndex 显示部分内容
+    const displayLength = Math.min(currentCharIndex.value, 5) // HH:MM 是 5 个字符
+    return systemTime.value.substring(0, displayLength)
+  }
+  
+  // 非打字状态或已完成，显示完整时间
+  return systemTime.value
+})
 
 // 默认速度：每个字符 30ms
 const typingSpeed = computed(() => props.speed || 30)
@@ -75,7 +128,7 @@ const startTyping = () => {
 
 // 显示下一个字符
 const typeNextChar = () => {
-  // 跳过所有换行和 delay 节点
+  // 跳过所有换行、delay 和 systemTime 节点（systemTime 需要特殊处理）
   while (
     currentIndex.value < parsedNodes.value.length &&
     (parsedNodes.value[currentIndex.value].type === 'linebreak' ||
@@ -107,6 +160,23 @@ const typeNextChar = () => {
   }
   
   const currentNode = parsedNodes.value[currentIndex.value]
+  
+  // 处理 systemTime 节点
+  if (currentNode.type === 'systemTime') {
+    // systemTime 节点：显示 5 个字符（HH:MM）
+    if (currentCharIndex.value < 5) {
+      currentCharIndex.value++
+      typingTimer.value = window.setTimeout(() => {
+        typeNextChar()
+      }, typingSpeed.value)
+    } else {
+      // systemTime 节点显示完成，移动到下一个节点
+      currentIndex.value++
+      currentCharIndex.value = 0
+      typeNextChar()
+    }
+    return
+  }
   
   if (currentCharIndex.value < currentNode.content.length) {
     // 显示下一个字符
@@ -164,10 +234,17 @@ const skipToEnd = () => {
     typingTimer.value = null
   }
   
-  // 立即显示所有剩余文本（跳过 delay 节点）
+  // 立即显示所有剩余文本（跳过 delay 节点，systemTime 节点会自动显示）
   parsedNodes.value.forEach((node, index) => {
-    if (node.type !== 'linebreak' && node.type !== 'delay') {
+    if (node.type !== 'linebreak' && node.type !== 'delay' && node.type !== 'systemTime') {
       displayTexts.value[index] = node.content
+    }
+  })
+  
+  // 对于 systemTime 节点，确保显示完整
+  parsedNodes.value.forEach((node, index) => {
+    if (node.type === 'systemTime') {
+      currentCharIndex.value = 5 // 确保显示完整
     }
   })
   
@@ -197,6 +274,23 @@ watch(() => props.text, () => {
 }, { immediate: true })
 
 onMounted(() => {
+  // 初始化系统时间
+  updateSystemTime()
+  
+  // 设置定时器，每分钟更新一次系统时间（在分钟变化时更新）
+  const updateTimer = () => {
+    updateSystemTime()
+    // 计算到下一分钟的毫秒数
+    const now = new Date()
+    const msUntilNextMinute = 60000 - (now.getSeconds() * 1000 + now.getMilliseconds())
+    systemTimeTimer.value = window.setTimeout(() => {
+      updateSystemTime()
+      // 之后每分钟更新一次
+      systemTimeTimer.value = window.setInterval(updateSystemTime, 60000)
+    }, msUntilNextMinute)
+  }
+  updateTimer()
+  
   if (props.autoStart !== false) {
     startTyping()
   }
@@ -205,6 +299,10 @@ onMounted(() => {
 onUnmounted(() => {
   if (typingTimer.value) {
     clearTimeout(typingTimer.value)
+  }
+  if (systemTimeTimer.value) {
+    clearTimeout(systemTimeTimer.value)
+    clearInterval(systemTimeTimer.value)
   }
 })
 
