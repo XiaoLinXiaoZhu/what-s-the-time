@@ -75,7 +75,7 @@ export interface ScriptSegment {
 }
 
 /**
- * 解析后的文本节点
+ * 解析后的文本节点（用于渲染）
  */
 export interface TextNode {
   type: 'text' | 'bold' | 'italic' | 'red' | 'linebreak'
