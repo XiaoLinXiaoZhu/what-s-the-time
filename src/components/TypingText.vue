@@ -28,14 +28,12 @@
         :class="{
           'text-red': false,
           'text-bold': false,
-          'text-italic': false
+          'text-italic': false,
+          'animate-text-container': true
         }"
+        :style="{ minWidth: `${getMaxLengthForTyping(index)}ch` }"
       >{{ getAnimateTextDisplayForTyping(index) }}<span
-          v-if="
-            isTyping &&
-            index === currentIndex &&
-            currentCharIndex < getAnimateTextContentForTyping(index).length
-          "
+          v-if="shouldShowCursorForTyping(index)"
           class="typing-cursor"
         >▮</span></span>
       <span
@@ -92,6 +90,8 @@ const { playRandomSound } = useMechanicalSound()
 const {
   getAnimateTextContent,
   getAnimateTextDisplay,
+  getMaxLength,
+  shouldShowCursorForTyping: shouldShowCursorForTypingBase,
   initTypingIndex,
   completeTyping,
   skipToComplete,
@@ -163,6 +163,37 @@ const getAnimateTextDisplayForTyping = (index: number): string => {
     index === currentIndex.value,
     isCompleted
   )
+}
+
+/**
+ * 获取是否显示光标（包装函数）
+ */
+const shouldShowCursorForTyping = (index: number): boolean => {
+  const node = parsedNodes.value[index]
+  const isCompleted = index < currentIndex.value
+  // 如果正在打字且是当前节点，显示打字光标
+  if (isTyping.value && index === currentIndex.value) {
+    return true
+  }
+  // 如果已完成，使用 composable 的方法判断
+  if (isCompleted) {
+    return shouldShowCursorForTypingBase(
+      node,
+      index,
+      isTyping.value,
+      index === currentIndex.value,
+      isCompleted
+    )
+  }
+  return false
+}
+
+/**
+ * 获取最大文本长度（包装函数）
+ */
+const getMaxLengthForTyping = (index: number): number => {
+  const node = parsedNodes.value[index]
+  return getMaxLength(node, index)
 }
 
 // 默认速度：每个字符 30ms
@@ -443,6 +474,10 @@ defineExpose({
 
 .text-italic {
   font-style: italic !important;
+}
+
+.animate-text-container {
+  display: inline-block;
 }
 
 .typing-cursor {

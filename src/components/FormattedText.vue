@@ -20,10 +20,15 @@
         :class="{
           'text-red': false,
           'text-bold': false,
-          'text-italic': false
+          'text-italic': false,
+          'animate-text-container': true
         }"
+        :style="{ minWidth: `${getMaxLength(node, index)}ch` }"
       >
-        {{ getAnimateText(node, index) }}
+        {{ getAnimateText(node, index) }}<span
+          v-if="shouldShowCursor(node, index)"
+          class="typing-cursor"
+        >▮</span>
       </span>
       <span
         v-else
@@ -60,7 +65,7 @@ const systemTimeDisplay = computed(() => {
 })
 
 // 使用动画文本管理
-const { getAnimateText, startAnimation, cleanup } = useAnimateText()
+const { getAnimateText, getMaxLength, shouldShowCursor, startAnimation, cleanup } = useAnimateText()
 
 // 初始化动画文本的函数
 const initializeAnimateTexts = () => {
@@ -92,6 +97,24 @@ watch(parsedNodes, () => {
 
 .text-italic {
   font-style: italic !important;
+}
+
+.animate-text-container {
+  display: inline-block;
+}
+
+.typing-cursor {
+  animation: blink 0.5s infinite;
+  color: inherit;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.5;
+  }
 }
 </style>
 

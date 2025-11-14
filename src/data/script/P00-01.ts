@@ -63,7 +63,7 @@ export const P00_01: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{delay:1}{red}疲惫{/red}？'
+      text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{delay:1}{red}疲{/red}{delay:0.5}{red}惫{/red}？'
     },
     {
       type: 'dialogue',

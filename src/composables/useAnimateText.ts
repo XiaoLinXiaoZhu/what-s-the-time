@@ -4,7 +4,26 @@ import type { TextNode } from '@/types'
 /**
  * 动画文本切换间隔（毫秒）
  */
-const ANIMATE_INTERVAL = 100
+const ANIMATE_INTERVAL = 300
+
+/**
+ * 每个字符的删除/打字间隔（毫秒）
+ */
+const CHAR_INTERVAL = 100
+
+/**
+ * 动画状态
+ */
+type AnimationState = 'idle' | 'deleting' | 'typing'
+
+/**
+ * 节点动画状态
+ */
+interface NodeAnimationState {
+  currentIndex: number
+  displayLength: number
+  state: AnimationState
+}
 
 /**
  * 动画文本管理 Composable
@@ -17,6 +36,29 @@ export function useAnimateText() {
   const animateTextIntervals = ref<Map<number, number>>(new Map())
   // 每个节点在打字时使用的文本索引（打字完成后会继续切换）
   const animateTextTypingIndices = ref<Map<number, number>>(new Map())
+  // 每个节点的动画状态（用于删除-打字动画）
+  const animateTextStates = ref<Map<number, NodeAnimationState>>(new Map())
+  // 每个节点的最长文本长度（用于固定宽度）
+  const animateTextMaxLengths = ref<Map<number, number>>(new Map())
+
+  /**
+   * 计算并缓存节点的最长文本长度
+   */
+  const calculateMaxLength = (node: TextNode, nodeIndex: number): number => {
+    if (node.type !== 'animateText' || !node.animateTexts || node.animateTexts.length === 0) {
+      return 0
+    }
+    
+    // 如果已经缓存，直接返回
+    if (animateTextMaxLengths.value.has(nodeIndex)) {
+      return animateTextMaxLengths.value.get(nodeIndex)!
+    }
+    
+    // 计算最长文本的字符数（包括光标）
+    const maxLength = Math.max(...node.animateTexts.map(text => text.length)) + 2 // +1 for cursor +1 for space
+    animateTextMaxLengths.value.set(nodeIndex, maxLength)
+    return maxLength
+  }
 
   /**
    * 获取指定节点的当前显示文本（普通模式）
@@ -26,8 +68,42 @@ export function useAnimateText() {
       return node.content
     }
     
-    const currentIndex = animateTextIndices.value.get(nodeIndex) ?? 0
-    return node.animateTexts[currentIndex] || node.animateTexts[0]
+    const state = animateTextStates.value.get(nodeIndex)
+    if (!state) {
+      return node.animateTexts[0] || node.content
+    }
+    
+    const currentText = node.animateTexts[state.currentIndex] || node.animateTexts[0]
+    // 根据状态和显示长度返回部分文本
+    if (state.state === 'deleting' || state.state === 'typing') {
+      return currentText.substring(0, state.displayLength)
+    }
+    
+    return currentText
+  }
+
+  /**
+   * 获取指定节点的最大文本长度（用于设置固定宽度）
+   */
+  const getMaxLength = (node: TextNode, nodeIndex: number): number => {
+    return calculateMaxLength(node, nodeIndex)
+  }
+
+  /**
+   * 获取是否显示光标（普通模式）
+   */
+  const shouldShowCursor = (node: TextNode, nodeIndex: number): boolean => {
+    if (node.type !== 'animateText' || !node.animateTexts || node.animateTexts.length === 0) {
+      return false
+    }
+    
+    const state = animateTextStates.value.get(nodeIndex)
+    if (!state) {
+      return false
+    }
+    
+    // 在删除或打字状态时显示光标
+    return state.state === 'deleting' || state.state === 'typing'
   }
 
   /**
@@ -79,13 +155,53 @@ export function useAnimateText() {
       return displayText
     }
     
-    // 打字完成后，显示完整的动态文本
+    // 打字完成后，使用动画状态显示
+    const state = animateTextStates.value.get(nodeIndex)
+    if (state) {
+      const currentText = node.animateTexts[state.currentIndex] || node.animateTexts[0]
+      if (state.state === 'deleting' || state.state === 'typing') {
+        return currentText.substring(0, state.displayLength)
+      }
+      return currentText
+    }
+    
+    // 如果没有状态，使用旧的索引方式（向后兼容）
     const animateIndex = animateTextIndices.value.get(nodeIndex) ?? 0
     return node.animateTexts[animateIndex] || node.animateTexts[0]
   }
 
   /**
-   * 启动指定节点的动画定时器
+   * 获取是否显示光标（打字模式）
+   */
+  const shouldShowCursorForTyping = (
+    node: TextNode,
+    nodeIndex: number,
+    isTyping: boolean,
+    isCurrentNode: boolean,
+    isCompleted: boolean
+  ): boolean => {
+    if (node.type !== 'animateText' || !node.animateTexts || node.animateTexts.length === 0) {
+      return false
+    }
+    
+    // 如果正在打字且是当前节点，显示打字光标
+    if (isTyping && isCurrentNode) {
+      return true
+    }
+    
+    // 如果已完成，检查动画状态
+    if (isCompleted) {
+      const state = animateTextStates.value.get(nodeIndex)
+      if (state) {
+        return state.state === 'deleting' || state.state === 'typing'
+      }
+    }
+    
+    return false
+  }
+
+  /**
+   * 启动指定节点的动画定时器（删除-打字模式）
    */
   const startAnimation = (node: TextNode, nodeIndex: number) => {
     if (node.type !== 'animateText' || !node.animateTexts || node.animateTexts.length <= 1) {
@@ -95,22 +211,91 @@ export function useAnimateText() {
     // 如果已经有定时器，先清除
     const existingInterval = animateTextIntervals.value.get(nodeIndex)
     if (existingInterval) {
+      clearTimeout(existingInterval)
       clearInterval(existingInterval)
     }
     
-    // 初始化索引
-    if (!animateTextIndices.value.has(nodeIndex)) {
-      animateTextIndices.value.set(nodeIndex, 0)
+    // 初始化状态
+    let currentIndex = animateTextIndices.value.get(nodeIndex) ?? 0
+    if (currentIndex >= node.animateTexts.length) {
+      currentIndex = 0
     }
     
-    // 创建新的定时器，每0.5秒切换一次
-    const interval = setInterval(() => {
-      const currentIndex = animateTextIndices.value.get(nodeIndex) ?? 0
-      const nextIndex = (currentIndex + 1) % node.animateTexts!.length
-      animateTextIndices.value.set(nodeIndex, nextIndex)
-    }, ANIMATE_INTERVAL)
+    const currentText = node.animateTexts[currentIndex]
+    const initialState: NodeAnimationState = {
+      currentIndex,
+      displayLength: currentText.length,
+      state: 'idle'
+    }
+    animateTextStates.value.set(nodeIndex, initialState)
+    animateTextIndices.value.set(nodeIndex, currentIndex)
     
-    animateTextIntervals.value.set(nodeIndex, interval as unknown as number)
+    // 开始删除动画
+    const startDeleting = () => {
+      const state = animateTextStates.value.get(nodeIndex)
+      if (!state) return
+      
+      state.state = 'deleting'
+      
+      const deleteChar = () => {
+        const currentState = animateTextStates.value.get(nodeIndex)
+        if (!currentState || currentState.state !== 'deleting') return
+        
+        if (currentState.displayLength > 0) {
+          currentState.displayLength--
+          const interval = setTimeout(deleteChar, CHAR_INTERVAL)
+          animateTextIntervals.value.set(nodeIndex, interval as unknown as number)
+        } else {
+          // 删除完成，切换到下一个文本
+          const nextIndex = (currentState.currentIndex + 1) % node.animateTexts!.length
+          currentState.currentIndex = nextIndex
+          currentState.state = 'typing'
+          animateTextIndices.value.set(nodeIndex, nextIndex)
+          
+          // 开始打字
+          startTyping()
+        }
+      }
+      
+      // 等待一段时间后开始删除
+      const delay = setTimeout(() => {
+        deleteChar()
+      }, ANIMATE_INTERVAL)
+      animateTextIntervals.value.set(nodeIndex, delay as unknown as number)
+    }
+    
+    // 开始打字动画
+    const startTyping = () => {
+      const state = animateTextStates.value.get(nodeIndex)
+      if (!state) return
+      
+      state.state = 'typing'
+      const targetText = node.animateTexts![state.currentIndex]
+      const targetLength = targetText.length
+      
+      const typeChar = () => {
+        const currentState = animateTextStates.value.get(nodeIndex)
+        if (!currentState || currentState.state !== 'typing') return
+        
+        if (currentState.displayLength < targetLength) {
+          currentState.displayLength++
+          const interval = setTimeout(typeChar, CHAR_INTERVAL)
+          animateTextIntervals.value.set(nodeIndex, interval as unknown as number)
+        } else {
+          // 打字完成，等待后开始下一轮删除
+          currentState.state = 'idle'
+          const interval = setTimeout(() => {
+            startDeleting()
+          }, ANIMATE_INTERVAL)
+          animateTextIntervals.value.set(nodeIndex, interval as unknown as number)
+        }
+      }
+      
+      typeChar()
+    }
+    
+    // 开始第一轮删除
+    startDeleting()
   }
 
   /**
@@ -119,9 +304,12 @@ export function useAnimateText() {
   const stopAnimation = (nodeIndex: number) => {
     const interval = animateTextIntervals.value.get(nodeIndex)
     if (interval) {
+      clearTimeout(interval)
       clearInterval(interval)
       animateTextIntervals.value.delete(nodeIndex)
     }
+    // 清除状态
+    animateTextStates.value.delete(nodeIndex)
   }
 
   /**
@@ -150,12 +338,23 @@ export function useAnimateText() {
       return node.content
     }
     
-    // 初始化索引并启动动画
+    // 初始化索引
     animateTextIndices.value.set(nodeIndex, 0)
     animateTextTypingIndices.value.set(nodeIndex, 0)
+    
+    // 初始化状态为完整显示第一个文本
+    const firstText = node.animateTexts[0]
+    const initialState: NodeAnimationState = {
+      currentIndex: 0,
+      displayLength: firstText.length,
+      state: 'idle'
+    }
+    animateTextStates.value.set(nodeIndex, initialState)
+    
+    // 启动动画
     startAnimation(node, nodeIndex)
     
-    return node.animateTexts[0]
+    return firstText
   }
 
   /**
@@ -163,11 +362,14 @@ export function useAnimateText() {
    */
   const cleanup = () => {
     animateTextIntervals.value.forEach((interval) => {
+      clearTimeout(interval)
       clearInterval(interval)
     })
     animateTextIntervals.value.clear()
     animateTextIndices.value.clear()
     animateTextTypingIndices.value.clear()
+    animateTextStates.value.clear()
+    animateTextMaxLengths.value.clear()
   }
 
   // 组件卸载时清理
@@ -178,6 +380,8 @@ export function useAnimateText() {
   return {
     // 普通模式
     getAnimateText,
+    getMaxLength,
+    shouldShowCursor,
     startAnimation,
     stopAnimation,
     cleanup,
@@ -185,13 +389,15 @@ export function useAnimateText() {
     // 打字模式
     getAnimateTextContent,
     getAnimateTextDisplay,
+    shouldShowCursorForTyping,
     initTypingIndex,
     completeTyping,
     skipToComplete,
     
     // 状态（用于调试）
     animateTextIndices,
-    animateTextTypingIndices
+    animateTextTypingIndices,
+    animateTextStates
   }
 }
 
