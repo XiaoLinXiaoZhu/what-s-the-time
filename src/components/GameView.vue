@@ -21,14 +21,14 @@
         </template>
 
         <!-- 回到开始按钮 - 在所有行显示完成后显示（开场片段除外） -->
-        <BackToStartButton v-if="isAllLinesComplete" @click="backToStart" />
+        <BackToStartButton v-if="shouldShowBackButton" @click="backToStart" />
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { nextTick, onMounted, onUnmounted, watch } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
 import { useGameNavigation } from '@/composables/useGameNavigation'
 import { useScriptDisplay } from '@/composables/useScriptDisplay'
 import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation'
@@ -81,11 +81,16 @@ watch(currentSegment, (newSegment) => {
   }
 }, { immediate: true })
 
+// 计算是否应该显示"回到开始"按钮（START 片段不显示）
+const shouldShowBackButton = computed(() => {
+  return isAllLinesComplete.value && currentSegment.value?.id !== 'START'
+})
+
 // 键盘导航
 const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
   showNextLine,
   backToStart,
-  isAllLinesComplete,
+  isAllLinesComplete: shouldShowBackButton,
   skipCurrentLine,
   getTypingComponent,
   currentLineIndex,

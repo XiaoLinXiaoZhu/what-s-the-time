@@ -29,6 +29,10 @@ export const startSegment: ScriptSegment = {
       text: '不，是{delay:1}  {bold}他{/bold}  在问我。'
     },
     {
+      type: 'dialogue',
+      text: '{red}时间是:{/red}'
+    },
+    {
       type: 'input',
       placeholder: '输入时间 (HH:MM)'
     }
@@ -271,7 +275,7 @@ export const scriptSegments: ScriptSegment[] = [
     time: '10:07',
     description: 'A 被推下（使用时间匹配分支）',
     loop: 'D',
-    unlockFlags: ['loop_c_complete', 'saw_p01-01'],
+    unlockFlags: [],
     lines: [
       {
         type: 'narration',
