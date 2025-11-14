@@ -3,7 +3,7 @@
     <template v-for="(node, index) in parsedNodes" :key="index">
       <br v-if="node.type === 'linebreak'" />
       <span
-        v-else
+        v-else-if="node.type !== 'delay'"
         :class="{
           'text-red': node.type === 'red',
           'text-bold': node.type === 'bold',
@@ -11,6 +11,17 @@
         }"
       >
         {{ displayTexts[index] || '' }}
+        <!-- 光标：在当前正在显示的节点且还有未显示字符时显示 -->
+        <span
+          v-if="
+            isTyping &&
+            index === currentIndex &&
+            currentCharIndex < node.content.length
+          "
+          class="typing-cursor"
+        >
+          ▮ 
+        </span>
       </span>
     </template>
   </span>
@@ -19,7 +30,6 @@
 <script setup lang="ts">
 import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
 import { parseText } from '@/utils/textParser'
-import type { TextNode } from '@/types'
 
 const props = defineProps<{
   text: string
@@ -41,13 +51,6 @@ const typingTimer = ref<number | null>(null)
 
 // 默认速度：每个字符 30ms
 const typingSpeed = computed(() => props.speed || 30)
-
-// 计算总字符数（不包括格式标记）
-const totalChars = computed(() => {
-  return parsedNodes.value
-    .filter(node => node.type !== 'linebreak')
-    .reduce((sum, node) => sum + node.content.length, 0)
-})
 
 // 开始显示
 const startTyping = () => {
@@ -73,12 +76,25 @@ const startTyping = () => {
 
 // 显示下一个字符
 const typeNextChar = () => {
-  // 跳过所有换行节点，找到下一个文本节点
+  // 跳过所有换行和 delay 节点
   while (
     currentIndex.value < parsedNodes.value.length &&
-    parsedNodes.value[currentIndex.value].type === 'linebreak'
+    (parsedNodes.value[currentIndex.value].type === 'linebreak' ||
+     parsedNodes.value[currentIndex.value].type === 'delay')
   ) {
-    displayTexts.value[currentIndex.value] = ''
+    const node = parsedNodes.value[currentIndex.value]
+    if (node.type === 'linebreak') {
+      displayTexts.value[currentIndex.value] = ''
+    } else if (node.type === 'delay') {
+      // delay 节点，应用延时后继续
+      const delayTime = (node.delayTime || 0) * 1000 // 转换为毫秒
+      currentIndex.value++
+      currentCharIndex.value = 0
+      typingTimer.value = window.setTimeout(() => {
+        typeNextChar()
+      }, delayTime)
+      return
+    }
     currentIndex.value++
     currentCharIndex.value = 0
   }
@@ -149,9 +165,9 @@ const skipToEnd = () => {
     typingTimer.value = null
   }
   
-  // 立即显示所有剩余文本
+  // 立即显示所有剩余文本（跳过 delay 节点）
   parsedNodes.value.forEach((node, index) => {
-    if (node.type !== 'linebreak') {
+    if (node.type !== 'linebreak' && node.type !== 'delay') {
       displayTexts.value[index] = node.content
     }
   })
@@ -204,15 +220,29 @@ defineExpose({
 
 <style scoped>
 .text-red {
-  color: #ff4444;
+  color: #ff4444 !important;
 }
 
 .text-bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .text-italic {
-  font-style: italic;
+  font-style: italic !important;
+}
+
+.typing-cursor {
+  animation: blink 0.5s infinite;
+  color: inherit;
+}
+
+@keyframes blink {
+  0%, 50% {
+    opacity: 1;
+  }
+  51%, 100% {
+    opacity: 0.5;
+  }
 }
 </style>
 

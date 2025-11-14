@@ -29,15 +29,15 @@ const parsedNodes = computed(() => parseText(props.text))
 
 <style scoped>
 .text-red {
-  color: #ff4444;
+  color: #ff4444 !important;
 }
 
 .text-bold {
-  font-weight: bold;
+  font-weight: bold !important;
 }
 
 .text-italic {
-  font-style: italic;
+  font-style: italic !important;
 }
 </style>
 

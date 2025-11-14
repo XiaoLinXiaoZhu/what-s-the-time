@@ -171,8 +171,8 @@ const handleTimeInput = () => {
 }
 
 // 设置 TypingText 组件的 ref
-const setTypingRef = (el: ComponentPublicInstance | null, index: number) => {
-  if (el) {
+const setTypingRef = (el: any, index: number) => {
+  if (el && typeof el === 'object' && 'startTyping' in el) {
     typingRefs.value.set(index, el)
   }
 }

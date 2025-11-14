@@ -39,7 +39,7 @@ export const scriptSegments: ScriptSegment[] = [
       {
         type: 'dialogue',
         character: 'A',
-        text: '嗯...其实我想试试那家新开的包子铺。'
+        text: '嗯...{delay:1}其实我想试试那家新开的包子铺。'
       },
       {
         type: 'dialogue',
@@ -56,7 +56,7 @@ export const scriptSegments: ScriptSegment[] = [
       },
       {
         type: 'narration',
-        text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{red}疲惫{/red}？'
+        text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{delay:1}{red}疲惫{/red}？'
       },
       {
         type: 'dialogue',

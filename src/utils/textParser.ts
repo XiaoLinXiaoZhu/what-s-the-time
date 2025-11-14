@@ -7,6 +7,7 @@ import type { TextNode } from '@/types'
  * - {bold}...{/bold} - 粗体
  * - {italic}...{/italic} - 斜体
  * - {br} - 换行
+ * - {delay:1.2} - 延时（秒）
  * - 可以嵌套使用（简化处理：只支持最外层格式）
  */
 export function parseText(text: string): TextNode[] {
@@ -14,8 +15,19 @@ export function parseText(text: string): TextNode[] {
   
   if (!text) return nodes
   
+  // 先处理 delay 标记
+  const delayPattern = /\{delay:([\d.]+)\}/g
+  const delayMatches: Array<{ index: number; time: number }> = []
+  let delayMatch
+  while ((delayMatch = delayPattern.exec(text)) !== null) {
+    delayMatches.push({
+      index: delayMatch.index,
+      time: parseFloat(delayMatch[1])
+    })
+  }
+  
   // 使用正则表达式匹配所有标记，转义斜杠
-  const tagPattern = /\{(red|bold|italic|br|\/red|\/bold|\/italic)\}/g
+  const tagPattern = /\{(red|bold|italic|br|\/red|\/bold|\/italic|delay:[\d.]+)\}/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   
@@ -34,7 +46,12 @@ export function parseText(text: string): TextNode[] {
     }
     
     // 处理标记
-    if (tag === 'br') {
+    if (tag.startsWith('delay:')) {
+      // delay 标记
+      const delayTime = parseFloat(tag.substring(6))
+      nodes.push({ type: 'delay', content: '', delayTime })
+      lastIndex = matchIndex + match[0].length
+    } else if (tag === 'br') {
       nodes.push({ type: 'linebreak', content: '' })
       lastIndex = matchIndex + 4 // {br} 的长度
     } else if (tag.startsWith('/')) {
