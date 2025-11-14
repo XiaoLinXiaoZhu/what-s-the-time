@@ -265,27 +265,58 @@ export const scriptSegments: ScriptSegment[] = [
     ]
   },
 
-  // 两问一锁：10:07 真相版
+  // 时间匹配分支示例：10:07 真相版
   {
     id: 'P01-04',
     time: '10:07',
-    secondTime: '08:20',
-    description: 'A 被推下（真相版）',
+    description: 'A 被推下（使用时间匹配分支）',
     loop: 'D',
     unlockFlags: ['loop_c_complete', 'saw_p01-01'],
     lines: [
       {
         type: 'narration',
-        text: '楼顶。清晰的记忆。'
+        text: '楼顶。模糊的记忆。'
       },
       {
         type: 'dialogue',
-        character: 'A',
-        text: '我们分手吧。'
+        text: '我需要更清楚地回忆...'
       },
       {
-        type: 'narration',
-        text: '我抓住她的手腕，有意识地...多推了一点点。'
+        type: 'timeChoice',
+        choices: [
+          {
+            time: '08:20',
+            setFlag: 'saw_p01_01_detail',
+            lines: [
+              {
+                type: 'narration',
+                text: '楼顶。清晰的记忆。'
+              },
+              {
+                type: 'dialogue',
+                character: 'A',
+                text: '我们分手吧。'
+              },
+              {
+                type: 'narration',
+                text: '我抓住她的手腕，有意识地...多推了一点点。'
+              }
+            ]
+          },
+          {
+            time: '*',
+            lines: [
+              {
+                type: 'narration',
+                text: '记忆依然模糊。'
+              },
+              {
+                type: 'dialogue',
+                text: '我想不起来了...'
+              }
+            ]
+          }
+        ]
       }
     ]
   },
@@ -307,70 +338,58 @@ export const scriptSegments: ScriptSegment[] = [
         choices: [
           {
             text: '向左走',
-            targetSegmentId: 'EXAMPLE-02',
-            setFlag: 'went_left'
+            setFlag: 'went_left',
+            lines: [
+              {
+                type: 'narration',
+                text: '你选择了向左走。'
+              },
+              {
+                type: 'dialogue',
+                text: '这条路看起来很熟悉...'
+              },
+              {
+                type: 'dialogue',
+                text: '似乎有什么在召唤着你。'
+              }
+            ]
           },
           {
             text: '向右走',
-            targetSegmentId: 'EXAMPLE-03',
-            setFlag: 'went_right'
+            setFlag: 'went_right',
+            lines: [
+              {
+                type: 'narration',
+                text: '你选择了向右走。'
+              },
+              {
+                type: 'dialogue',
+                text: '这里似乎有什么不对劲...'
+              },
+              {
+                type: 'dialogue',
+                text: '空气中弥漫着一种不安的气息。'
+              }
+            ]
           },
           {
             text: '站在原地',
-            targetSegmentId: 'EXAMPLE-04'
+            lines: [
+              {
+                type: 'narration',
+                text: '你决定站在原地。'
+              },
+              {
+                type: 'dialogue',
+                text: '也许等待是最好的选择...'
+              },
+              {
+                type: 'dialogue',
+                text: '时间会给出答案。'
+              }
+            ]
           }
         ]
-      }
-    ]
-  },
-  {
-    id: 'EXAMPLE-02',
-    time: '09:05',
-    description: '向左走的结果',
-    loop: 'A',
-    unlockFlags: ['went_left'],
-    lines: [
-      {
-        type: 'narration',
-        text: '你选择了向左走。'
-      },
-      {
-        type: 'dialogue',
-        text: '这条路看起来很熟悉...'
-      }
-    ]
-  },
-  {
-    id: 'EXAMPLE-03',
-    time: '09:05',
-    description: '向右走的结果',
-    loop: 'A',
-    unlockFlags: ['went_right'],
-    lines: [
-      {
-        type: 'narration',
-        text: '你选择了向右走。'
-      },
-      {
-        type: 'dialogue',
-        text: '这里似乎有什么不对劲...'
-      }
-    ]
-  },
-  {
-    id: 'EXAMPLE-04',
-    time: '09:05',
-    description: '站在原地',
-    loop: 'A',
-    unlockFlags: [],
-    lines: [
-      {
-        type: 'narration',
-        text: '你决定站在原地。'
-      },
-      {
-        type: 'dialogue',
-        text: '也许等待是最好的选择...'
       }
     ]
   },

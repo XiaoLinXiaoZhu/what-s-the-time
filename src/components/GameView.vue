@@ -92,7 +92,7 @@
 
 <script setup lang="ts">
 import { ref, computed, watch, nextTick, onMounted, onUnmounted } from 'vue'
-import { findSegment, startSegment, scriptSegments } from '@/data/script'
+import { findSegment, startSegment } from '@/data/script'
 import type { ScriptSegment, ScriptLine } from '@/types'
 import FormattedText from './FormattedText.vue'
 import TypingText from './TypingText.vue'
@@ -112,6 +112,7 @@ const isProcessing = ref(false)
 const currentLineIndex = ref(0)
 const displayedLines = ref<ScriptLine[]>([])
 const typingRefs = ref<Map<number, ComponentPublicInstance>>(new Map())
+const currentTimeChoiceLineIndex = ref<number | null>(null)
 
 // 检查是否所有行都已完成显示
 const isAllLinesComplete = computed(() => {
@@ -234,6 +235,138 @@ const handleTimePaste = (e: ClipboardEvent) => {
     timeInputChars.value[4] = cleaned[3]
     checkTimeComplete()
   }
+}
+
+// 处理时间匹配分支的单个字符输入
+const handleTimeCharInputForChoice = (e: Event, inputIndex: number, lineIndex: number) => {
+  const input = e.target as HTMLInputElement
+  let value = input.value
+  
+  // 只允许数字（除了第3个位置是冒号）
+  if (inputIndex !== 2) {
+    value = value.replace(/\D/g, '')
+    if (value) {
+      timeInputChars.value[inputIndex] = value
+      currentTimeChoiceLineIndex.value = lineIndex
+      
+      // 自动移动到下一个输入框
+      if (inputIndex < 4 && inputIndex !== 1) {
+        // 跳过冒号位置
+        const nextIndex = inputIndex === 1 ? 3 : inputIndex + 1
+        nextTick(() => {
+          timeInputRefs.value[nextIndex]?.focus()
+        })
+      } else if (inputIndex === 1) {
+        // 小时输入完成，移动到分钟
+        nextTick(() => {
+          timeInputRefs.value[3]?.focus()
+        })
+      }
+      
+      // 检查是否输入完成
+      checkTimeCompleteForChoice()
+    } else {
+      timeInputChars.value[inputIndex] = ''
+    }
+  } else {
+    // 冒号位置不允许输入
+    timeInputChars.value[inputIndex] = ':'
+  }
+}
+
+// 处理时间匹配分支的粘贴
+const handleTimePasteForChoice = (e: ClipboardEvent) => {
+  e.preventDefault()
+  const pastedText = e.clipboardData?.getData('text') || ''
+  const cleaned = pastedText.replace(/\D/g, '').slice(0, 4)
+  
+  if (cleaned.length === 4) {
+    timeInputChars.value[0] = cleaned[0]
+    timeInputChars.value[1] = cleaned[1]
+    timeInputChars.value[3] = cleaned[2]
+    timeInputChars.value[4] = cleaned[3]
+    checkTimeCompleteForChoice()
+  }
+}
+
+// 检查时间匹配分支的时间是否输入完成
+const checkTimeCompleteForChoice = () => {
+  const timeStr = `${timeInputChars.value[0]}${timeInputChars.value[1]}:${timeInputChars.value[3]}${timeInputChars.value[4]}`
+  
+  if (timeInputChars.value[0] && timeInputChars.value[1] && timeInputChars.value[3] && timeInputChars.value[4]) {
+    // 验证时间格式
+    if (/^\d{1,2}:\d{2}$/.test(timeStr)) {
+      // 延迟一下再提交，让用户看到完整的输入
+      setTimeout(() => {
+        handleTimeChoice(timeStr)
+      }, 300)
+    }
+  }
+}
+
+// 处理时间匹配分支的时间输入
+const handleTimeChoice = (timeStr: string) => {
+  if (currentTimeChoiceLineIndex.value === null || isProcessing.value) return
+  
+  const line = displayedLines.value[currentTimeChoiceLineIndex.value]
+  if (line?.type !== 'timeChoice') return
+  
+  isProcessing.value = true
+  
+  // 查找匹配的时间选项
+  let matchedChoice = null
+  for (const choice of line.choices) {
+    if (choice.time === '*' || choice.time === timeStr) {
+      matchedChoice = choice
+      break
+    }
+  }
+  
+  if (matchedChoice) {
+    // 设置 flag
+    if (matchedChoice.setFlag) {
+      gameState.value.unlockedFlags.add(matchedChoice.setFlag)
+    }
+    
+    // 记录选择历史
+    gameState.value.choiceHistory.push({
+      choiceText: `时间: ${timeStr}`,
+      timestamp: Date.now()
+    })
+    
+    // 显示匹配的时间（作为对话）
+    const timeLine: ScriptLine = {
+      type: 'dialogue',
+      text: `{italic}时间：{/italic} ${timeStr}`
+    }
+    
+    // 在当前行之后插入时间显示和后续内容
+    const insertIndex = currentTimeChoiceLineIndex.value + 1
+    displayedLines.value.splice(insertIndex, 0, timeLine, ...matchedChoice.lines)
+    
+    // 移动到下一行
+    currentLineIndex.value = insertIndex
+    
+    // 重置输入
+    timeInputChars.value = ['', '', ':', '', '']
+    currentTimeChoiceLineIndex.value = null
+    
+    // 等待 DOM 更新后启动下一行的打字效果
+    nextTick(() => {
+      const typingComponent = typingRefs.value.get(currentLineIndex.value) as any
+      if (typingComponent && typeof typingComponent.startTyping === 'function') {
+        typingComponent.startTyping()
+      }
+    })
+  } else {
+    // 没有匹配，重置输入
+    timeInputChars.value = ['', '', ':', '', '']
+    nextTick(() => {
+      timeInputRefs.value[0]?.focus()
+    })
+  }
+  
+  isProcessing.value = false
 }
 
 // 检查时间是否输入完成
@@ -462,6 +595,7 @@ watch(() => {
   return currentLine?.type === 'input' || currentLine?.type === 'timeChoice'
 }, (isInputLine) => {
   if (isInputLine) {
+    const currentLine = displayedLines.value[currentLineIndex.value]
     nextTick(() => {
       setTimeout(() => {
         timeInputRefs.value[0]?.focus()

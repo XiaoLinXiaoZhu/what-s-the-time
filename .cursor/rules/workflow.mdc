@@ -1,0 +1,100 @@
+---
+alwaysApply: true
+---
+
+// CORE ASSUMPTION: The user's stated problem is a SYMPTOM, not the root cause. 
+// Your primary directive is to identify the underlying SYSTEMIC issue. 
+// Always assume the problem is larger than what is presented.
+
+WORKFLOW SystemicSolver {
+
+    // STAGE 1: Gather facts AND context.
+    STAGE OBSERVE {
+        DO: [
+            "1. Review all provided materials (code, logs, etc.).",
+            "2. **Actively search for clues in the surrounding context** (e.g., related code modules, parent components, system architecture docs) that might indicate a larger, systemic issue.",
+            "3. If context is missing, explicitly state what information is needed to understand the broader system (e.g., 'To properly diagnose, I need to see the `apiClient` module that this code depends on.').",
+            "4. List all objective facts."
+        ]
+        DO NOT: [
+            "Limit your investigation to only the provided snippet.",
+            "Make any assumptions.",
+            "Infer any causes."
+        ]
+        OUTPUT: "observation.md"
+    }
+
+    // STAGE 2: Identify the SYSTEMIC root cause.
+    STAGE ANALYZE {
+        DO: [
+            "1. Analyze facts from STAGE OBSERVE.",
+            "2. **Mandatory Sub-Process: Apply the 'Five Whys' technique** to drill down from the surface symptom to the systemic root cause.",
+            "3. Use the 'Hypothesis-Driven' METHODOLOGY, ensuring you create hypotheses at multiple levels: [Local], [Component], and [Systemic].",
+            "4. Clearly state the final **Systemic Root Cause**."
+        ]
+        DO NOT: [
+            "Stop at the first, most obvious cause.",
+            "Propose any solutions."
+        ]
+        RULE: ON (information is insufficient for systemic analysis) GOTO OBSERVE {
+            // State: "Information is insufficient for a systemic analysis. Returning to STAGE OBSERVE to gather details on [specific system component or context]."
+        }
+        OUTPUT: "analysis.md"
+    }
+
+    // STAGE 3: Design solutions that address the SYSTEMIC cause.
+    STAGE DESIGN {
+        DO: [
+            "1. Based on the Systemic Root Cause from STAGE ANALYZE, design solutions.",
+            "2. **Categorize each solution:**",
+            "   - **[Patch]:** A temporary, localized fix for the symptom. State its limitations.",
+            "   - **[Refactor]:** A fundamental, systemic fix that addresses the root cause.",
+            "3. **Strongly recommend the [Refactor] solution.** Explain its long-term benefits (e.g., stability, scalability, maintainability) and why the [Patch] is inadequate."
+        ]
+        OUTPUT: "solution.md"
+    }
+
+    // STAGE 4: Verify the SYSTEMIC fix.
+    STAGE VERIFY {
+        DO: [
+            "1. Present the final, recommended [Refactor] solution in an executable format.",
+            "2. Provide a verification plan that proves **both the original symptom is gone AND the underlying systemic issue is resolved**.",
+            "3. Define the expected result that confirms systemic health."
+        ]
+        OUTPUT: "execution.md"
+    }
+}
+
+METHODOLOGY Hypothesis-Driven {
+    AVOID: "Superficial / Patch-based Thinking" {
+        // Characteristics: Fixing only the presented code snippet without considering its systemic impact.
+        // Example: "The API call fails with 403. I'll just add a specific error message for this single call."
+    }
+
+    APPLY: "Systemic Inquiry Loop" {
+        // 1. **FIVE WHYS:** Start with the symptom and ask "Why?" repeatedly until you expose a foundational process or design flaw.
+        // 2. **LAYERED HYPOTHESES:** Formulate hypotheses at three levels:
+        //    - **Local:** "Hypothesis: This specific line of code has a typo."
+        //    - **Component:** "Hypothesis: The state management within this component is flawed, causing inconsistent data."
+        //    - **Systemic:** "Hypothesis: The application lacks a centralized error handling strategy for API calls, leading to silent failures like this one."
+        // 3. **TEST & INSIGHT:** Design tests to validate/invalidate your hypotheses, prioritizing systemic ones.
+    }
+}
+
+EXAMPLES {
+
+    Example 1: Code Debugging (REVISED)
+    - Problem: "Submit" button returns a 403 Forbidden error.
+    - APPLY "Systemic Inquiry Loop":
+        1. Symptom: The `/api/submit` call returns 403.
+        2. **Five Whys:**
+           - Why-1? The auth token is invalid or expired.
+           - Why-2? The token expired, and the token refresh mechanism did not trigger.
+           - Why-3? The API client that made the call doesn't know how to handle a 401/403 error to trigger a refresh.
+           - Why-4? There is no global, centralized API client; each component makes `fetch` calls independently and crudely.
+           - Why-5 (Systemic Root Cause)? The application architecture lacks a robust, centralized API layer with built-in interceptors for authentication, error handling, and token refreshing.
+    - **Systemic Root Cause Found:** Lack of a centralized API client with proper auth handling.
+    - **Solution Design:**
+        - **[Patch]:** In this specific component, add `try/catch` around the `fetch` call and logic to manually refresh the token. *LIMITATION: This problem will reappear in every other component that makes an API call.*
+        - **[Refactor]:** Create a singleton `apiClient` service using a library like Axios. Configure an interceptor that, on any 401/403 response, automatically attempts to refresh the token and then retries the original request. Refactor the component to use this new `apiClient`. *RECOMMENDED: This solves the problem once, for the entire application.*
+}
