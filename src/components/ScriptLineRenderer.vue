@@ -19,7 +19,7 @@
     v-else-if="line.type === 'choice'"
     :line="line"
     :index="index"
-    @choice-select="$emit('choice-select', $event, index)"
+    @choice-select="(choice, lineIndex, choiceIndex) => $emit('choice-select', choice, lineIndex, choiceIndex)"
   />
   <TimeChoiceLine
     v-else-if="line.type === 'timeChoice'"
@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import type { ScriptLine } from '@/types'
+import type { DisplayedLine } from '@/types'
 import NarrationLine from './NarrationLine.vue'
 import DialogueLine from './DialogueLine.vue'
 import ChoiceLine from './ChoiceLine.vue'
@@ -59,7 +59,7 @@ import TimeDisplayLine from './TimeDisplayLine.vue'
 import CommandLine from './CommandLine.vue'
 
 defineProps<{
-  line: ScriptLine
+  line: DisplayedLine
   index: number
   currentLineIndex: number
 }>()
@@ -67,7 +67,7 @@ defineProps<{
 defineEmits<{
   'set-typing-ref': [el: any, index: number]
   'line-complete': []
-  'choice-select': [choice: any, lineIndex: number]
+  'choice-select': [choice: any, lineIndex: number, choiceIndex: number]
   'time-choice-complete': [time: string, lineIndex: number]
   'input-complete': [time: string, lineIndex: number]
   'command-execute': [command: any, lineIndex: number]

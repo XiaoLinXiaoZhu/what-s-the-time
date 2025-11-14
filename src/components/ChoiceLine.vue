@@ -18,37 +18,33 @@
 </template>
 
 <script setup lang="ts">
-import { computed, ref } from 'vue'
-import type { ChoiceLine } from '@/types'
+import { computed } from 'vue'
+import type { DisplayedLine, ChoiceLine } from '@/types'
 
 const props = defineProps<{
-  line: ChoiceLine
+  line: DisplayedLine & ChoiceLine
   index: number
 }>()
 
 const emit = defineEmits<{
-  'choice-select': [choice: ChoiceLine['choices'][0], lineIndex: number]
+  'choice-select': [choice: ChoiceLine['choices'][0], lineIndex: number, choiceIndex: number]
 }>()
-
-// 记录选中的选项索引
-const selectedIndex = ref<number | null>(null)
 
 // 根据行状态决定是否禁用
 const isDisabled = computed(() => {
-  const status = (props.line as any).status
+  const status = props.line.status
   return status === 'completed' || status === 'disabled'
 })
 
-// 检查选项是否被选中
+// 检查选项是否被选中（从 line.selectedChoiceIndex 读取）
 const isSelected = (choiceIndex: number): boolean => {
-  return isDisabled.value && selectedIndex.value === choiceIndex
+  return isDisabled.value && props.line.selectedChoiceIndex === choiceIndex
 }
 
 // 处理选择点击
 const handleChoiceClick = (choice: ChoiceLine['choices'][0], choiceIndex: number) => {
   if (!isDisabled.value) {
-    selectedIndex.value = choiceIndex
-    emit('choice-select', choice, props.index)
+    emit('choice-select', choice, props.index, choiceIndex)
   }
 }
 </script>

@@ -5,14 +5,14 @@
 
     <!-- 文本显示区域 -->
     <div class="text-container" @click="handleTextClick">
-      <div class="text-content" v-if="currentSegment">
-        <template v-for="(line, index) in displayedLines" :key="`${currentSegment.id}-${index}`">
+      <div class="text-content" v-if="displayState.currentSegment">
+        <template v-for="(line, index) in displayState.displayedLines" :key="line.id">
           <ScriptLineRenderer
             v-if="shouldShowLine(line, index)"
             :line="line"
             :index="index"
-            :current-line-index="currentLineIndex"
-            @set-typing-ref="setTypingRef"
+            :current-line-index="displayState.currentLineIndex"
+            @set-typing-ref="handleSetTypingRef"
             @line-complete="onLineComplete"
             @choice-select="handleChoice"
             @time-choice-complete="handleTimeChoice"
@@ -29,149 +29,135 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, watch } from 'vue'
-import { useGameNavigation } from '@/composables/useGameNavigation'
-import { useScriptDisplay } from '@/composables/useScriptDisplay'
+import { computed, onMounted, onUnmounted } from 'vue'
+import { stateStore } from '@/stores/StateStore'
+import { navigationService } from '@/services/NavigationService'
+import { choiceService } from '@/services/ChoiceService'
+import { timeChoiceService } from '@/services/TimeChoiceService'
+import { inputService } from '@/services/InputService'
+import { commandService } from '@/services/CommandService'
+import { displayService } from '@/services/DisplayService'
+import { sideEffectExecutor } from '@/services/SideEffectExecutor'
 import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation'
-import { INPUT_FOCUS_DELAY } from '@/constants'
 import WatchDisplay from './WatchDisplay.vue'
 import ScriptLineRenderer from './ScriptLineRenderer.vue'
 import BackToStartButton from './BackToStartButton.vue'
 
-// 剧本显示（先创建，因为导航依赖它）
-const scriptDisplay = useScriptDisplay({
-  onLineComplete: () => {
-    onLineComplete()
-  }
+// 响应式状态（只读）
+const displayState = computed(() => stateStore.displayState)
+const gameState = computed(() => stateStore.gameState)
+
+// 计算显示时间
+const displayTime = computed(() => {
+  return gameState.value.currentTime || ''
 })
 
-const {
-  currentLineIndex,
-  displayedLines,
-  isAllLinesComplete,
-  setTypingRef,
-  skipCurrentLine,
-  showNextLine,
-  insertLines,
-  moveToLine,
-  getTypingComponent,
-  setDisplayedLines
-} = scriptDisplay
-
-// 判断是否应该显示行
+/**
+ * 判断是否应该显示行
+ * 
+ * 系统性规则（基于行状态，而非类型补丁）：
+ * 1. 已完成的行（status === 'completed'）始终显示
+ * 2. choice 行总是显示（交互行，需要用户选择）
+ * 3. 其他行根据 currentLineIndex 显示（进度控制）
+ */
 const shouldShowLine = (line: any, index: number) => {
-  // choice 行总是显示
+  // 规则1：已完成的行始终显示
+  // 这包括：转换后的 timeDisplay、已完成的 choice、已完成的 input 等
+  if (line.status === 'completed') {
+    return true
+  }
+  
+  // 规则2：choice 行总是显示（它们是交互行，需要用户选择）
   if (line.type === 'choice') {
     return true
   }
   
-  // 其他行根据 currentLineIndex 显示
-  return index <= currentLineIndex.value
-}
-
-// 游戏导航
-const { currentSegment, displayTime, handleTimeInput, handleChoice, handleTimeChoice, handleCommand, convertInputToTimeDisplay, backToStart, init } = useGameNavigation({
-  insertLines,
-  moveToLine,
-  displayedLines
-})
-
-// 将 currentSegment 同步到 useScriptDisplay
-watch(currentSegment, (newSegment) => {
-  if (newSegment) {
-    // 清除所有行的状态，确保重新进入时状态是干净的
-    const cleanLines = newSegment.lines.map(line => {
-      const cleanLine = { ...line }
-      // 移除可能存在的状态属性
-      if ('status' in cleanLine) {
-        delete (cleanLine as any).status
-      }
-      return cleanLine
-    })
-    setDisplayedLines(cleanLines)
-    scriptDisplay.currentLineIndex.value = 0
-    scriptDisplay.typingRefs.value.clear()
-    
-    // 等待 DOM 更新后启动第一行的打字效果
-    nextTick(() => {
-      const typingComponent = getTypingComponent(0)
-      if (typingComponent && typeof typingComponent.startTyping === 'function') {
-        typingComponent.startTyping()
-      }
+  // 规则3：其他行根据 currentLineIndex 显示（进度控制）
+  const shouldShow = index <= displayState.value.currentLineIndex
+  
+  // 调试日志
+  if (line.type === 'timeDisplay' || line.type === 'timeChoice' || line.type === 'input') {
+    console.log('[GameView] shouldShowLine:', {
+      lineType: line.type,
+      lineId: line.id,
+      index,
+      status: line.status,
+      currentLineIndex: displayState.value.currentLineIndex,
+      shouldShow,
+      reason: line.status === 'completed' ? 'completed' : 
+              line.type === 'choice' ? 'choice' : 
+              'currentLineIndex'
     })
   }
-}, { immediate: true })
+  
+  return shouldShow
+}
 
-// 计算是否应该显示"回到开始"按钮（START 片段不显示）
+// 计算是否应该显示"回到开始"按钮
 const shouldShowBackButton = computed(() => {
-  return isAllLinesComplete.value && currentSegment.value?.id !== 'START'
+  return displayService.isAllLinesComplete() && displayState.value.currentSegment?.id !== 'START'
 })
+
+// 事件处理
+const handleSetTypingRef = (el: any, index: number) => {
+  displayService.setTypingRef(el, index)
+}
+
+const handleChoice = (choice: any, lineIndex: number, choiceIndex: number) => {
+  const line = displayState.value.displayedLines[lineIndex]
+  if (line) {
+    choiceService.handleChoice(choice, line.id, choiceIndex)
+  }
+}
+
+const handleTimeChoice = (time: string, lineIndex: number, inputLineIndex?: number) => {
+  const line = displayState.value.displayedLines[lineIndex]
+  const inputLine = inputLineIndex !== undefined ? displayState.value.displayedLines[inputLineIndex] : undefined
+  if (line) {
+    timeChoiceService.handleTimeChoice(time, line.id, inputLine?.id)
+  }
+}
+
+const handleInputComplete = (time: string, lineIndex: number) => {
+  const line = displayState.value.displayedLines[lineIndex]
+  if (line) {
+    inputService.handleInputComplete(time, line.id)
+  }
+}
+
+const handleCommandExecute = (command: any, lineIndex: number) => {
+  commandService.handleCommand(command, lineIndex)
+}
+
+const backToStart = () => {
+  navigationService.navigateToStart()
+}
+
+const onLineComplete = () => {
+  // 当前行显示完成，可以在这里处理额外的逻辑
+  // 副作用执行器会自动处理打字效果和聚焦
+}
 
 // 键盘导航
 const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
-  showNextLine,
+  showNextLine: () => displayService.showNextLine(),
   backToStart,
   isAllLinesComplete: shouldShowBackButton,
-  skipCurrentLine,
-  getTypingComponent,
-  currentLineIndex,
-  displayedLines
+  skipCurrentLine: () => displayService.skipCurrentLine(),
+  getTypingComponent: (index: number) => displayService.getTypingComponent(index),
+  currentLineIndex: computed(() => displayState.value.currentLineIndex),
+  displayedLines: computed(() => displayState.value.displayedLines)
 })
-
-// 处理输入完成
-const handleInputComplete = (time: string, lineIndex: number) => {
-  // 将 input 行转换为 timeDisplay 行（显示输入的值）
-  convertInputToTimeDisplay(lineIndex, time)
-  
-  // 检查下一行是否是 timeChoice
-  const nextLine = displayedLines.value[lineIndex + 1]
-  if (nextLine?.type === 'timeChoice') {
-    // 如果下一行是 timeChoice，直接使用刚才输入的时间处理 timeChoice
-    handleTimeChoice(time, lineIndex + 1, lineIndex)
-  } else {
-    // 否则，执行原来的逻辑：查找匹配的片段
-    handleTimeInput(time)
-  }
-}
-
-// 处理命令执行
-const handleCommandExecute = (command: any, lineIndex: number) => {
-  handleCommand(command, lineIndex)
-  
-  // 如果命令是 jump，需要更新显示的行
-  if (command.command === 'jump' && currentSegment.value) {
-    setDisplayedLines([...currentSegment.value.lines])
-    scriptDisplay.currentLineIndex.value = 0
-    scriptDisplay.typingRefs.value.clear()
-    
-    // 等待 DOM 更新后启动第一行的打字效果
-    nextTick(() => {
-      const typingComponent = getTypingComponent(0)
-      if (typingComponent && typeof typingComponent.startTyping === 'function') {
-        typingComponent.startTyping()
-      }
-    })
-  }
-}
-
-// 当前行显示完成
-const onLineComplete = () => {
-  const currentLine = displayedLines.value[currentLineIndex.value]
-
-  // 如果当前行是输入框或时间匹配分支，自动聚焦第一个输入框
-  if (currentLine?.type === 'input' || currentLine?.type === 'timeChoice') {
-    nextTick(() => {
-      setTimeout(() => {
-        // TimeInput 组件会自动处理聚焦
-      }, INPUT_FOCUS_DELAY)
-    })
-  }
-}
-
 
 // 初始化
 onMounted(() => {
-  init()
+  // 初始化副作用执行器
+  sideEffectExecutor.init()
+  
+  // 导航到开始片段
+  navigationService.navigateToStart()
+  
+  // 添加键盘事件监听
   window.addEventListener('keydown', handleGlobalKeyDown)
 })
 

@@ -4,7 +4,7 @@
 export type LineStatus = 'pending' | 'active' | 'completed' | 'disabled'
 
 /**
- * 剧本行类型
+ * 剧本行类型（静态数据，不包含运行时状态）
  */
 export type ScriptLine = 
   | DialogueLine      // 对话
@@ -16,11 +16,22 @@ export type ScriptLine =
   | TimeDisplayLine   // 时间显示（只读）
 
 /**
- * 带状态的行（用于运行时）
+ * 行状态映射（运行时状态，独立于静态数据）
+ * key: lineId (格式: segmentId-index 或 inserted-baseIndex-index)
+ * value: LineStatus
  */
-export interface ScriptLineWithStatus extends ScriptLine {
-  /** 行的状态（可选，默认为 'pending'） */
-  status?: LineStatus
+export type LineStateMap = Map<string, LineStatus>
+
+/**
+ * 显示行（视图层使用的组合类型：静态数据 + 运行时状态）
+ */
+export type DisplayedLine = ScriptLine & {
+  /** 唯一标识，用于状态映射 */
+  id: string
+  /** 行的状态（从 LineStateMap 获取） */
+  status: LineStatus
+  /** 选中的选项索引（仅用于 choice 类型） */
+  selectedChoiceIndex?: number
 }
 
 /**
@@ -73,8 +84,6 @@ export interface TimeChoiceLine {
     /** 匹配后设置的 flag（可选） */
     setFlag?: string
   }>
-  /** 行的状态（可选，默认为 'pending'） */
-  status?: LineStatus
 }
 
 /**
@@ -95,8 +104,6 @@ export interface InputLine {
   type: 'input'
   /** 提示文本 */
   placeholder?: string
-  /** 行的状态（可选，默认为 'pending'） */
-  status?: LineStatus
 }
 
 /**
@@ -153,5 +160,31 @@ export interface GameState {
     choiceText: string
     timestamp: number
   }>
+}
+
+/**
+ * 副作用类型
+ */
+export interface SideEffect {
+  type: 'startTyping' | 'focusInput' | 'scrollToLine' | 'removeLine' | 'insertLines'
+  target: string | number
+  delay?: number
+  data?: any
+}
+
+/**
+ * 显示状态
+ */
+export interface DisplayState {
+  /** 当前片段 */
+  currentSegment: ScriptSegment | null
+  /** 当前行索引 */
+  currentLineIndex: number
+  /** 显示的行列表 */
+  displayedLines: DisplayedLine[]
+  /** TypingText 组件引用映射 */
+  typingRefs: Map<number, any>
+  /** 待执行的副作用 */
+  pendingSideEffects: SideEffect[]
 }
 
