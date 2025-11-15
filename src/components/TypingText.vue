@@ -39,11 +39,11 @@
       <span
         v-else
         :class="{
-          'text-red': node.type === 'red',
-          'text-bold': node.type === 'bold',
-          'text-italic': node.type === 'italic',
-          'text-blur': node.type === 'blur',
-          'text-strike': node.type === 'strike' && isStrikeActive(index)
+          'text-red': node.formats?.includes('red') || node.type === 'red',
+          'text-bold': node.formats?.includes('bold') || node.type === 'bold',
+          'text-italic': node.formats?.includes('italic') || node.type === 'italic',
+          'text-blur': node.formats?.includes('blur') || node.type === 'blur',
+          'text-strike': (node.formats?.includes('strike') || node.type === 'strike') && isStrikeActive(index)
         }"
       >{{ displayTexts[index] || '' }}<span
           v-if="
@@ -488,11 +488,16 @@ defineExpose({
 }
 
 .text-bold {
-  font-weight: bold !important;
+  font-weight: 700 !important;
+  font-size: 1.05em !important;
 }
 
 .text-italic {
   font-style: italic !important;
+  transform: skewX(-10deg);
+  display: inline-block;
+  font-weight: 500;
+  letter-spacing: 0.02em;
 }
 
 .text-blur {
