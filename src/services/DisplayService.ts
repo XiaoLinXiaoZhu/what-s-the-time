@@ -52,8 +52,8 @@ export class DisplayService {
 
       stateStore.updateDisplayState({
         currentLineIndex: nextLineIndex,
-        pendingSideEffects: nextLine?.type === 'input' || nextLine?.type === 'timeChoice'
-          ? [] // 输入行和时间选择行不自动启动打字效果
+        pendingSideEffects: nextLine?.type === 'input' || nextLine?.type === 'timeChoice' || nextLine?.type === 'choice'
+          ? [] // 输入行、时间选择行和选择行不自动启动打字效果
           : [{ type: 'startTyping', target: nextLineIndex, delay: 0 }]
       })
     }
@@ -69,8 +69,8 @@ export class DisplayService {
 
       stateStore.updateDisplayState({
         currentLineIndex: index,
-        pendingSideEffects: line?.type === 'input' || line?.type === 'timeChoice'
-          ? [] // 输入行和时间选择行不自动启动打字效果
+        pendingSideEffects: line?.type === 'input' || line?.type === 'timeChoice' || line?.type === 'choice'
+          ? [] // 输入行、时间选择行和选择行不自动启动打字效果
           : [{ type: 'startTyping', target: index, delay: 0 }]
       })
     }

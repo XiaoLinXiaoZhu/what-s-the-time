@@ -62,8 +62,8 @@ const displayTime = computed(() => {
  * 
  * 系统性规则（基于行状态，而非类型补丁）：
  * 1. 已完成的行（status === 'completed'）始终显示
- * 2. choice 行总是显示（交互行，需要用户选择）
- * 3. 其他行根据 currentLineIndex 显示（进度控制）
+ * 2. 其他行根据 currentLineIndex 显示（进度控制）
+ *    - 包括 choice 行：应该在上一行打字完成后才显示
  */
 const shouldShowLine = (line: any, index: number) => {
   // 规则1：已完成的行始终显示
@@ -72,16 +72,12 @@ const shouldShowLine = (line: any, index: number) => {
     return true
   }
   
-  // 规则2：choice 行总是显示（它们是交互行，需要用户选择）
-  if (line.type === 'choice') {
-    return true
-  }
-  
-  // 规则3：其他行根据 currentLineIndex 显示（进度控制）
+  // 规则2：所有行（包括 choice）根据 currentLineIndex 显示（进度控制）
+  // choice 行会在上一行打字完成后，通过 currentLineIndex 递增而显示
   const shouldShow = index <= displayState.value.currentLineIndex
   
   // 调试日志
-  if (line.type === 'timeDisplay' || line.type === 'timeChoice' || line.type === 'input') {
+  if (line.type === 'timeDisplay' || line.type === 'timeChoice' || line.type === 'input' || line.type === 'choice') {
     console.log('[GameView] shouldShowLine:', {
       lineType: line.type,
       lineId: line.id,
@@ -89,9 +85,7 @@ const shouldShowLine = (line: any, index: number) => {
       status: line.status,
       currentLineIndex: displayState.value.currentLineIndex,
       shouldShow,
-      reason: line.status === 'completed' ? 'completed' : 
-              line.type === 'choice' ? 'choice' : 
-              'currentLineIndex'
+      reason: line.status === 'completed' ? 'completed' : 'currentLineIndex'
     })
   }
   

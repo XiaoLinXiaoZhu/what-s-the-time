@@ -12,6 +12,7 @@ import type { TextNode, TextFormat } from '@/types'
  * - {delay:1.2} - 延时（秒）
  * - {systemTime} - 系统当前时间（HH:MM格式，实时更新）
  * - {animateText:string1|string2|string3} - 动画文本（每0.5秒切换）
+ * - {typewriter}...{/typewriter} - 逐字打印（转译为每个字符之间插入{delay:0.5}）
  * - 可以嵌套使用，支持多个格式叠加
  */
 export function parseText(text: string, parentFormats: TextFormat[] = []): TextNode[] {
@@ -96,13 +97,48 @@ export function parseText(text: string, parentFormats: TextFormat[] = []): TextN
       nodes.push({ type: 'systemTime', content: '' })
       i = tagEnd + 1
       continue
+    } else if (tagContent === 'typewriter') {
+      // 处理 typewriter 标签：将内容转译为每个字符之间插入 {delay:0.5}
+      const endTag = '{/typewriter}'
+      const endIndex = text.indexOf(endTag, tagEnd + 1)
+      
+      if (endIndex !== -1) {
+        // 找到结束标签，提取内部文本
+        const innerText = text.substring(tagEnd + 1, endIndex)
+        
+        // 将每个字符之间插入 {delay:0.5}
+        const translatedText = innerText
+          .split('')
+          .map((char, index) => {
+            // 最后一个字符后面不需要 delay
+            return index < innerText.length - 1 ? `${char}{delay:0.3}` : char
+          })
+          .join('')
+        
+        // 递归解析转译后的文本
+        const innerNodes = parseText(translatedText, [...formatStack])
+        nodes.push(...innerNodes)
+        
+        i = endIndex + endTag.length
+      } else {
+        // 没有找到结束标签，当作普通文本处理
+        i = tagEnd + 1
+      }
+      continue
     }
     
     // 处理格式标签
     if (tagContent.startsWith('/')) {
       // 结束标签
-      const formatType = tagContent.substring(1) as TextFormat
-      const index = formatStack.lastIndexOf(formatType)
+      const formatType = tagContent.substring(1)
+      // 如果是 typewriter 的结束标签，跳过（已在开始标签时处理）
+      if (formatType === 'typewriter') {
+        i = tagEnd + 1
+        continue
+      }
+      // 处理格式标签的结束标签
+      const formatTypeAsTextFormat = formatType as TextFormat
+      const index = formatStack.lastIndexOf(formatTypeAsTextFormat)
       if (index !== -1) {
         formatStack.splice(index, 1)
       }
