@@ -16,7 +16,7 @@ export const startFirstSegment: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '不，是{delay:1}  {bold}她{/bold}{bold}{blur}她{/blur}{/bold}  在问我。'
+      text: '不，{delay:1}是  {bold}她{/bold}  在问我。'
     },
     {
       type: "narration",
@@ -24,7 +24,7 @@ export const startFirstSegment: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '{red}时间是:{/red}这是正常文本 {blur}这段是模糊的{/blur}这是一句 {strike}作废的{/strike} 说明文本'
+      text: '{bold}{red}时间是:{/red}{/bold}'
     },
     {
       type: 'input',

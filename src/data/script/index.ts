@@ -32,6 +32,7 @@ export function getStartSegment(loop?: string): ScriptSegment {
 import { blankSegment } from './blank'
 import { P00_01 } from './P00-01'
 import { TEST_CHOICE } from './TEST-CHOICE'
+import { TEST_TIMECHOICE } from './TEST-TIMECHOICE'
 import { TEST_TAGS } from './TEST-TAGS'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
 import { startFirstSegment } from './start-first'
@@ -48,10 +49,13 @@ export const scriptSegments: ScriptSegment[] = [
   
   // 测试片段
   TEST_CHOICE,
+  TEST_TIMECHOICE,
   TEST_TAGS,
   TEST_COMMAND,
   TEST_COMMAND_2,
   TEST_COMMAND_END,
+
+  P00_01,
 ]
 
 /**

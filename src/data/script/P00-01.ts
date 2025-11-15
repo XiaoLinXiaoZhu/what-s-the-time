@@ -50,11 +50,7 @@ export const P00_01: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '我停下脚步，看着她。'
-    },
-    {
-      type: 'dialogue',
-      text: '三明治更有营养。而且你昨天不是说胃不舒服吗？'
+      text: '我停下脚步，看着她。{br}{delay:1}三明治更有营养。而且你昨天不是说胃不舒服吗？'
     },
     {
       type: 'dialogue',
@@ -63,7 +59,7 @@ export const P00_01: ScriptSegment = {
     },
     {
       type: 'narration',
-      text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{delay:1}{red}疲{/red}{delay:0.5}{red}惫{/red}？'
+      text: '她点点头，嘴角还挂着笑。{br}但我注意到，那笑容里有一丝...{delay:1}{red}疲{/red}{delay:0.5}{red}惫{/red}{delay:0.5}？'
     },
     {
       type: 'dialogue',
