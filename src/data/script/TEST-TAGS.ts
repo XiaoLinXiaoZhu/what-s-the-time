@@ -110,11 +110,11 @@ export const TEST_TAGS: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '动画文本：{animateText:加载中|加载中.|加载中..|加载中...}'
+      text: '动画文本：{animateText:加载中|加载中.|加载中..|加载中...}123'
     },
     {
       type: 'dialogue',
-      text: '状态切换：{animateText:思考中|分析中|处理中|完成}'
+      text: '状态切换：{animateText:思考中|分析中|处理中|完成}123'
     },
     {
       type: 'dialogue',

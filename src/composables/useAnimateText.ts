@@ -42,6 +42,40 @@ export function useAnimateText() {
   const animateTextMaxLengths = ref<Map<number, number>>(new Map())
 
   /**
+   * 计算文本的实际宽度（考虑中英文字符宽度差异）
+   * 中文字符占 2 个字符宽度，英文字符占 1 个字符宽度
+   */
+  const calculateTextWidth = (text: string): number => {
+    let width = 0
+    // 使用 for...of 遍历字符串，正确处理 Unicode 代理对
+    for (const char of text) {
+      // 使用 codePointAt 获取完整的 Unicode 码点（支持扩展字符）
+      const code = char.codePointAt(0) ?? char.charCodeAt(0)
+      
+      // 判断是否为中文字符（包括中文标点）
+      // Unicode 范围：CJK统一汉字、CJK扩展A、CJK扩展B等，以及中文标点符号
+      if (
+        (code >= 0x4E00 && code <= 0x9FFF) || // CJK统一汉字
+        (code >= 0x3400 && code <= 0x4DBF) || // CJK扩展A
+        (code >= 0x20000 && code <= 0x2A6DF) || // CJK扩展B
+        (code >= 0x2A700 && code <= 0x2B73F) || // CJK扩展C
+        (code >= 0x2B740 && code <= 0x2B81F) || // CJK扩展D
+        (code >= 0xF900 && code <= 0xFAFF) || // CJK兼容汉字
+        (code >= 0x2F800 && code <= 0x2FA1F) || // CJK兼容扩展
+        (code >= 0x3000 && code <= 0x303F) || // CJK符号和标点
+        (code >= 0xFF00 && code <= 0xFFEF) // 全角字符
+      ) {
+        width += 1
+      } else {
+        width += 0.5
+      }
+    }
+
+    // add 1 for cursor,add 1 for space
+    return width + 2
+  }
+
+  /**
    * 计算并缓存节点的最长文本长度
    */
   const calculateMaxLength = (node: TextNode, nodeIndex: number): number => {
@@ -54,10 +88,11 @@ export function useAnimateText() {
       return animateTextMaxLengths.value.get(nodeIndex)!
     }
     
-    // 计算最长文本的字符数（包括光标）
-    const maxLength = Math.max(...node.animateTexts.map(text => text.length)) + 2 // +1 for cursor +1 for space
-    animateTextMaxLengths.value.set(nodeIndex, maxLength)
-    return maxLength
+    // 计算最长文本的实际宽度（包括光标和间距）
+    // 光标占 1 个字符宽度，间距占 2 个字符宽度
+    const maxWidth = Math.max(...node.animateTexts.map(text => calculateTextWidth(text))) + 3
+    animateTextMaxLengths.value.set(nodeIndex, maxWidth)
+    return maxWidth
   }
 
   /**
