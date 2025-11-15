@@ -1,0 +1,8 @@
+customModes:
+  - slug: novel
+    name: novel
+    roleDefinition: "11111111111111111111"
+    groups:
+      - read
+      - edit
+    source: project
