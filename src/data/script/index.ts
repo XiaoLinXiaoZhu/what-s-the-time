@@ -8,7 +8,6 @@ export { startSegment }
 export { blankSegment } from './blank'
 
 // 导入所有阶段的开场片段
-import { startFirstSegment } from './start-first'
 import { startASegment } from './start-a'
 import { startP0Segment } from './start-p0'
 import { startP1Segment } from './start-p1'
@@ -18,19 +17,12 @@ import { startP4Segment } from './start-p4'
 import { startP5Segment } from './start-p5'
 import { startP6Segment } from './start-p6'
 
-let isFirstStart = true
 /**
  * 根据当前 loop 获取对应的开头片段
  * @param loop 当前游戏阶段（loop）
  * @returns 对应的开头片段
  */
 export function getStartSegment(loop?: string): ScriptSegment {
-  // 第一次启动时使用特殊开场
-  if (isFirstStart) {
-    isFirstStart = false
-    return startFirstSegment
-  }
-
   // 根据不同的loop返回对应的开场片段
   switch (loop) {
     case 'P0':

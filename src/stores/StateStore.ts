@@ -8,7 +8,7 @@ import type { GameState, DisplayState, LineStatus } from '@/types'
 class StateStore {
   // 游戏状态
   private _gameState = reactive<GameState>({
-    currentLoop: 'A',
+    currentLoop: 'P0',
     unlockedFlags: new Set<string>(),
     viewedSegments: new Set<string>(),
     currentTime: undefined,
@@ -107,7 +107,7 @@ class StateStore {
    */
   reset(): void {
     this._gameState = reactive<GameState>({
-      currentLoop: 'A',
+      currentLoop: 'P0',
       unlockedFlags: new Set<string>(),
       viewedSegments: new Set<string>(),
       currentTime: undefined,

@@ -1,7 +1,7 @@
-import { ref } from 'vue'
+import { ref, computed } from 'vue'
 import { findSegment, findSegmentById, getStartSegment } from '@/data/script'
 import type { ScriptSegment, ScriptLine, ChoiceLine, CommandLine } from '@/types'
-import { useGameState } from './useGameState'
+import { stateStore } from '@/stores/StateStore'
 
 export interface UseGameNavigationOptions {
   insertLines: (index: number, lines: ScriptLine[]) => void
@@ -15,7 +15,7 @@ export interface UseGameNavigationOptions {
  */
 export function useGameNavigation(options: UseGameNavigationOptions) {
   const { insertLines, moveToLine, displayedLines } = options
-  const { gameState } = useGameState()
+  const gameState = computed(() => stateStore.gameState)
 
   // 状态
   const currentSegment = ref<ScriptSegment | null>(null)
@@ -31,7 +31,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
     if (segment) {
       currentSegment.value = segment
       displayTime.value = time
-      gameState.value.viewedSegments.add(segment.id)
+      const viewedSegments = new Set(stateStore._internalGameState.viewedSegments)
+      viewedSegments.add(segment.id)
+      stateStore.updateGameState({ viewedSegments })
     } else {
       // 未找到片段，显示空白
       const blankSegment = findSegment('*')
@@ -62,14 +64,18 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
 
     // 设置 flag
     if (choice.setFlag) {
-      gameState.value.unlockedFlags.add(choice.setFlag)
+      const flags = new Set(stateStore._internalGameState.unlockedFlags)
+      flags.add(choice.setFlag)
+      stateStore.updateGameState({ unlockedFlags: flags })
     }
 
     // 记录选择历史
-    gameState.value.choiceHistory.push({
+    const choiceHistory = [...stateStore._internalGameState.choiceHistory]
+    choiceHistory.push({
       choiceText: choice.text,
       timestamp: Date.now()
     })
+    stateStore.updateGameState({ choiceHistory })
 
     // 直接插入选择的后续内容（不再显示"你选择了"的提示文本）
     insertLines(lineIndex, choice.lines)
@@ -143,14 +149,18 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
 
       // 设置 flag
       if (matchedChoice.setFlag) {
-        gameState.value.unlockedFlags.add(matchedChoice.setFlag)
+        const flags = new Set(stateStore._internalGameState.unlockedFlags)
+        flags.add(matchedChoice.setFlag)
+        stateStore.updateGameState({ unlockedFlags: flags })
       }
 
       // 记录选择历史
-      gameState.value.choiceHistory.push({
+      const choiceHistory = [...stateStore._internalGameState.choiceHistory]
+      choiceHistory.push({
         choiceText: `时间: ${time}`,
         timestamp: Date.now()
       })
+      stateStore.updateGameState({ choiceHistory })
 
       // timeChoice 行是匹配逻辑行，匹配完成后应该被移除
       // 只有用户实际输入的 input 行才显示为 timeDisplay
@@ -178,7 +188,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
       case 'setFlag': {
         const flag = params.flag as string
         if (flag) {
-          gameState.value.unlockedFlags.add(flag)
+          const flags = new Set(stateStore._internalGameState.unlockedFlags)
+          flags.add(flag)
+          stateStore.updateGameState({ unlockedFlags: flags })
         }
         break
       }
@@ -186,7 +198,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
       case 'unsetFlag': {
         const flag = params.flag as string
         if (flag) {
-          gameState.value.unlockedFlags.delete(flag)
+          const flags = new Set(stateStore._internalGameState.unlockedFlags)
+          flags.delete(flag)
+          stateStore.updateGameState({ unlockedFlags: flags })
         }
         break
       }
@@ -202,7 +216,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
           if (segment) {
             currentSegment.value = segment
             displayTime.value = segment.time === 'START' ? '' : segment.time
-            gameState.value.viewedSegments.add(segment.id)
+            const viewedSegments = new Set(stateStore._internalGameState.viewedSegments)
+            viewedSegments.add(segment.id)
+            stateStore.updateGameState({ viewedSegments })
             
             // 重置显示的行，切换到新片段
             // 注意：这里需要外部调用 setDisplayedLines 来更新显示
@@ -215,7 +231,9 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
           if (segment) {
             currentSegment.value = segment
             displayTime.value = time
-            gameState.value.viewedSegments.add(segment.id)
+            const viewedSegments = new Set(stateStore._internalGameState.viewedSegments)
+            viewedSegments.add(segment.id)
+            stateStore.updateGameState({ viewedSegments })
           }
         }
         break
@@ -234,9 +252,8 @@ export function useGameNavigation(options: UseGameNavigationOptions) {
           insertLines(lineIndex, [endLine])
         }
         
-        // 如果需要重置游戏，可以调用 resetGame
-        // const { resetGame } = useGameState()
-        // resetGame()
+        // 如果需要重置游戏，可以调用 stateStore.reset()
+        // stateStore.reset()
         break
       }
 
