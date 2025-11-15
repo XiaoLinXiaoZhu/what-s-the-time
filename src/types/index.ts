@@ -134,11 +134,18 @@ export interface ScriptSegment {
 }
 
 /**
+ * 文本格式类型
+ */
+export type TextFormat = 'bold' | 'italic' | 'red' | 'blur' | 'strike'
+
+/**
  * 解析后的文本节点（用于渲染）
  */
 export interface TextNode {
   type: 'text' | 'bold' | 'italic' | 'red' | 'blur' | 'strike' | 'linebreak' | 'delay' | 'systemTime' | 'animateText'
   content: string
+  /** 应用的格式数组（支持多个格式叠加，如同时应用 bold 和 red） */
+  formats?: TextFormat[]
   /** delay 类型的延时时间（秒） */
   delayTime?: number
   /** animateText 类型的文本数组 */

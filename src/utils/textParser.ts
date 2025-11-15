@@ -1,4 +1,4 @@
-import type { TextNode } from '@/types'
+import type { TextNode, TextFormat } from '@/types'
 
 /**
  * 解析带格式标记的文本
@@ -12,119 +12,141 @@ import type { TextNode } from '@/types'
  * - {delay:1.2} - 延时（秒）
  * - {systemTime} - 系统当前时间（HH:MM格式，实时更新）
  * - {animateText:string1|string2|string3} - 动画文本（每0.5秒切换）
- * - 可以嵌套使用（简化处理：只支持最外层格式）
+ * - 可以嵌套使用，支持多个格式叠加
  */
-export function parseText(text: string): TextNode[] {
+export function parseText(text: string, parentFormats: TextFormat[] = []): TextNode[] {
   const nodes: TextNode[] = []
   
   if (!text) return nodes
   
-  // 先处理 delay 标记
-  const delayPattern = /\{delay:([\d.]+)\}/g
-  const delayMatches: Array<{ index: number; time: number }> = []
-  let delayMatch
-  while ((delayMatch = delayPattern.exec(text)) !== null) {
-    delayMatches.push({
-      index: delayMatch.index,
-      time: parseFloat(delayMatch[1])
-    })
-  }
+  // 使用栈来跟踪格式标签的嵌套
+  const formatStack: TextFormat[] = [...parentFormats]
+  let i = 0
   
-  // 使用正则表达式匹配所有标记，转义斜杠
-  const tagPattern = /\{(red|bold|italic|blur|strike|br|systemTime|\/red|\/bold|\/italic|\/blur|\/strike|delay:[\d.]+|animateText:[^}]+)\}/g
-  let lastIndex = 0
-  let match: RegExpExecArray | null
-  
-  while ((match = tagPattern.exec(text)) !== null) {
-    const tag = match[1]
-    const matchIndex = match.index
+  while (i < text.length) {
+    // 查找下一个标签开始位置
+    const tagStart = text.indexOf('{', i)
     
-    if (matchIndex === undefined) break
-    
-    // 添加标记前的文本
-    if (matchIndex > lastIndex) {
-      const beforeText = text.substring(lastIndex, matchIndex)
-      if (beforeText) {
-        nodes.push({ type: 'text', content: beforeText })
-      }
-    }
-    
-    // 处理标记
-    if (tag.startsWith('delay:')) {
-      // delay 标记
-      const delayTime = parseFloat(tag.substring(6))
-      nodes.push({ type: 'delay', content: '', delayTime })
-      lastIndex = matchIndex + match[0].length
-    } else if (tag.startsWith('animateText:')) {
-      // animateText 标记：{animateText:string1|string2|string3}
-      const animateContent = tag.substring(12) // 去掉 'animateText:' 前缀
-      const animateTexts = animateContent.split('|').map(s => s.trim()).filter(s => s.length > 0)
-      if (animateTexts.length > 0) {
-        nodes.push({ 
-          type: 'animateText', 
-          content: animateTexts[0], // 默认显示第一个
-          animateTexts 
+    if (tagStart === -1) {
+      // 没有更多标签，添加剩余文本
+      const remainingText = text.substring(i)
+      if (remainingText) {
+        nodes.push({
+          type: 'text',
+          content: remainingText,
+          formats: formatStack.length > 0 ? [...formatStack] : undefined
         })
       }
-      lastIndex = matchIndex + match[0].length
-    } else if (tag === 'br') {
-      nodes.push({ type: 'linebreak', content: '' })
-      lastIndex = matchIndex + 4 // {br} 的长度
-    } else if (tag === 'systemTime') {
-      // 系统时间占位符
-      nodes.push({ type: 'systemTime', content: '' })
-      lastIndex = matchIndex + 12 // {systemTime} 的长度
-    } else if (tag.startsWith('/')) {
-      // 结束标记，暂时忽略（简化处理）
-      lastIndex = matchIndex + tag.length + 2
-    } else {
-      // 开始标记，找到对应的结束标记
-      const endTag = `{/${tag}}`
-      const endIndex = text.indexOf(endTag, matchIndex)
-      
-      if (endIndex !== -1) {
-        // 提取标记内的文本
-        const innerText = text.substring(matchIndex + tag.length + 2, endIndex)
-        if (innerText) {
-          // 递归解析内部文本（处理嵌套）
-          const innerNodes = parseText(innerText)
-          const formatType = tag as 'red' | 'bold' | 'italic' | 'blur' | 'strike'
-          
-          // 如果内部有节点，对每个文本节点应用格式
-          if (innerNodes.length > 0) {
-            for (const innerNode of innerNodes) {
-              if (innerNode.type === 'text') {
-                // 对文本节点应用格式
-                nodes.push({ type: formatType, content: innerNode.content })
-              } else {
-                // 其他类型节点（如delay、linebreak）直接添加
-                nodes.push(innerNode)
-              }
-            }
-          } else {
-            // 如果没有内部节点，直接创建格式节点
-            nodes.push({ type: formatType, content: innerText })
-          }
-        }
-        lastIndex = endIndex + endTag.length
-      } else {
-        // 没有找到结束标记，当作普通文本处理
-        lastIndex = matchIndex + tag.length + 2
+      break
+    }
+    
+    // 添加标签前的文本
+    if (tagStart > i) {
+      const beforeText = text.substring(i, tagStart)
+      if (beforeText) {
+        nodes.push({
+          type: 'text',
+          content: beforeText,
+          formats: formatStack.length > 0 ? [...formatStack] : undefined
+        })
       }
     }
-  }
-  
-  // 添加剩余的文本
-  if (lastIndex < text.length) {
-    const remainingText = text.substring(lastIndex)
-    if (remainingText) {
-      nodes.push({ type: 'text', content: remainingText })
+    
+    // 查找标签结束位置
+    const tagEnd = text.indexOf('}', tagStart)
+    if (tagEnd === -1) {
+      // 没有找到结束标签，添加剩余文本
+      const remainingText = text.substring(tagStart)
+      if (remainingText) {
+        nodes.push({
+          type: 'text',
+          content: remainingText,
+          formats: formatStack.length > 0 ? [...formatStack] : undefined
+        })
+      }
+      break
+    }
+    
+    // 提取标签内容
+    const tagContent = text.substring(tagStart + 1, tagEnd)
+    
+    // 处理特殊标签
+    if (tagContent.startsWith('delay:')) {
+      const delayTime = parseFloat(tagContent.substring(6))
+      nodes.push({ type: 'delay', content: '', delayTime })
+      i = tagEnd + 1
+      continue
+    } else if (tagContent.startsWith('animateText:')) {
+      const animateContent = tagContent.substring(12)
+      const animateTexts = animateContent.split('|').map(s => s.trim()).filter(s => s.length > 0)
+      if (animateTexts.length > 0) {
+        nodes.push({
+          type: 'animateText',
+          content: animateTexts[0],
+          animateTexts
+        })
+      }
+      i = tagEnd + 1
+      continue
+    } else if (tagContent === 'br') {
+      nodes.push({ type: 'linebreak', content: '' })
+      i = tagEnd + 1
+      continue
+    } else if (tagContent === 'systemTime') {
+      nodes.push({ type: 'systemTime', content: '' })
+      i = tagEnd + 1
+      continue
+    }
+    
+    // 处理格式标签
+    if (tagContent.startsWith('/')) {
+      // 结束标签
+      const formatType = tagContent.substring(1) as TextFormat
+      const index = formatStack.lastIndexOf(formatType)
+      if (index !== -1) {
+        formatStack.splice(index, 1)
+      }
+      i = tagEnd + 1
+    } else if (['red', 'bold', 'italic', 'blur', 'strike'].includes(tagContent)) {
+      // 开始标签
+      const formatType = tagContent as TextFormat
+      const endTag = `{/${formatType}}`
+      const endIndex = text.indexOf(endTag, tagEnd + 1)
+      
+      if (endIndex !== -1) {
+        // 找到结束标签，提取内部文本
+        const innerText = text.substring(tagEnd + 1, endIndex)
+        
+        // 将当前格式添加到栈中
+        formatStack.push(formatType)
+        
+        // 递归解析内部文本
+        const innerNodes = parseText(innerText, [...formatStack])
+        
+        // 从栈中移除当前格式
+        formatStack.pop()
+        
+        // 添加内部节点
+        nodes.push(...innerNodes)
+        
+        i = endIndex + endTag.length
+      } else {
+        // 没有找到结束标签，当作普通文本处理
+        i = tagEnd + 1
+      }
+    } else {
+      // 未知标签，当作普通文本处理
+      i = tagEnd + 1
     }
   }
   
   // 如果没有匹配到任何标记，返回纯文本
   if (nodes.length === 0 && text) {
-    nodes.push({ type: 'text', content: text })
+    nodes.push({
+      type: 'text',
+      content: text,
+      formats: parentFormats.length > 0 ? [...parentFormats] : undefined
+    })
   }
   
   return nodes

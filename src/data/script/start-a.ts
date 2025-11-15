@@ -16,7 +16,7 @@ export const startASegment: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '不，是{delay:1}  {animateText:ta|她|他|它|祂}  在问我。'
+      text: '不，是{delay:1}  {bold}{blur}她{/blur}{/bold}  在问我。'
     },
     {
       type: "narration",
