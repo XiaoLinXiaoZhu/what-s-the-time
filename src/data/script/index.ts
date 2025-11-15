@@ -7,6 +7,17 @@ import { startSegment } from './start'
 export { startSegment }
 export { blankSegment } from './blank'
 
+// 导入所有阶段的开场片段
+import { startFirstSegment } from './start-first'
+import { startASegment } from './start-a'
+import { startP0Segment } from './start-p0'
+import { startP1Segment } from './start-p1'
+import { startP2Segment } from './start-p2'
+import { startP3Segment } from './start-p3'
+import { startP4Segment } from './start-p4'
+import { startP5Segment } from './start-p5'
+import { startP6Segment } from './start-p6'
+
 let isFirstStart = true
 /**
  * 根据当前 loop 获取对应的开头片段
@@ -14,17 +25,34 @@ let isFirstStart = true
  * @returns 对应的开头片段
  */
 export function getStartSegment(loop?: string): ScriptSegment {
-  // Loop G（meta 终局阶段）使用循环变体
+  // 第一次启动时使用特殊开场
   if (isFirstStart) {
     isFirstStart = false
     return startFirstSegment
   }
-  if (loop === 'A') {
-    return startASegment
-  }
 
-  // 默认返回原始开头片段
-  return startSegment
+  // 根据不同的loop返回对应的开场片段
+  switch (loop) {
+    case 'P0':
+      return startP0Segment
+    case 'P1':
+      return startP1Segment
+    case 'P2':
+      return startP2Segment
+    case 'P3':
+      return startP3Segment
+    case 'P4':
+      return startP4Segment
+    case 'P5':
+      return startP5Segment
+    case 'P6':
+      return startP6Segment
+    case 'A':
+      return startASegment
+    default:
+      // 默认返回原始开头片段
+      return startSegment
+  }
 }
 
 
@@ -34,8 +62,6 @@ import { TEST_CHOICE } from './TEST-CHOICE'
 import { TEST_TIMECHOICE } from './TEST-TIMECHOICE'
 import { TEST_TAGS } from './TEST-TAGS'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
-import { startFirstSegment } from './start-first'
-import { startASegment } from './start-a'
 
 // 阶段0: 初始循环
 import { P0_CORE_T1007_FallBlur } from './phase0'
