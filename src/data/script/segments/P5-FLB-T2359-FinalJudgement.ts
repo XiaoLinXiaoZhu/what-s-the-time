@@ -13,20 +13,6 @@ export const P5_FLB_T2359_FinalJudgement: ScriptSegment = {
   description: '阶段5 - 最终审判',
   loop: 'P5',
   unlockFlags: ['FLAG_Truth_Completed'],
-  lines: [
-    {
-      type: 'narration',
-      text: '结尾新闻播报的文字片段。{delay:2}'
-    },
-    {
-      type: 'dialogue',
-      character: '新闻',
-      text: '校园连环命案告破，{delay:1.5}嫌疑人已被逮捕。{delay:2}据知情人透露，{delay:1}另一位同学提供的关键证据起到了重要作用。'
-    },
-    {
-      type: 'narration',
-      text: '现实世界的尘埃落定，{delay:1.5}但精神世界的审判才刚开始。{delay:2}'
-    }
-  ]
+        lines: []
 }
 

@@ -15,50 +15,6 @@ export const P5_CORE_T1840_E_Accomplice: ScriptSegment = {
   description: '阶段5 - E的共犯',
   loop: 'P5',
   unlockFlags: ['FLAG_E_Is_Witness_A', 'FLAG_B_Case_Revealed'],
-  lines: [
-    {
-      type: 'narration',
-      text: 'B案当晚。{delay:1.5}我正在处理现场。{delay:1}'
-    },
-    {
-      type: 'narration',
-      text: '然后，{delay:1.5}E出现了。{delay:1.5}'
-    },
-    {
-      type: 'narration',
-      text: '她在极度挣扎，{delay:1}手机屏幕亮起，{delay:0.8}显示报警电话。{delay:2}'
-    },
-    {
-      type: 'narration',
-      text: '然后，{delay:1.5}她走向我，{delay:1}轻声说：'
-    },
-    {
-      type: 'dialogue',
-      character: 'E',
-      text: '她太吵了。{delay:2}我来帮你让她安静。'
-    },
-    {
-      type: 'narration',
-      text: '她戴上了手套，{delay:1.5}并说出"叫她C"的宣言。{delay:1.5}'
-    },
-    {
-      type: 'dialogue',
-      character: 'E',
-      text: '叫她C。{delay:2}从今以后，{delay:1}她就是C。'
-    },
-    {
-      type: 'narration',
-      text: 'E主动成为了C在现实的代行者。{delay:2}她的爱是毁灭性的。{delay:1.5}'
-    },
-    {
-      type: 'narration',
-      text: 'C。{delay:1.5}'
-    },
-    {
-      type: 'command',
-      command: 'setFlag',
-      params: { flag: 'FLAG_E_Is_Accomplice' }
-    }
-  ]
+        lines: []
 }
 
