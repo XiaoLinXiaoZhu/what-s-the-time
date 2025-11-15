@@ -6,6 +6,8 @@ import type { TextNode } from '@/types'
  * - {red}...{/red} - 红色文本
  * - {bold}...{/bold} - 粗体
  * - {italic}...{/italic} - 斜体
+ * - {blur}...{/blur} - 模糊文本
+ * - {strike}...{/strike} - 删除线文本
  * - {br} - 换行
  * - {delay:1.2} - 延时（秒）
  * - {systemTime} - 系统当前时间（HH:MM格式，实时更新）
@@ -29,7 +31,7 @@ export function parseText(text: string): TextNode[] {
   }
   
   // 使用正则表达式匹配所有标记，转义斜杠
-  const tagPattern = /\{(red|bold|italic|br|systemTime|\/red|\/bold|\/italic|delay:[\d.]+|animateText:[^}]+)\}/g
+  const tagPattern = /\{(red|bold|italic|blur|strike|br|systemTime|\/red|\/bold|\/italic|\/blur|\/strike|delay:[\d.]+|animateText:[^}]+)\}/g
   let lastIndex = 0
   let match: RegExpExecArray | null
   
@@ -86,7 +88,7 @@ export function parseText(text: string): TextNode[] {
         if (innerText) {
           // 递归解析内部文本（处理嵌套）
           const innerNodes = parseText(innerText)
-          const formatType = tag as 'red' | 'bold' | 'italic'
+          const formatType = tag as 'red' | 'bold' | 'italic' | 'blur' | 'strike'
           
           // 如果内部有节点，对每个文本节点应用格式
           if (innerNodes.length > 0) {

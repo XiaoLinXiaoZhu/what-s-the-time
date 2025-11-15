@@ -24,7 +24,7 @@ export const startFirstSegment: ScriptSegment = {
     },
     {
       type: 'dialogue',
-      text: '{red}时间是:{/red}'
+      text: '{red}时间是:{/red}这是正常文本 {blur}这段是模糊的{/blur}这是一句 {strike}作废的{/strike} 说明文本'
     },
     {
       type: 'input',

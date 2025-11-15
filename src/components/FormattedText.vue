@@ -35,7 +35,9 @@
         :class="{
           'text-red': node.type === 'red',
           'text-bold': node.type === 'bold',
-          'text-italic': node.type === 'italic'
+          'text-italic': node.type === 'italic',
+          'text-blur': node.type === 'blur',
+          'text-strike': node.type === 'strike'
         }"
       >
         {{ node.content }}
@@ -97,6 +99,17 @@ watch(parsedNodes, () => {
 
 .text-italic {
   font-style: italic !important;
+}
+
+.text-blur {
+  filter: blur(2px);
+  user-select: none;
+}
+
+.text-strike {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.18em;
+  text-decoration-color: currentColor;
 }
 
 .animate-text-container {

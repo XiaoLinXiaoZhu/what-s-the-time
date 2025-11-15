@@ -41,7 +41,9 @@
         :class="{
           'text-red': node.type === 'red',
           'text-bold': node.type === 'bold',
-          'text-italic': node.type === 'italic'
+          'text-italic': node.type === 'italic',
+          'text-blur': node.type === 'blur',
+          'text-strike': node.type === 'strike' && isStrikeActive(index)
         }"
       >{{ displayTexts[index] || '' }}<span
           v-if="
@@ -194,6 +196,23 @@ const shouldShowCursorForTyping = (index: number): boolean => {
 const getMaxLengthForTyping = (index: number): number => {
   const node = parsedNodes.value[index]
   return getMaxLength(node, index)
+}
+
+/**
+ * 判断删除线是否应该激活：
+ * - 打字过程中：当前索引之前的 strike 节点才显示删除线（先出现文本，再被划掉）
+ * - 全部打完后：所有 strike 节点都显示删除线
+ */
+const isStrikeActive = (index: number): boolean => {
+  // 当前索引之前的节点：已经完成
+  if (index < currentIndex.value) {
+    return true
+  }
+  // 整行已经打完（包括最后一个节点）
+  if (!isTyping.value && isComplete.value) {
+    return true
+  }
+  return false
 }
 
 // 默认速度：每个字符 30ms
@@ -474,6 +493,17 @@ defineExpose({
 
 .text-italic {
   font-style: italic !important;
+}
+
+.text-blur {
+  filter: blur(2px);
+  user-select: none;
+}
+
+.text-strike {
+  text-decoration-line: line-through;
+  text-decoration-thickness: 0.18em;
+  text-decoration-color: currentColor;
 }
 
 .animate-text-container {
