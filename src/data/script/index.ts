@@ -15,14 +15,14 @@ let isFirstStart = true
  */
 export function getStartSegment(loop?: string): ScriptSegment {
   // Loop G（meta 终局阶段）使用循环变体
+  if (isFirstStart) {
+    isFirstStart = false
+    return startFirstSegment
+  }
   if (loop === 'A') {
-    if (isFirstStart) {
-      isFirstStart = false
-      return startFirstSegment as ScriptSegment
-    }
     return startASegment
   }
-  
+
   // 默认返回原始开头片段
   return startSegment
 }
@@ -30,15 +30,12 @@ export function getStartSegment(loop?: string): ScriptSegment {
 
 // 统一导出所有片段数组
 import { blankSegment } from './blank'
-import { P00_01 } from './P00-01'
 import { TEST_CHOICE } from './TEST-CHOICE'
 import { TEST_TIMECHOICE } from './TEST-TIMECHOICE'
 import { TEST_TAGS } from './TEST-TAGS'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './TEST-COMMAND'
 import { startFirstSegment } from './start-first'
 import { startASegment } from './start-a'
-
-
 /**
  * 所有剧本片段
  */
@@ -46,7 +43,7 @@ export const scriptSegments: ScriptSegment[] = [
   // 特殊片段
   startSegment,
   blankSegment,
-  
+
   // 测试片段
   TEST_CHOICE,
   TEST_TIMECHOICE,
@@ -54,8 +51,6 @@ export const scriptSegments: ScriptSegment[] = [
   TEST_COMMAND,
   TEST_COMMAND_2,
   TEST_COMMAND_END,
-
-  P00_01,
 ]
 
 /**
