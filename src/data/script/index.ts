@@ -57,14 +57,14 @@ import { P0_CORE_T1037_FallBlur } from './segments/P0-CORE-T1037-FallBlur'
 
 // 阶段1: 糖衣
 import { P1_DTL_T0805_Breakfast } from './segments/P1-DTL-T0805-Breakfast'
-import { P1_BKG_T0830_Gossip } from './segments/P1-BKG-T0830-Gossip'
-import { P1_DTL_T1230_Lunch } from './segments/P1-DTL-T1230-Lunch'
-import { P1_BKG_T1620_LibraryStare } from './segments/P1-BKG-T1620-LibraryStare'
-import { P1_DTL_T1900_Movie } from './segments/P1-DTL-T1900-Movie'
-import { P1_FLB_T0000_C_Whisper1 } from './segments/P1-FLB-T0000-C_Whisper1'
-import { P1_DTL_T2145_GiftPlan } from './segments/P1-DTL-T2145-GiftPlan'
-import { P1_BKG_T1400_H_Warning_A } from './segments/P1-BKG-T1400-H_Warning_A'
-import { P1_DTL_T1210_A_Note } from './segments/P1-DTL-T1210-A_Note'
+// import { P1_BKG_T0830_Gossip } from './segments/P1-BKG-T0830-Gossip'
+// import { P1_DTL_T1230_Lunch } from './segments/P1-DTL-T1230-Lunch'
+// import { P1_BKG_T1620_LibraryStare } from './segments/P1-BKG-T1620-LibraryStare'
+// import { P1_DTL_T1900_Movie } from './segments/P1-DTL-T1900-Movie'
+// import { P1_FLB_T0000_C_Whisper1 } from './segments/P1-FLB-T0000-C_Whisper1'
+// import { P1_DTL_T2145_GiftPlan } from './segments/P1-DTL-T2145-GiftPlan'
+// import { P1_BKG_T1400_H_Warning_A } from './segments/P1-BKG-T1400-H_Warning_A'
+// import { P1_DTL_T1210_A_Note } from './segments/P1-DTL-T1210-A_Note'
 
 // 阶段2: 裂痕
 import { P2_DTL_T1500_TeaOrCoke } from './segments/P2-DTL-T1500-TeaOrCoke'
@@ -127,14 +127,14 @@ export const scriptSegments: ScriptSegment[] = [
 
   // 阶段1: 糖衣
   P1_DTL_T0805_Breakfast,
-  P1_BKG_T0830_Gossip,
-  P1_DTL_T1230_Lunch,
-  P1_BKG_T1620_LibraryStare,
-  P1_DTL_T1900_Movie,
-  P1_FLB_T0000_C_Whisper1,
-  P1_DTL_T2145_GiftPlan,
-  P1_BKG_T1400_H_Warning_A,
-  P1_DTL_T1210_A_Note,
+  // P1_BKG_T0830_Gossip,
+  // P1_DTL_T1230_Lunch,
+  // P1_BKG_T1620_LibraryStare,
+  // P1_DTL_T1900_Movie,
+  // P1_FLB_T0000_C_Whisper1,
+  // P1_DTL_T2145_GiftPlan,
+  // P1_BKG_T1400_H_Warning_A,
+  // P1_DTL_T1210_A_Note,
 
   // 阶段2: 裂痕
   P2_DTL_T1500_TeaOrCoke,
