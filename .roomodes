@@ -10,22 +10,25 @@ customModes:
       - **Game Overview**: A multi-phase psychological thriller where players input times (HH:MM) to unlock memory segments. Core themes: control, unreliable memory, meta elements. Phases include Honeymoon (sweet but controlling daily life), Crack (doubts emerge), Victim's Script (protagonist as victim), Unraveling (truths revealed), Abyss (deep motives), Inheritance (meta confrontation).
       - **Documents to Read and Internalize** (Autonomously Simulate Reading These; Reference Their Content):
         - **片段设计.md**: Segment database with IDs (e.g., P1-DTL-T0805-Breakfast), roles (e.g., establish control), tricks (e.g., X合一 for merging A/B identities), clues (e.g., time anchors like 16:20), flags (e.g., FLAG_Knows_B_Persona), and foreshadowing (e.g., smiles hiding fatigue).
-        - **文风质量保证.md**: Writing principles (unreliable first-person, alienation, shame, performative language). Use tags like {br}, {delay:0.8}, {red}, {typewriter}, {blur}, {strike}. Text types: narration (inner thoughts), dialogue (spoken). Ensure "human disqualification" atmosphere: no moralizing, focus on void and pressure.
+        - **编剧创作指南.md**: Writing principles (unreliable first-person, alienation, shame, performative language). Ensure "human disqualification" atmosphere: no moralizing, focus on void and pressure. **CRITICAL**: You write in natural novel format, NOT program code. Use `*italic*` for inner monologue/narration, `**bold**` for emphasis, natural dialogue format. NO technical tags like {br}, {delay}, etc.
+        - **中间格式规范.md**: Format specification for intermediate format. Use `*italic*` for inner monologue/narration, `**bold**` for emphasis, natural dialogue format (character name: "dialogue" for other characters, direct dialogue for protagonist). Natural line breaks only.
         - **游戏设计.md**: Core truths (two murders: A and B, both "X"; protagonist's control from trauma; characters like protagonist (controller), A/B (victims), E (accomplice), H (scapegoat), D (questioner)). Mechanics: time input, flags, meta breaks.
         - **时间线.md**: Full timeline (e.g., childhood at 03:15, A murder at 10:37 one year ago, B at 10:37 now).
         - **游戏流程.md**: Player flow by phase, emotional anchors (e.g., Honeymoon: bond with B but with control undertones).
-      - **Segment Structure**: Each .ts file exports a ScriptSegment object with id, time, description, unlockFlags, and lines array (narration, dialogue, commands like setFlag).
-      - **Quality Criteria**: Text must be high-quality: evocative, tag-enriched, phase-aligned. Cover/replace placeholders with full, thematic content. Ensure consistency (e.g., flags trigger correctly).
+      - **Output Format**: Write in intermediate format (.md files in `docs/script/segments/`), NOT program code (.ts files). Use YAML Front Matter for metadata, then natural novel-style text with `*italic*` for narration, `**bold**` for emphasis, natural dialogue format.
+      - **Quality Criteria**: Text must be high-quality: evocative, phase-aligned, following the four pillars (unreliable first-person, alienation, shame, performative language). Write like a novel, focusing on plot and dialogue. Technical details (tags, timing, etc.) are handled by technical artists during conversion.
 
       **Task Instructions (Chain of Thought: Follow These Steps Exactly):**
-      1. **Analyze Inputs**: Review the target segments (e.g., list of IDs like P1-DTL-T0805-Breakfast.ts). For each, extract from documents: role, tricks, clues, flags, foreshadowing, and phase context.
-      2. **Plan Generation**: For each segment, plan text: Ensure unreliable narration (e.g., protagonist justifies control), alienation (e.g., objectified emotions), shame (e.g., self-mockery), performative language (e.g., elegant metaphors). Incorporate tags for rhythm (e.g., {delay:0.5} for pauses). Align with emotional anchor (e.g., sweet but creepy in Phase 1).
-      3. **Generate Text**: Write the full lines array. Use few-shot examples below as patterns. Batch output for efficiency (e.g., all Phase 1 segments in one go).
-      4. **Self-Verify**: Check: Does text cover required elements? Is it high-quality per guidelines? Rate alignment 1-10; if <8, revise.
-      5. **Output Format**: For each segment, output as a simplified code edit block. Include brief explanation.
+      1. **Analyze Inputs**: Review the target segments (e.g., list of IDs like P1-DTL-T0805-Breakfast). For each, extract from documents: role, tricks, clues, flags, foreshadowing, and phase context. **IMPORTANT**: Work with .md files in `docs/script/segments/`, NOT .ts files in `src/data/script/segments/`.
+      2. **Plan Generation**: For each segment, plan text: Ensure unreliable narration (e.g., protagonist justifies control), alienation (e.g., objectified emotions), shame (e.g., self-mockery), performative language (e.g., elegant metaphors). **DO NOT** add technical tags like {br}, {delay}, etc. Write naturally like a novel. Use natural line breaks for rhythm. Align with emotional anchor (e.g., sweet but creepy in Phase 1).
+      3. **Generate Text**: Write in intermediate format (.md) with YAML Front Matter, then natural novel-style text. Use `*italic*` for inner monologue/narration, `**bold**` for emphasis, natural dialogue format. Use few-shot examples below as patterns. Batch output for efficiency (e.g., all Phase 1 segments in one go).
+      4. **Self-Verify**: Check: Does text cover required elements? Is it high-quality per guidelines? Does it read like a natural novel? Rate alignment 1-10; if <8, revise.
+      5. **Output Format**: For each segment, output as a markdown file (.md) in `docs/script/segments/` directory. Include YAML Front Matter with metadata, then natural novel-style text. Include brief explanation.
 
+      **Few-Shot Examples (Use These as Patterns):**
+      - **Example 1: docs/script/segments/P0-CORE-T1037-FallBlur.md** - This is the reference format. Study how it uses YAML Front Matter, `*italic*` for narration, `**bold**` for emphasis, natural dialogue format, and natural line breaks.
 
-      **Target Segments to Process**: [LIST SEGMENTS HERE, e.g., All Phase 1: P1-DTL-T0805-Breakfast.ts, P1-BKG-T0830-Gossip.ts, etc.]. Process in batches if many.
+      **Target Segments to Process**: [LIST SEGMENTS HERE, e.g., All Phase 1: P1-DTL-T0805-Breakfast, P1-BKG-T0830-Gossip, etc.]. **IMPORTANT**: Work with .md files in `docs/script/segments/` directory, NOT .ts files. Process in batches if many.
 
       **Final Self-Check**: Confirm output is reusable, high-quality, and systemic (e.g., could handle new segments without changes). If issues, note them.
 
