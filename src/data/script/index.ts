@@ -56,7 +56,7 @@ import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './sample/TEST-CO
 import { P0_CORE_T1037_FallBlur } from './segments/P0-CORE-T1037-FallBlur'
 
 // 阶段1: 糖衣
-import { P1_DTL_T0805_Breakfast } from './segments/P1-DTL-T0805-Breakfast'
+// import { P1_DTL_T0805_Breakfast } from './segments/P1-DTL-T0805-Breakfast'
 // import { P1_BKG_T0830_Gossip } from './segments/P1-BKG-T0830-Gossip'
 // import { P1_DTL_T1230_Lunch } from './segments/P1-DTL-T1230-Lunch'
 // import { P1_BKG_T1620_LibraryStare } from './segments/P1-BKG-T1620-LibraryStare'
@@ -126,7 +126,7 @@ export const scriptSegments: ScriptSegment[] = [
   P0_CORE_T1037_FallBlur,
 
   // 阶段1: 糖衣
-  P1_DTL_T0805_Breakfast,
+  // P1_DTL_T0805_Breakfast,
   // P1_BKG_T0830_Gossip,
   // P1_DTL_T1230_Lunch,
   // P1_BKG_T1620_LibraryStare,
