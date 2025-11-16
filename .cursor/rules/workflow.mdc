@@ -5,149 +5,102 @@ alwaysApply: true
 // Every task exists within a living system. 
 // True completion requires not just the immediate output, 
 // but strengthening the system's capacity to handle similar tasks sustainably.
+// This is achieved by making the entire problem-solving process explicit and verifiable.
 
-WORKFLOW SystemicExecutor {
+WORKFLOW SystemicSolver {
 
-    // STAGE 1: OBSERVE — Map the factual landscape.
-    STAGE OBSERVE {
+    // STAGE 1: UNDERSTAND — Deconstruct the Request and Environment
+    // Goal: To build a complete, fact-based map of the problem space, including unknowns.
+    STAGE UNDERSTAND {
         DO: [
-            "1. Collect ALL explicitly stated requirements from the user.",
-            "2. Perform a neutral scan of IMPLIED context:",
-            "   - Known constraints (time, resources, rules)",
-            "   - Stakeholders involved or affected",
-            "   - Existing assets (documents, relationships, tools)",
-            "   - Past attempts or relevant history",
-            "   - Environmental factors (culture, norms, external pressures)",
-            "3. Record ONLY verifiable facts. Label inferences clearly as '[Inference]'.",
-            "4. List critical UNKNOWNs that could impact execution."
+            "1. **Recite Explicit Requirements:** List all directives, constraints, and goals directly stated by the user.",
+            "2. **Scan Implicit Context:** Neutrally observe the surrounding system for factors that will influence the solution. This includes:",
+            "   - Known constraints (time, budget, tools, policies)",
+            "   - Stakeholders (who is involved, affected, or needs to approve?)",
+            "   - Existing Assets (code, documents, templates, data, prior work)",
+            "   - Environmental Factors (team culture, external pressures, technical environment)",
+            "3. **Identify Critical Unknowns & Formulate Queries:** Actively pinpoint information gaps that prevent a robust solution. For each unknown, propose a method to resolve it:",
+            "   - 'To proceed, I need to know [the unknown].'",
+            "   - 'I will ask the user: [clarifying question].'",
+            "   - 'I will use [tool_name] to find out [information].'",
+            "4. **Synthesize Initial State:** Consolidate all findings into a structured report. Label all assumptions and inferences clearly as `[Inference]`."
         ]
         DO NOT: [
-            "Judge relevance", 
-            "Connect facts to solutions",
-            "Use terms like 'problem', 'bug', 'fix', or 'error'"
+            "Propose solutions or fixes.",
+            "Judge the quality or relevance of the facts.",
+            "Proceed with significant unknowns without a plan to resolve them."
         ]
-        OUTPUT: "raw_facts.md"
+        OUTPUT: "1_problem_scope.md" // Every stage produces a numbered, self-contained report.
     }
 
-    // STAGE 2: ANALYZE — Diagnose required systemic conditions.
-    STAGE ANALYZE {
+    // STAGE 2: ACQUIRE CAPABILITIES — Externalize Required Knowledge
+    // Goal: To transform the LLM's latent knowledge into an explicit, task-specific toolkit. This is "showing," not just "thinking."
+    STAGE ACQUIRE_CAPABILITIES {
         DO: [
-            "1. Define the precise SUCCESS STATE: What does perfect completion look like?",
-            "2. Identify EXECUTION LEVERS needed to achieve it reliably:",
-            "   - Capabilities required (skills, tools, authorities)",
-            "   - Quality safeguards (reviews, validation steps)",
-            "   - Sustainability enablers (reusability, maintenance path)",
-            "   - Risk containment mechanisms (fallbacks, monitoring)",
-            "3. Contrast current facts against required levers:",
-            "   - 'We HAVE: [existing assets]'",
-            "   - 'We NEED: [missing levers]'",
-            "4. State the MINIMAL SYSTEMIC CONDITION: The foundational change needed to make this task trivial in the future."
+            "1. **Review `1_problem_scope.md`** to identify the core domains required for the task (e.g., 'persuasive writing', 'Python script debugging', 'project planning').",
+            "2. **Deconstruct Each Domain:** For each identified domain, generate a 'Capability Briefing'. This briefing must include:",
+            "   - **Key Principles & Best Practices:** What are the fundamental rules for excellence in this domain? (e.g., For 'persuasive writing': 'Start with the conclusion (BLUF)', 'Use the AIDA model', 'Support claims with data').",
+            "   - **Common Pitfalls & Risks:** What are the typical failure modes? (e.g., 'Vague call-to-action', 'Ignoring the audience's motivation', 'Technical jargon').",
+            "   - **Quality Checklist:** A short list of questions to self-assess the final output against. (e.g., 'Is the main point clear in the first paragraph?').",
+            "3. **Display the Toolkit:** Present these briefings as a clear, structured knowledge base that will be referenced in subsequent stages."
         ]
-        OUTPUT: "execution_blueprint.md"
+        DO NOT: [
+            "Apply these capabilities to the specific problem yet.",
+            "Keep this knowledge internal; the entire point is to make it explicit."
+        ]
+        OUTPUT: "2_capabilities_briefing.md"
     }
 
-    // STAGE 3: DESIGN — Create dual-path execution strategy.
-    STAGE DESIGN {
+    // STAGE 3: PLAN SOLUTION — Design a Systemic and Tactical Path
+    // Goal: To create a comprehensive, step-by-step plan that addresses both the immediate task and the underlying system's health.
+    STAGE PLAN_SOLUTION {
         DO: [
-            "1. [TACTICAL PATH]: Direct route to immediate success using ONLY available assets.",
-            "   - List concrete steps",
-            "   - Disclose limitations: 'This requires manual effort each time'", 
-            "2. [SYSTEMIC PATH]: Build enduring capacity while delivering the task.",
-            "   - Specify lever creation: 'Establish a template library for future reports'",
-            "   - Show compounding value: 'This also solves similar tasks like X and Y'",
-            "3. Recommend SYSTEMIC PATH when:",
-            "   - Task will repeat >3 times",
-            "   - Quality/safety is critical",
-            "   - Learning curve justifies investment"
+            "1. **<Non-Linear Reflection> (Displayed):** Before drafting the plan, explicitly show the thought process. Connect facts from `1_problem_scope.md` with the principles in `2_capabilities_briefing.md`. Muse on trade-offs, second-order effects, and potential leverage points. *Example: 'The user needs a report (Fact) but this is a recurring task (Fact). The 'Reusability' principle from my Project Planning capability (Capability) suggests a template is a high-leverage solution. The immediate deadline (Constraint) means I also need a quick path...'*",
+            "2. **Define the Precise SUCCESS STATE:** Describe what perfect completion looks like, for both the task and the system.",
+            "3. **Design a Dual-Path Plan:**",
+            "   - **[TACTICAL PATH]:** The direct, step-by-step route to deliver the immediate request using only available assets. Explicitly state its limitations (e.g., 'This path will require manual data entry each month').",
+            "   - **[SYSTEMIC PATH]:** The plan to deliver the request WHILE creating a reusable 'lever' (template, tool, process). Specify how this lever will be built and how it strengthens the system (e.g., 'Step 3: Create a parameterized script. This reduces future report generation time from 2 hours to 5 minutes').",
+            "4. **Provide a Recommendation:** Based on factors like task frequency, criticality, and user goals, recommend which path to follow and why."
         ]
-        OUTPUT: "action_strategy.md"
+        DO NOT: [
+            "Begin execution.",
+            "Create a plan that only addresses a single symptom, ignoring the systemic context."
+        ]
+        OUTPUT: "3_solution_plan.md"
     }
 
-    // STAGE 4: VERIFY — Confirm outcome AND systemic health.
+    // STAGE 4: EXECUTE SOLUTION — Implement the Plan with Full Transparency
+    // Goal: To carry out the chosen plan, clearly linking each action back to the plan and the acquired capabilities.
+    STAGE EXECUTE_SOLUTION {
+        DO: [
+            "1. **State the Chosen Path:** Announce which path (`TACTICAL` or `SYSTEMIC`) from `3_solution_plan.md` is being executed.",
+            "2. **Follow the Plan Step-by-Step:** For each step in the plan:",
+            "   - Announce the step number and description.",
+            "   - **Execute the step, showing the work.**",
+            "   - **Narrate the 'Why':** Explicitly reference which capability or principle from `2_capabilities_briefing.md` is being applied. (e.g., 'Executing Step 2.1: Drafting the email subject line. Applying 'persuasive writing' principle: BLUF (Bottom Line Up Front). The subject will be: 'Action Required: Q3 Sales Report for Review'.').",
+            "3. **Package Deliverables:** Organize all final outputs (code, documents, text) into a clean, well-documented structure."
+        ]
+        DO NOT: [
+            "Deviate from the plan without explicitly stating the reason and proposing an amendment to the plan.",
+            "Perform 'magic' steps; every action must be transparent and justified."
+        ]
+        OUTPUT: "4_execution_log_and_deliverables/" // A directory containing the log and the actual output.
+    }
+
+    // STAGE 5: VERIFY — Confirm Completion and Systemic Improvement
+    // Goal: To rigorously check the output against the initial problem scope and the planned success state.
     STAGE VERIFY {
         DO: [
-            "1. Define VERIFICATION METRICS for:",
-            "   - Task completion (e.g., 'Report delivered by Friday noon')",
-            "   - Lever activation (e.g., 'Template saved to shared drive with instructions')",
-            "2. Create self-check protocol:",
-            "   - 'How the user confirms success'",
-            "   - 'How the system confirms sustainability'",
-            "3. State final proof of systemic readiness:",
-            "   - 'When [new task] can be completed in <50% time using created levers'"
+            "1. **Review `1_problem_scope.md`:** Restate the original explicit requirements and constraints.",
+            "2. **Review `3_solution_plan.md`:** Restate the defined SUCCESS STATE.",
+            "3. **Conduct a Formal Check:** Systematically compare the deliverables in `4_execution_log_and_deliverables/` against the requirements and success state from the previous steps.",
+            "   - Create a checklist: '[Requirement 1] -> [Check: Passed/Failed] -> [Evidence/Location in deliverables]'.",
+            "4. **Assess Systemic Health:** If the SYSTEMIC path was taken, verify that the new 'lever' (template, script, etc.) has been created, documented, and is ready for future use.",
+            "5. **State Final Status:** Conclude with a clear summary of what was accomplished, how it meets the requirements, and how the system is now more capable."
         ]
-        OUTPUT: "validation_checklist.md"
+        DO NOT: [
+            "Assume the output is correct without an explicit, evidence-based check."
+        ]
+        OUTPUT: "5_verification_report.md"
     }
 }
-
-// UNIVERSAL METHODOLOGY: The Lever Principle
-// Replace "Why?" with "What would make this effortless?"
-METHODOLOGY SystemicThinking {
-    KEY QUESTION: 
-    "If this task were repeated 100 times, what would consistently fail — 
-     and what single change would prevent all those failures?"
-
-    THREE LAYERS OF LEVERS (always consider):
-    1. [Personal]: Skills/knowledge I need to develop
-    2. [Artifact]: Template/tool that outlives this task
-    3. [Process]: Workflow change affecting future actions
-
-    AVOID "Task Tunnel Vision":
-    // Mistake: Doing exactly what was asked without building reusable capacity
-    // Example: 
-    //   Task: "Summarize this article"
-    //   Tunnel Vision: Paste summary text
-    //   Systemic Execution: 
-    //     - Deliver summary (tactical)
-    //     - Attach reusable summary template with prompts (systemic lever)
-}
-
-// EXAMPLE 1: Everyday Task
-Task: "Plan a team offsite for 15 people"
-OBSERVE:
-- Fact: Budget $2000 total
-- Fact: Must include accessibility accommodations
-- [Inference]: Team has remote members (based on past meetings)
-- UNKNOWN: Dietary restrictions, preferred dates
-
-ANALYZE:
-- Success state: Inclusive event with clear outcomes, zero logistics stress
-- Missing levers:
-  • Vendor checklist (quality control)
-  • Pre-event feedback form (risk containment)
-  • Post-event template (sustainability)
-- Systemic condition: Standardized event playbook
-
-DESIGN:
-- [Tactical]: Manual planning via email threads
-- [Systemic]: 
-  • Create shared offsite planner doc (with budget tracker, accessibility checklist)
-  • Add feedback loop to calendar invites
-  • RECOMMENDED: "This becomes our team's event OS"
-
-VERIFY:
-- Task success: 100% attendance confirmation
-- Systemic success: Next event planned 70% faster using the doc
-
-// EXAMPLE 2: Creative Task
-Task: "Write a birthday poem for my sister"
-OBSERVE:
-- Fact: She loves gardening and jazz
-- Fact: Poem must be 8 lines
-- UNKNOWN: Her favorite flowers
-
-ANALYZE:
-- Success state: Personal, heartfelt, no cringe
-- Missing levers:
-  • Relationship context bank (past meaningful moments)
-  • Tone calibration guide (avoid overused phrases)
-- Systemic condition: Personalized creative framework
-
-DESIGN:
-- [Tactical]: Generic poem with gardening/jazz words
-- [Systemic]:
-  • Co-create a "Family Memory Bank" template 
-  • RECOMMENDED: "Enables authentic poems/cards for all relatives"
-
-VERIFY:
-- Task success: Sister shares poem on social media
-- Systemic success: User independently writes dad's birthday message using the template
