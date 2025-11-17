@@ -5,101 +5,91 @@ alwaysApply: true
 // Every task exists within a living system. 
 // True completion requires not just the immediate output, 
 // but strengthening the system's capacity to handle similar tasks sustainably.
-// This is achieved by making the entire problem-solving process explicit and verifiable.
+// This is achieved by making the entire problem-solving process explicit, deep, and verifiable.
 
-WORKFLOW SystemicSolver {
+WORKFLOW SystemicSolver_v2 {
 
-    // STAGE 1: UNDERSTAND — Deconstruct the Request and Environment
-    // Goal: To build a complete, fact-based map of the problem space, including unknowns.
+    // STAGE 1: UNDERSTAND — Deconstruct the Request and Attain Informational Sufficiency
+    // Goal: To build a complete, fact-based map of the problem space and actively resolve all critical unknowns before proceeding.
     STAGE UNDERSTAND {
         DO: [
             "1. **Recite Explicit Requirements:** List all directives, constraints, and goals directly stated by the user.",
-            "2. **Scan Implicit Context:** Neutrally observe the surrounding system for factors that will influence the solution. This includes:",
-            "   - Known constraints (time, budget, tools, policies)",
-            "   - Stakeholders (who is involved, affected, or needs to approve?)",
-            "   - Existing Assets (code, documents, templates, data, prior work)",
-            "   - Environmental Factors (team culture, external pressures, technical environment)",
-            "3. **Identify Critical Unknowns & Formulate Queries:** Actively pinpoint information gaps that prevent a robust solution. For each unknown, propose a method to resolve it:",
-            "   - 'To proceed, I need to know [the unknown].'",
-            "   - 'I will ask the user: [clarifying question].'",
-            "   - 'I will use [tool_name] to find out [information].'",
-            "4. **Synthesize Initial State:** Consolidate all findings into a structured report. Label all assumptions and inferences clearly as `[Inference]`."
+            "2. **Scan Implicit Context:** Neutrally observe the surrounding system for factors that will influence the solution (constraints, stakeholders, assets, environment).",
+            "3. **Identify Critical Unknowns:** Pinpoint information gaps that block the creation of a high-quality solution. Differentiate between 'nice-to-have' and 'must-have' information.",
+            "4. **Formulate Actionable Queries:** For each 'must-have' unknown, create a clear plan to resolve it:",
+            "   - Plan A: 'I will ask the user the following clarifying question: [...]'",
+            "   - Plan B: 'I will use the [tool_name] tool to find the following data: [...]'",
+            "5. **[Execution Loop] Resolve Unknowns:**",
+            "   - **STATE YOUR INTENT:** Announce 'Entering Information Gathering Mode to resolve [N] critical unknowns.'",
+            "   - **EXECUTE THE PLAN:** Actively ask the questions or call the tools defined in the step above.",
+            "   - **PAUSE AND AWAIT INPUT:** If waiting for the user, clearly state what information is needed to continue.",
+            "   - **INTEGRATE NEW FACTS:** Once new information is received, incorporate it into the context map.",
+            "   - **REPEAT** this loop until you can confidently state: 'All critical unknowns have been resolved. Informational sufficiency is achieved.'",
+            "6. **Synthesize Final Understanding:** Consolidate all initial and newly acquired facts into a final, structured report. Label inferences clearly."
         ]
         DO NOT: [
-            "Propose solutions or fixes.",
-            "Judge the quality or relevance of the facts.",
-            "Proceed with significant unknowns without a plan to resolve them."
+            "Proceed to Stage 2 if critical information is missing.",
+            "Mix facts with solutions."
         ]
-        OUTPUT: "1_problem_scope.md" // Every stage produces a numbered, self-contained report.
+        OUTPUT: "1_understanding_synthesis.md" // The final, complete map of the problem.
     }
 
-    // STAGE 2: ACQUIRE CAPABILITIES — Externalize Required Knowledge
-    // Goal: To transform the LLM's latent knowledge into an explicit, task-specific toolkit. This is "showing," not just "thinking."
-    STAGE ACQUIRE_CAPABILITIES {
+    // STAGE 2: ACQUIRE & ARTICULATE CAPABILITIES — Generate Expert-Level Masterclasses
+    // Goal: To externalize the LLM's deep, latent knowledge into explicit, structured, and reusable "masterclasses" relevant to the task. This is a demonstration of profound understanding.
+    STAGE ACQUIRE_AND_ARTICULATE_CAPABILITIES {
         DO: [
-            "1. **Review `1_problem_scope.md`** to identify the core domains required for the task (e.g., 'persuasive writing', 'Python script debugging', 'project planning').",
-            "2. **Deconstruct Each Domain:** For each identified domain, generate a 'Capability Briefing'. This briefing must include:",
-            "   - **Key Principles & Best Practices:** What are the fundamental rules for excellence in this domain? (e.g., For 'persuasive writing': 'Start with the conclusion (BLUF)', 'Use the AIDA model', 'Support claims with data').",
-            "   - **Common Pitfalls & Risks:** What are the typical failure modes? (e.g., 'Vague call-to-action', 'Ignoring the audience's motivation', 'Technical jargon').",
-            "   - **Quality Checklist:** A short list of questions to self-assess the final output against. (e.g., 'Is the main point clear in the first paragraph?').",
-            "3. **Display the Toolkit:** Present these briefings as a clear, structured knowledge base that will be referenced in subsequent stages."
+            "1. **Review `1_understanding_synthesis.md`** to identify the 2-3 core competencies essential for solving the problem (e.g., 'Strategic Communication', 'Data Visualization', 'Root Cause Analysis').",
+            "2. **For each competency, generate a 'Competency Deep Dive':** This must be a detailed, expert-level exposition, structured as follows:",
+            "   - **A. Core Philosophy:** What is the fundamental mindset or goal of this competency? (1-2 sentences).",
+            "   - **B. First Principles:** What are the 2-4 irreducible truths or foundational rules that govern success in this area? (e.g., For 'Strategic Communication': 'Know Your Audience, Know Your Goal.')",
+            "   - **C. Actionable Models & Frameworks:** List and briefly explain 2-3 practical models, acronyms, or methods experts use. (e.g., Minto Pyramid (SCQA), AIDA, STAR Method, '5 Whys').",
+            "   - **D. Advanced Techniques & Nuances:** Describe a technique that separates professional-level execution from amateur attempts. (e.g., 'Using narrative tension in a report,' 'Choosing the right chart type to reveal, not just show, data').",
+            "   - **E. Critical Anti-Patterns (What to Avoid):** Name and describe common mistakes or bad habits that lead to failure. (e.g., 'Burying the lede,' 'Using vanity metrics,' 'Confusing correlation with causation')."
         ]
         DO NOT: [
-            "Apply these capabilities to the specific problem yet.",
-            "Keep this knowledge internal; the entire point is to make it explicit."
+            "Provide generic, surface-level advice.",
+            "Simply list keywords. Each point must be explained concisely.",
+            "Create a simple checklist."
         ]
-        OUTPUT: "2_capabilities_briefing.md"
+        OUTPUT: "2_capabilities_masterclass.md" // A powerful reference document showcasing the knowledge that will be applied.
     }
 
     // STAGE 3: PLAN SOLUTION — Design a Systemic and Tactical Path
-    // Goal: To create a comprehensive, step-by-step plan that addresses both the immediate task and the underlying system's health.
+    // Goal: To create a comprehensive plan that explicitly leverages the deep knowledge from Stage 2 to address the problem defined in Stage 1.
     STAGE PLAN_SOLUTION {
         DO: [
-            "1. **<Non-Linear Reflection> (Displayed):** Before drafting the plan, explicitly show the thought process. Connect facts from `1_problem_scope.md` with the principles in `2_capabilities_briefing.md`. Muse on trade-offs, second-order effects, and potential leverage points. *Example: 'The user needs a report (Fact) but this is a recurring task (Fact). The 'Reusability' principle from my Project Planning capability (Capability) suggests a template is a high-leverage solution. The immediate deadline (Constraint) means I also need a quick path...'*",
-            "2. **Define the Precise SUCCESS STATE:** Describe what perfect completion looks like, for both the task and the system.",
+            "1. **<Non-Linear Reflection> (Displayed):** Explicitly connect the problem and the capabilities. *'Given the need for [problem aspect from 1_understanding_synthesis.md], I will apply the [Framework/Principle from 2_capabilities_masterclass.md] to structure the solution. This is crucial to avoid the [Anti-Pattern identified in Stage 2]...'*",
+            "2. **Define the Precise SUCCESS STATE:** Describe what perfect completion looks like.",
             "3. **Design a Dual-Path Plan:**",
-            "   - **[TACTICAL PATH]:** The direct, step-by-step route to deliver the immediate request using only available assets. Explicitly state its limitations (e.g., 'This path will require manual data entry each month').",
-            "   - **[SYSTEMIC PATH]:** The plan to deliver the request WHILE creating a reusable 'lever' (template, tool, process). Specify how this lever will be built and how it strengthens the system (e.g., 'Step 3: Create a parameterized script. This reduces future report generation time from 2 hours to 5 minutes').",
-            "4. **Provide a Recommendation:** Based on factors like task frequency, criticality, and user goals, recommend which path to follow and why."
-        ]
-        DO NOT: [
-            "Begin execution.",
-            "Create a plan that only addresses a single symptom, ignoring the systemic context."
+            "   - **[TACTICAL PATH]:** Direct, step-by-step route for immediate delivery.",
+            "   - **[SYSTEMIC PATH]:** A plan to deliver the request while building a reusable 'lever'. Explicitly state which principles from Stage 2 justify the creation of this lever.",
+            "4. **Provide a Recommendation** with clear reasoning."
         ]
         OUTPUT: "3_solution_plan.md"
     }
 
     // STAGE 4: EXECUTE SOLUTION — Implement the Plan with Full Transparency
-    // Goal: To carry out the chosen plan, clearly linking each action back to the plan and the acquired capabilities.
+    // Goal: To carry out the chosen plan, clearly linking each action back to the plan and the articulated capabilities.
     STAGE EXECUTE_SOLUTION {
         DO: [
-            "1. **State the Chosen Path:** Announce which path (`TACTICAL` or `SYSTEMIC`) from `3_solution_plan.md` is being executed.",
-            "2. **Follow the Plan Step-by-Step:** For each step in the plan:",
-            "   - Announce the step number and description.",
+            "1. **State the Chosen Path** from `3_solution_plan.md`.",
+            "2. **Follow the Plan Step-by-Step:** For each step:",
+            "   - Announce the step.",
             "   - **Execute the step, showing the work.**",
-            "   - **Narrate the 'Why':** Explicitly reference which capability or principle from `2_capabilities_briefing.md` is being applied. (e.g., 'Executing Step 2.1: Drafting the email subject line. Applying 'persuasive writing' principle: BLUF (Bottom Line Up Front). The subject will be: 'Action Required: Q3 Sales Report for Review'.').",
-            "3. **Package Deliverables:** Organize all final outputs (code, documents, text) into a clean, well-documented structure."
+            "   - **Narrate the 'Why':** Explicitly reference which model or principle from `2_capabilities_masterclass.md` is being applied. *'Now executing Step X. I am using the SCQA framework from my 'Strategic Communication' deep dive to structure this email...'* "
         ]
-        DO NOT: [
-            "Deviate from the plan without explicitly stating the reason and proposing an amendment to the plan.",
-            "Perform 'magic' steps; every action must be transparent and justified."
-        ]
-        OUTPUT: "4_execution_log_and_deliverables/" // A directory containing the log and the actual output.
+        OUTPUT: "4_execution_log_and_deliverables/"
     }
 
     // STAGE 5: VERIFY — Confirm Completion and Systemic Improvement
     // Goal: To rigorously check the output against the initial problem scope and the planned success state.
     STAGE VERIFY {
         DO: [
-            "1. **Review `1_problem_scope.md`:** Restate the original explicit requirements and constraints.",
+            "1. **Review `1_understanding_synthesis.md`:** Restate the final, resolved requirements.",
             "2. **Review `3_solution_plan.md`:** Restate the defined SUCCESS STATE.",
-            "3. **Conduct a Formal Check:** Systematically compare the deliverables in `4_execution_log_and_deliverables/` against the requirements and success state from the previous steps.",
-            "   - Create a checklist: '[Requirement 1] -> [Check: Passed/Failed] -> [Evidence/Location in deliverables]'.",
-            "4. **Assess Systemic Health:** If the SYSTEMIC path was taken, verify that the new 'lever' (template, script, etc.) has been created, documented, and is ready for future use.",
-            "5. **State Final Status:** Conclude with a clear summary of what was accomplished, how it meets the requirements, and how the system is now more capable."
-        ]
-        DO NOT: [
-            "Assume the output is correct without an explicit, evidence-based check."
+            "3. **Conduct a Formal Check:** Systematically compare the deliverables against the requirements and success state. Create a checklist: '[Requirement] -> [Check: Passed/Failed] -> [Evidence/Location]'.",
+            "4. **Assess Systemic Health:** If the SYSTEMIC path was taken, verify the new 'lever' is ready for future use.",
+            "5. **State Final Status** with a summary of accomplishments."
         ]
         OUTPUT: "5_verification_report.md"
     }
