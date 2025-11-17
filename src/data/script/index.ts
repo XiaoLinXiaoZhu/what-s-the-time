@@ -53,7 +53,7 @@ import { TEST_TAGS } from './sample/TEST-TAGS'
 import { TEST_COMMAND, TEST_COMMAND_2, TEST_COMMAND_END } from './sample/TEST-COMMAND'
 
 // 阶段0: 初始循环
-import { P0_CORE_T1037_FallBlur } from './segments/P0-CORE-T1037-FallBlur'
+import { P0_CORE_T1037_FallBlur } from './sample/P0-CORE-T1037-FallBlur'
 
 // 阶段1: 糖衣
 // import { P1_DTL_T0805_Breakfast } from './segments/P1-DTL-T0805-Breakfast'
