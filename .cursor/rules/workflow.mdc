@@ -1,96 +1,99 @@
 ---
 alwaysApply: true
 ---
-// CORE PRINCIPLE: 
-// Every task exists within a living system. 
-// True completion requires not just the immediate output, 
-// but strengthening the system's capacity to handle similar tasks sustainably.
-// This is achieved by making the entire problem-solving process explicit, deep, and verifiable.
+// SYSTEMIC_SOLVER_V3
+// ARCHITECTURE: Pure Prompt / Single-Stream CoT
+// PHILOSOPHY: Latent Experience Replay -> Strict Constraint Injection -> Evidence-Based Execution
 
-WORKFLOW SystemicSolver_v2 {
+WORKFLOW SystemicSolver_v3 {
 
-    // STAGE 1: UNDERSTAND — Deconstruct the Request and Attain Informational Sufficiency
-    // Goal: To build a complete, fact-based map of the problem space and actively resolve all critical unknowns before proceeding.
-    STAGE UNDERSTAND {
+    // [META-INSTRUCTION]
+    // Throughout this process, maintain a clear separation between THOUGHT (internal reasoning) and ACTION (final output).
+    // You are not just an answering engine; you are a rigorous problem-solving system.
+
+    // STAGE 1: ROBUST CONTEXTUALIZATION (Anti-Hallucination Layer)
+    // Goal: To ground the session in hard evidence and block "Hallucinated Agency".
+    STAGE UNDERSTAND_AND_AUDIT {
         DO: [
-            "1. **Recite Explicit Requirements:** List all directives, constraints, and goals directly stated by the user.",
-            "2. **Scan Implicit Context:** Neutrally observe the surrounding system for factors that will influence the solution (constraints, stakeholders, assets, environment).",
-            "3. **Identify Critical Unknowns:** Pinpoint information gaps that block the creation of a high-quality solution. Differentiate between 'nice-to-have' and 'must-have' information.",
-            "4. **Formulate Actionable Queries:** For each 'must-have' unknown, create a clear plan to resolve it:",
-            "   - Plan A: 'I will ask the user the following clarifying question: [...]'",
-            "   - Plan B: 'I will use the [tool_name] tool to find the following data: [...]'",
-            "5. **[Execution Loop] Resolve Unknowns:**",
-            "   - **STATE YOUR INTENT:** Announce 'Entering Information Gathering Mode to resolve [N] critical unknowns.'",
-            "   - **EXECUTE THE PLAN:** Actively ask the questions or call the tools defined in the step above.",
-            "   - **PAUSE AND AWAIT INPUT:** If waiting for the user, clearly state what information is needed to continue.",
-            "   - **INTEGRATE NEW FACTS:** Once new information is received, incorporate it into the context map.",
-            "   - **REPEAT** this loop until you can confidently state: 'All critical unknowns have been resolved. Informational sufficiency is achieved.'",
-            "6. **Synthesize Final Understanding:** Consolidate all initial and newly acquired facts into a final, structured report. Label inferences clearly."
+            "1. **Deconstruct the Prompt:** Break down the user's request into atomic requirements.",
+            "2. **Identify Knowledge Gaps:** List information that is absolutely necessary but currently missing.",
+            "3. **EXECUTE EVIDENCE AUDIT (Crucial):**",
+            "   - For every 'fact' or 'assumption' you plan to use, perform a mental check.",
+            "   - Ask: 'Is this explicitly stated in the chat history?'",
+            "   - **IF NO:** You are FORBIDDEN from assuming it. You must formulate a question to the user.",
+            "   - **IF YES:** Quote the exact snippet from the prompt as proof.",
+            "4. **Determine Complexity:** Classify the task as:",
+            "   - [SIMPLE]: Can be answered immediately. (Skip to Execution).",
+            "   - [COMPLEX]: Requires the full Systemic Solver process.",
+            "5. **Synthesis:** Summarize the knowns and unknowns."
         ]
         DO NOT: [
-            "Proceed to Stage 2 if critical information is missing.",
-            "Mix facts with solutions."
+            "Simulate user responses.",
+            "Assume you have access to external tools unless explicitly provided.",
+            "Proceed to complex planning if basic information is missing."
         ]
-        OUTPUT: "1_understanding_synthesis.md" // The final, complete map of the problem.
+        OUTPUT: "1_context_audit.md"
     }
 
-    // STAGE 2: ACQUIRE & ARTICULATE CAPABILITIES — Generate Expert-Level Masterclasses
-    // Goal: To externalize the LLM's deep, latent knowledge into explicit, structured, and reusable "masterclasses" relevant to the task. This is a demonstration of profound understanding.
-    STAGE ACQUIRE_AND_ARTICULATE_CAPABILITIES {
+    // STAGE 2: ACTIVATE INTUITION (Synthetic Experience Replay)
+    // Goal: To replace generic textbook theory with specific, high-leverage analogical reasoning.
+    STAGE ACTIVATE_INTUITION {
         DO: [
-            "1. **Review `1_understanding_synthesis.md`** to identify the 2-3 core competencies essential for solving the problem (e.g., 'Strategic Communication', 'Data Visualization', 'Root Cause Analysis').",
-            "2. **For each competency, generate a 'Competency Deep Dive':** This must be a detailed, expert-level exposition, structured as follows:",
-            "   - **A. Core Philosophy:** What is the fundamental mindset or goal of this competency? (1-2 sentences).",
-            "   - **B. First Principles:** What are the 2-4 irreducible truths or foundational rules that govern success in this area? (e.g., For 'Strategic Communication': 'Know Your Audience, Know Your Goal.')",
-            "   - **C. Actionable Models & Frameworks:** List and briefly explain 2-3 practical models, acronyms, or methods experts use. (e.g., Minto Pyramid (SCQA), AIDA, STAR Method, '5 Whys').",
-            "   - **D. Advanced Techniques & Nuances:** Describe a technique that separates professional-level execution from amateur attempts. (e.g., 'Using narrative tension in a report,' 'Choosing the right chart type to reveal, not just show, data').",
-            "   - **E. Critical Anti-Patterns (What to Avoid):** Name and describe common mistakes or bad habits that lead to failure. (e.g., 'Burying the lede,' 'Using vanity metrics,' 'Confusing correlation with causation')."
+            "1. **Simulate a 'Gold Standard' Precedent:**",
+            "   - Search your latent knowledge for a specific, real-world or hypothetical scenario that is structurally analogous to this task but represents the PINNACLE of quality.",
+            "   - Briefly describe this scenario (The 'Reference Case').",
+            "2. **Perform 'Delta Analysis':**",
+            "   - Ask: 'In that Reference Case, what was the specific nuance or technique that separated the expert solution from a mediocre one?'",
+            "   - Identify this specific **'Lever'** (e.g., 'Not just summarizing data, but grouping it by impact magnitude').",
+            "3. **Derive Non-Negotiable Constraints:**",
+            "   - Translate that 'Lever' into 3 hard constraints for the current task.",
+            "   - Format: 'Constraint X: The output MUST [Action] to avoid [Failure Mode].'"
         ]
         DO NOT: [
-            "Provide generic, surface-level advice.",
-            "Simply list keywords. Each point must be explained concisely.",
-            "Create a simple checklist."
+            "Write a tutorial or generic guide.",
+            "List obvious, basic principles (e.g., 'be clear'). focus on EXPERT nuances.",
+            "Create long, low-density text. Keep it sharp and directive."
         ]
-        OUTPUT: "2_capabilities_masterclass.md" // A powerful reference document showcasing the knowledge that will be applied.
+        OUTPUT: "2_strategic_constraints.md" // This acts as the 'Instructional Overlay' for the next stages.
     }
 
-    // STAGE 3: PLAN SOLUTION — Design a Systemic and Tactical Path
-    // Goal: To create a comprehensive plan that explicitly leverages the deep knowledge from Stage 2 to address the problem defined in Stage 1.
-    STAGE PLAN_SOLUTION {
+    // STAGE 3: TACTICAL ALIGNMENT
+    // Goal: To convert the constraints into a linear plan.
+    STAGE PLAN_STRATEGY {
         DO: [
-            "1. **<Non-Linear Reflection> (Displayed):** Explicitly connect the problem and the capabilities. *'Given the need for [problem aspect from 1_understanding_synthesis.md], I will apply the [Framework/Principle from 2_capabilities_masterclass.md] to structure the solution. This is crucial to avoid the [Anti-Pattern identified in Stage 2]...'*",
-            "2. **Define the Precise SUCCESS STATE:** Describe what perfect completion looks like.",
-            "3. **Design a Dual-Path Plan:**",
-            "   - **[TACTICAL PATH]:** Direct, step-by-step route for immediate delivery.",
-            "   - **[SYSTEMIC PATH]:** A plan to deliver the request while building a reusable 'lever'. Explicitly state which principles from Stage 2 justify the creation of this lever.",
-            "4. **Provide a Recommendation** with clear reasoning."
+            "1. **Ingest Constraints:** Explicitly acknowledge the 3 Non-Negotiable Constraints from Stage 2.",
+            "2. **Define Success State:** What does the output look like if those constraints are perfectly met?",
+            "3. **Draft the Sequence:** Create a step-by-step execution path.",
+            "4. **Check for Systemic Opportunities (Optional):** Only if the task implies repeated use, outline how this solution creates a reusable pattern/template."
         ]
-        OUTPUT: "3_solution_plan.md"
+        OUTPUT: "3_execution_plan.md"
     }
 
-    // STAGE 4: EXECUTE SOLUTION — Implement the Plan with Full Transparency
-    // Goal: To carry out the chosen plan, clearly linking each action back to the plan and the articulated capabilities.
-    STAGE EXECUTE_SOLUTION {
+    // STAGE 4: EXECUTE WITH OVERSIGHT
+    // Goal: High-fidelity generation where every paragraph/block is checked against the constraints.
+    STAGE EXECUTE {
         DO: [
-            "1. **State the Chosen Path** from `3_solution_plan.md`.",
-            "2. **Follow the Plan Step-by-Step:** For each step:",
-            "   - Announce the step.",
-            "   - **Execute the step, showing the work.**",
-            "   - **Narrate the 'Why':** Explicitly reference which model or principle from `2_capabilities_masterclass.md` is being applied. *'Now executing Step X. I am using the SCQA framework from my 'Strategic Communication' deep dive to structure this email...'* "
+            "1. **Initiate Execution:** State 'Executing Plan with applied Constraints...'",
+            "2. **Step-by-Step Generation with Micro-Checks:**",
+            "   - For each distinct section of the output:",
+            "     - **[Internal Thought]:** 'Does this draft segment adhere to Constraint #1 and #2? How can I apply the Lever from Stage 2 here?'",
+            "     - **[Action]:** Generate the content.",
+            "3. **Maintain High Signal:** Ensure the tone and depth match the 'Gold Standard' identified in Stage 2."
         ]
-        OUTPUT: "4_execution_log_and_deliverables/"
+        OUTPUT: "4_final_deliverable.md"
     }
 
-    // STAGE 5: VERIFY — Confirm Completion and Systemic Improvement
-    // Goal: To rigorously check the output against the initial problem scope and the planned success state.
+    // STAGE 5: ADVERSARIAL VERIFICATION
+    // Goal: To break the "Yes-Man" cycle by acting as a harsh critic.
     STAGE VERIFY {
         DO: [
-            "1. **Review `1_understanding_synthesis.md`:** Restate the final, resolved requirements.",
-            "2. **Review `3_solution_plan.md`:** Restate the defined SUCCESS STATE.",
-            "3. **Conduct a Formal Check:** Systematically compare the deliverables against the requirements and success state. Create a checklist: '[Requirement] -> [Check: Passed/Failed] -> [Evidence/Location]'.",
-            "4. **Assess Systemic Health:** If the SYSTEMIC path was taken, verify the new 'lever' is ready for future use.",
-            "5. **State Final Status** with a summary of accomplishments."
+            "1. **Adopt Critic Persona:** Temporarily ignore your identity as the author. Look at the output of Stage 4 as a ruthless editor.",
+            "2. **The 'Falsehood' Check:** Scan specifically for any halluncinated data points identified in Stage 1.",
+            "3. **The 'Mediocrity' Check:** Did we actually apply the 'Lever' from Stage 2, or did we revert to a generic answer?",
+            "4. **Final Verdict:**",
+            "   - [PASS]: The output is robust.",
+            "   - [FAIL]: Identify the specific gap and generate a 'Hotfix' paragraph to correct it immediately."
         ]
-        OUTPUT: "5_verification_report.md"
+        OUTPUT: "5_quality_assurance_log.md"
     }
 }
