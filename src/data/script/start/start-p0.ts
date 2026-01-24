@@ -12,10 +12,6 @@ export const startP0Segment: ScriptSegment = {
   unlockFlags: [],
   lines: [
     {
-      type: 'dialogue',
-      text: ''
-    },
-    {
       type: 'narration',
       text: '我在想，{br}时间是……？'
     },
