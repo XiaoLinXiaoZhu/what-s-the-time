@@ -10,11 +10,11 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DisplayedLine, InputLine } from '@/types'
+import type { DisplayedLineV2 } from '@/types'
 import TimeInput from './TimeInput.vue'
 
 const props = defineProps<{
-  line: DisplayedLine & InputLine
+  line: DisplayedLineV2
   index: number
   currentLineIndex: number
 }>()

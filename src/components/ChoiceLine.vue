@@ -19,15 +19,15 @@
 
 <script setup lang="ts">
 import { computed } from 'vue'
-import type { DisplayedLine, ChoiceLine } from '@/types'
+import type { DisplayedLineV2, ChoiceLineV2 } from '@/types'
 
 const props = defineProps<{
-  line: DisplayedLine & ChoiceLine
+  line: DisplayedLineV2 & ChoiceLineV2
   index: number
 }>()
 
 const emit = defineEmits<{
-  'choice-select': [choice: ChoiceLine['choices'][0], lineIndex: number, choiceIndex: number]
+  'choice-select': [choice: ChoiceLineV2['choices'][0], lineIndex: number, choiceIndex: number]
 }>()
 
 // 根据行状态决定是否禁用
@@ -42,7 +42,7 @@ const isSelected = (choiceIndex: number): boolean => {
 }
 
 // 处理选择点击
-const handleChoiceClick = (choice: ChoiceLine['choices'][0], choiceIndex: number) => {
+const handleChoiceClick = (choice: ChoiceLineV2['choices'][0], choiceIndex: number) => {
   if (!isDisabled.value) {
     emit('choice-select', choice, props.index, choiceIndex)
   }

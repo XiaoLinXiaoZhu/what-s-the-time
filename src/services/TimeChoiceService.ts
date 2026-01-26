@@ -1,7 +1,7 @@
 import { stateStore } from '@/stores/StateStore'
 import { useSystemTime } from '@/composables/useSystemTime'
 import { lineConversionService } from './LineConversionService'
-import type { DisplayedLine, LineStatus, ScriptLine } from '@/types'
+import type { DisplayedLineV2, LineStatus, ContentLine } from '@/types'
 
 /**
  * 时间选择服务
@@ -169,9 +169,9 @@ export class TimeChoiceService {
   }
 
   /**
-   * 创建 DisplayedLine 数组（用于插入的行）
+   * 创建 DisplayedLineV2 数组（用于插入的行）
    */
-  private _createDisplayedLines(lines: ScriptLine[], baseIndex: number): DisplayedLine[] {
+  private _createDisplayedLines(lines: ContentLine[], baseIndex: number): DisplayedLineV2[] {
     return lines.map((line, index) => ({
       ...line,
       id: `inserted-${baseIndex}-${index}`,

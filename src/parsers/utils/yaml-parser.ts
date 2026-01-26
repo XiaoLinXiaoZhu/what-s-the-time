@@ -1,6 +1,6 @@
 import yaml from 'js-yaml'
-import type { SegmentMetadata } from '@/types/parser'
-import { ParseError } from '@/types/parser'
+import type { SegmentMetadata } from '@/types/index'
+import { ParseError } from '@/types/index'
 
 /**
  * 解析YAML Front Matter

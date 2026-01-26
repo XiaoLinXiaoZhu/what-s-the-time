@@ -1,8 +1,8 @@
 import { type Ref } from 'vue'
-import type { ScriptLine, LineStatus } from '@/types'
+import type { DisplayedLineV2, LineStatus } from '@/types'
 
 export interface UseLineStateOptions {
-  displayedLines: Ref<ScriptLine[]>
+  displayedLines: Ref<DisplayedLineV2[]>
 }
 
 /**

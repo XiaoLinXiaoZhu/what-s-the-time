@@ -1,20 +1,22 @@
-import type { ParserOptions, ParseResult } from '@/types/parser'
-import type { ScriptSegment } from '@/types'
+import type { ParserOptions, ParseResult } from '@/types/index'
+import type { ScriptSegmentV2 } from '@/types/script-v2'
 import { ScriptTokenizer } from './tokenizer'
-import { ScriptAstBuilder } from './ast-builder'
+import { ScriptAstBuilderV2 } from './ast-builder-v2'
 
 /**
- * ScriptParser - 主解析器
- * 
- * 整合Tokenizer和AstBuilder，提供完整的解析流程
+ * ScriptParser V2 - 主解析器
  * 
  * 流程：
- * Markdown文件 -> Tokenizer -> TokenSegment -> AstBuilder -> ScriptSegment
+ * Markdown文件 -> Tokenizer -> TokenSegment -> AstBuilderV2 -> ScriptSegmentV2
+ * 
+ * 改进：
+ * - 文本直接解析为 TextNode[]
+ * - Choice 选项改为 targetSegments 引用
+ * - 去除子片段内联逻辑
  */
-export class ScriptParser {
+export class ScriptParserV2 {
   private options: ParserOptions
   private cache: Map<string, ParseResult>
-  private textNodeCache: Map<string, any>
 
   constructor(options: ParserOptions = {}) {
     this.options = {
@@ -22,19 +24,14 @@ export class ScriptParser {
       maxNestingDepth: options.maxNestingDepth ?? 5
     }
     this.cache = new Map()
-    this.textNodeCache = new Map()
   }
 
   /**
    * 解析剧本文件
-   * @param content - Markdown格式的剧本内容
-   * @param filePath - 文件路径（用于缓存）
-   * @returns 解析结果
    */
   parse(content: string, filePath?: string): ParseResult {
     const cacheKey = filePath || content
     
-    // 检查缓存
     if (this.options.enableCache && this.cache.has(cacheKey)) {
       return this.cache.get(cacheKey)!
     }
@@ -42,16 +39,14 @@ export class ScriptParser {
     const startTime = performance.now()
     
     try {
-      // 阶段1：Tokenization
+      // 阶段1：Tokenization（复用现有 Tokenizer）
       const tokenizer = new ScriptTokenizer({ keepComments: false })
       const tokens = tokenizer.tokenize(content)
       
-      // 阶段2：AST构建
-      const astBuilder = new ScriptAstBuilder()
+      // 阶段2：AST构建（使用新的 V2 Builder）
+      const astBuilder = new ScriptAstBuilderV2()
       const segments = tokens.map(token => astBuilder.build(token))
       
-      // 目前只支持单片段文件，取第一个片段
-      // 未来可以支持多片段文件
       if (segments.length === 0) {
         throw new Error('未找到有效的剧本片段')
       }
@@ -61,12 +56,11 @@ export class ScriptParser {
       const parseTime = performance.now() - startTime
       
       const result: ParseResult = {
-        segment,
+        segment: segment as any, // TODO: 修改 ParseResult 类型以支持 V2
         parseTime,
         filePath
       }
       
-      // 存入缓存
       if (this.options.enableCache) {
         this.cache.set(cacheKey, result)
       }
@@ -84,7 +78,6 @@ export class ScriptParser {
    */
   clearCache(): void {
     this.cache.clear()
-    this.textNodeCache.clear()
   }
 
   /**
@@ -101,15 +94,15 @@ export class ScriptParser {
 /**
  * 便捷函数：直接解析剧本内容
  */
-export function parseScript(content: string, filePath?: string): ScriptSegment {
-  const parser = new ScriptParser({ enableCache: true })
+export function parseScriptV2(content: string, filePath?: string): ScriptSegmentV2 {
+  const parser = new ScriptParserV2({ enableCache: true })
   const result = parser.parse(content, filePath)
-  return result.segment
+  return result.segment as ScriptSegmentV2
 }
 
 /**
  * 创建解析器实例（带选项）
  */
-export function createParser(options?: ParserOptions): ScriptParser {
-  return new ScriptParser(options)
+export function createParserV2(options?: ParserOptions): ScriptParserV2 {
+  return new ScriptParserV2(options)
 }

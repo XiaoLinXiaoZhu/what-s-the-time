@@ -4,30 +4,33 @@
       {{ line.character }}
     </span>
     <span class="dialogue-text">
-      <TypingText
+      <TypingTextV2
         v-if="index === currentLineIndex"
-        :text="line.text"
+        :nodes="line.nodes"
         :ref="(el) => $emit('set-typing-ref', el, index)"
         :auto-start="false"
         @complete="$emit('line-complete')"
       />
-      <FormattedText v-else-if="index < currentLineIndex" :text="line.text" />
+      <FormattedTextV2
+        v-else-if="index < currentLineIndex"
+        :nodes="line.nodes"
+      />
     </span>
   </div>
 </template>
 
 <script setup lang="ts">
-import type { DialogueLine } from '@/types'
-import TypingText from './TypingText.vue'
-import FormattedText from './FormattedText.vue'
+import type { DialogueTextLine } from '@/types'
+import TypingTextV2 from './TypingTextV2.vue'
+import FormattedTextV2 from './FormattedTextV2.vue'
 
-defineProps<{
-  line: DialogueLine
+const props = defineProps<{
+  line: DialogueTextLine
   index: number
   currentLineIndex: number
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'set-typing-ref': [el: any, index: number]
   'line-complete': []
 }>()
@@ -49,4 +52,3 @@ defineEmits<{
   color: #fff;
 }
 </style>
-

@@ -8,15 +8,15 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from 'vue'
-import type { CommandLine } from '@/types'
+import type { CommandLineV2 } from '@/types/script-v2'
 
 const props = defineProps<{
-  line: CommandLine
+  line: CommandLineV2
   index: number
 }>()
 
 const emit = defineEmits<{
-  'command-execute': [command: CommandLine, lineIndex: number]
+  'command-execute': [command: CommandLineV2, lineIndex: number]
 }>()
 
 // 组件挂载时自动执行命令
@@ -39,6 +39,8 @@ const commandDescription = computed(() => {
       return `跳转到: ${params.segmentId || params.time || 'N/A'}`
     case 'end':
       return `结束游戏${params.message ? `: ${params.message}` : ''}`
+    case 'return':
+      return `返回上一层`
     default:
       return `未知命令: ${command}`
   }

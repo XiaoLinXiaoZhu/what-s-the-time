@@ -1,5 +1,5 @@
-import type { TokenSegment, TokenizerOptions, SegmentMetadata } from '@/types/parser'
-import { ParseError } from '@/types/parser'
+import type { TokenSegment, TokenizerOptions, SegmentMetadata } from '@/types/index'
+import { ParseError } from '@/types/index'
 import { extractFrontMatter, parseYamlFrontMatter } from './utils/yaml-parser'
 import { normalizeText } from './utils/text-normalizer'
 

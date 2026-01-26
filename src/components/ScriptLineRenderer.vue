@@ -49,7 +49,7 @@
 </template>
 
 <script setup lang="ts">
-import type { DisplayedLine } from '@/types'
+import type { DisplayedLineV2 } from '@/types'
 import NarrationLine from './NarrationLine.vue'
 import DialogueLine from './DialogueLine.vue'
 import ChoiceLine from './ChoiceLine.vue'
@@ -59,7 +59,7 @@ import TimeDisplayLine from './TimeDisplayLine.vue'
 import CommandLine from './CommandLine.vue'
 
 defineProps<{
-  line: DisplayedLine
+  line: DisplayedLineV2
   index: number
   currentLineIndex: number
 }>()

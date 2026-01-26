@@ -1,5 +1,5 @@
 import { stateStore } from '@/stores/StateStore'
-import type { DisplayedLine, TimeDisplayLine, LineStatus } from '@/types'
+import type { DisplayedLineV2, LineStatus } from '@/types'
 
 /**
  * 行转换服务
@@ -31,7 +31,7 @@ export class LineConversionService {
 
     if (line?.type === 'input') {
       // 创建新的 timeDisplay 行
-      const timeDisplayLine: DisplayedLine & TimeDisplayLine = {
+      const timeDisplayLine: DisplayedLineV2 = {
         ...line,
         type: 'timeDisplay',
         value: time,
@@ -42,7 +42,7 @@ export class LineConversionService {
       console.log('[LineConversionService] Created timeDisplayLine from input:', {
         id: timeDisplayLine.id,
         type: timeDisplayLine.type,
-        value: timeDisplayLine.value,
+        value: (timeDisplayLine as any).value,
         status: timeDisplayLine.status
       })
 
@@ -61,7 +61,7 @@ export class LineConversionService {
 
       console.log('[LineConversionService] Display state updated (input->timeDisplay), verifying:', {
         updatedType: stateStore._internalDisplayState.displayedLines[lineIndex]?.type,
-        updatedValue: (stateStore._internalDisplayState.displayedLines[lineIndex] as any)?.value,
+        updatedValue: (stateStore._internalDisplayState.displayedLines[lineIndex] as { value?: string })?.value,
         updatedStatus: stateStore._internalDisplayState.displayedLines[lineIndex]?.status
       })
     } else {
@@ -95,7 +95,7 @@ export class LineConversionService {
 
     if (line?.type === 'timeChoice') {
       // 创建新的 timeDisplay 行
-      const timeDisplayLine: DisplayedLine & TimeDisplayLine = {
+      const timeDisplayLine: DisplayedLineV2 = {
         ...line,
         type: 'timeDisplay',
         value: time,
@@ -106,7 +106,7 @@ export class LineConversionService {
       console.log('[LineConversionService] Created timeDisplayLine:', {
         id: timeDisplayLine.id,
         type: timeDisplayLine.type,
-        value: timeDisplayLine.value,
+        value: (timeDisplayLine as any).value,
         status: timeDisplayLine.status
       })
 

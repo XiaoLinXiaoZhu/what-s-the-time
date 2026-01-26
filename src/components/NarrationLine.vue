@@ -1,28 +1,31 @@
 <template>
   <div class="narration">
-    <TypingText
+    <TypingTextV2
       v-if="index === currentLineIndex"
-      :text="line.text"
+      :nodes="line.nodes"
       :ref="(el) => $emit('set-typing-ref', el, index)"
       :auto-start="false"
       @complete="$emit('line-complete')"
     />
-    <FormattedText v-else-if="index < currentLineIndex" :text="line.text" />
+    <FormattedTextV2
+      v-else-if="index < currentLineIndex"
+      :nodes="line.nodes"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
-import type { NarrationLine } from '@/types'
-import TypingText from './TypingText.vue'
-import FormattedText from './FormattedText.vue'
+import type { NarrationTextLine } from '@/types'
+import TypingTextV2 from './TypingTextV2.vue'
+import FormattedTextV2 from './FormattedTextV2.vue'
 
-defineProps<{
-  line: NarrationLine
+const props = defineProps<{
+  line: NarrationTextLine
   index: number
   currentLineIndex: number
 }>()
 
-defineEmits<{
+const emit = defineEmits<{
   'set-typing-ref': [el: any, index: number]
   'line-complete': []
 }>()
@@ -35,4 +38,3 @@ defineEmits<{
   font-style: italic;
 }
 </style>
-

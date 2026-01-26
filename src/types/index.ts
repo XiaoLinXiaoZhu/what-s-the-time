@@ -4,134 +4,11 @@
 export type LineStatus = 'pending' | 'active' | 'completed' | 'disabled'
 
 /**
- * 剧本行类型（静态数据，不包含运行时状态）
- */
-export type ScriptLine = 
-  | DialogueLine      // 对话
-  | NarrationLine     // 场景描述/旁白
-  | ChoiceLine        // 选择分支
-  | TimeChoiceLine    // 时间匹配分支
-  | CommandLine       // 命令（如设置 flag、跳转等）
-  | InputLine         // 输入框
-  | TimeDisplayLine   // 时间显示（只读）
-
-/**
  * 行状态映射（运行时状态，独立于静态数据）
  * key: lineId (格式: segmentId-index 或 inserted-baseIndex-index)
  * value: LineStatus
  */
 export type LineStateMap = Map<string, LineStatus>
-
-/**
- * 显示行（视图层使用的组合类型：静态数据 + 运行时状态）
- */
-export type DisplayedLine = ScriptLine & {
-  /** 唯一标识，用于状态映射 */
-  id: string
-  /** 行的状态（从 LineStateMap 获取） */
-  status: LineStatus
-  /** 选中的选项索引（仅用于 choice 类型） */
-  selectedChoiceIndex?: number
-}
-
-/**
- * 对话行
- */
-export interface DialogueLine {
-  type: 'dialogue'
-  /** 角色名（可选，为空时表示内心独白或旁白） */
-  character?: string
-  /** 对话内容（支持格式标记：{red}、{bold}、{italic}） */
-  text: string
-}
-
-/**
- * 场景描述/旁白
- */
-export interface NarrationLine {
-  type: 'narration'
-  /** 描述文本（支持格式标记） */
-  text: string
-}
-
-/**
- * 选择分支
- */
-export interface ChoiceLine {
-  type: 'choice'
-  /** 选项列表 */
-  choices: Array<{
-    /** 选项文本 */
-    text: string
-    /** 选择后显示的后续内容（在当前片段内继续） */
-    lines: ScriptLine[]
-    /** 选择后设置的 flag（可选） */
-    setFlag?: string
-  }>
-}
-
-/**
- * 时间匹配分支
- */
-export interface TimeChoiceLine {
-  type: 'timeChoice'
-  /** 时间选项列表 */
-  choices: Array<{
-    /** 匹配的时间模式（具体时间如 '08:00' 或通配符 '*'） */
-    time: string
-    /** 匹配后显示的后续内容 */
-    lines: ScriptLine[]
-    /** 匹配后设置的 flag（可选） */
-    setFlag?: string
-  }>
-}
-
-/**
- * 命令行
- */
-export interface CommandLine {
-  type: 'command'
-  /** 命令类型 */
-  command: 'setFlag' | 'unsetFlag' | 'jump' | 'end'
-  /** 命令参数 */
-  params: Record<string, any>
-}
-
-/**
- * 输入框行
- */
-export interface InputLine {
-  type: 'input'
-  /** 提示文本 */
-  placeholder?: string
-}
-
-/**
- * 时间显示行（只读，用于显示已输入的时间）
- */
-export interface TimeDisplayLine {
-  type: 'timeDisplay'
-  /** 要显示的时间值（HH:MM格式） */
-  value: string
-}
-
-/**
- * 剧本片段
- */
-export interface ScriptSegment {
-  /** 片段 ID */
-  id: string
-  /** 时间点 (HH:MM) */
-  time: string
-  /** 剧本行列表 */
-  lines: ScriptLine[]
-  /** 片段功能描述（用于开发调试） */
-  description?: string
-  /** 解锁条件（flag） */
-  unlockFlags?: string[]
-  /** Loop 阶段 */
-  loop?: string
-}
 
 /**
  * 文本格式类型
@@ -181,19 +58,138 @@ export interface SideEffect {
   data?: any
 }
 
+// ============================================================================
+// Parser 基础类型定义
+// ============================================================================
+
 /**
- * 显示状态
+ * 解析错误
+ */
+export class ParseError extends Error {
+  /** 错误消息 */
+  message: string
+  /** 错误所在行号 */
+  lineNumber?: number
+  /** 错误所在列号 */
+  columnNumber?: number
+  /** 相关的片段ID */
+  segmentId?: string
+
+  constructor(
+    message: string,
+    lineNumber?: number,
+    columnNumber?: number,
+    segmentId?: string
+  ) {
+    super(message)
+    this.name = 'ParseError'
+    this.message = message
+    this.lineNumber = lineNumber
+    this.columnNumber = columnNumber
+    this.segmentId = segmentId
+  }
+}
+
+/**
+ * 片段元数据
+ */
+export interface SegmentMetadata {
+  /** 片段ID */
+  id: string
+  /** 时间点 */
+  time: string
+  /** 描述（可选） */
+  description?: string
+  /** Loop ID（可选） */
+  loop?: string
+  /** 解锁的flag列表（可选） */
+  unlockFlags?: string[]
+}
+
+/**
+ * Token片段
+ * Tokenizer 的输出结果
+ */
+export interface TokenSegment {
+  /** 片段元数据 */
+  metadata: SegmentMetadata
+  /** 主内容（原始行数组） */
+  content: string[]
+  /** 子片段映射（key: 子片段标识, value: 行数组） */
+  subSegments: Map<string, string[]>
+}
+
+/**
+ * Tokenizer 选项
+ */
+export interface TokenizerOptions {
+  /** 是否保留注释行（以 > 开头的行） */
+  keepComments?: boolean
+}
+
+/**
+ * Parser 选项
+ */
+export interface ParserOptions {
+  /** 是否启用缓存 */
+  enableCache?: boolean
+  /** 最大嵌套深度 */
+  maxNestingDepth?: number
+}
+
+/**
+ * 解析结果
+ */
+export interface ParseResult<T = any> {
+  /** 解析后的片段 */
+  segment: T
+  /** 解析耗时（毫秒） */
+  parseTime: number
+  /** 源文件路径（可选） */
+  filePath?: string
+}
+
+/**
+ * 展示状态（用于 StateStore）
+ * 通用接口，支持 V1 和 V2 系统
  */
 export interface DisplayState {
-  /** 当前片段 */
-  currentSegment: ScriptSegment | null
+  /** 当前片段（类型未知，可能是 V1 或 V2） */
+  currentSegment: any
   /** 当前行索引 */
   currentLineIndex: number
-  /** 显示的行列表 */
-  displayedLines: DisplayedLine[]
-  /** TypingText 组件引用映射 */
+  /** 已展示的行列表 */
+  displayedLines: any[]
+  /** 打字动画引用映射 */
   typingRefs: Map<number, any>
-  /** 待执行的副作用 */
+  /** 待处理的副作用队列 */
   pendingSideEffects: SideEffect[]
 }
 
+// ============================================================================
+// V2 类型系统导出
+// ============================================================================
+// 用于渐进式迁移的新类型系统
+//
+// 核心改进：
+// 1. 扁平化设计：去除内联，使用片段引用
+// 2. 单次解析：文本直接解析为 TextNode[]
+// 3. 职责分离：语义层与展示层完全解耦
+//
+// 导出所有 V2 类型供其他模块使用
+// ============================================================================
+
+export type {
+  ScriptSegmentV2,
+  ContentLine,
+  TextLine,
+  DialogueTextLine,
+  NarrationTextLine,
+  ChoiceLineV2,
+  TimeChoiceLineV2,
+  InputLineV2,
+  CommandLineV2,
+  TimeDisplayLineV2,
+  DisplayedLineV2,
+  SegmentRefLine
+} from './script-v2'
