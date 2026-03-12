@@ -49,7 +49,7 @@ export class ScriptParser {
   }
 
   /** 解析多片段剧本 */
-  parseAll(content: string, _filePath?: string): ScriptSegment[] {
+  parseAll(content: string): ScriptSegment[] {
     const tokens = this.tokenizer.tokenize(content);
     return tokens.map((token) => this.astBuilder.build(token));
   }

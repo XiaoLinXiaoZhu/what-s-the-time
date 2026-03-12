@@ -118,11 +118,11 @@ const handleSetTypingRef = (el: unknown, index: number) => {
   displayService.setTypingRef(el, index);
 };
 
-const handleChoice = (choice: unknown, lineIndex: number, choiceIndex: number) => {
+const handleChoice = (choice: ChoiceLine["choices"][0], lineIndex: number, choiceIndex: number) => {
   const line = displayState.value.displayedLines[lineIndex];
   if (line) {
     choiceService.handleChoice(
-      choice as ChoiceLine["choices"][0],
+      choice,
       line.id,
       choiceIndex,
     );
@@ -139,14 +139,14 @@ const handleInputComplete = (time: string, lineIndex: number) => {
   if (line) inputService.handleInputComplete(time, line.id);
 };
 
-const handleCommandExecute = (command: unknown, lineIndex: number) => {
-  commandService.handleCommand(command as CommandLine, lineIndex);
+const handleCommandExecute = (command: CommandLine, lineIndex: number) => {
+  commandService.handleCommand(command, lineIndex);
 };
 
 const backToStart = () => navigationService.navigateToStart();
 
 const onLineComplete = () => {
-  // 副作用执行器自动处理后续逻辑
+  displayService.showNextLine();
 };
 
 const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({

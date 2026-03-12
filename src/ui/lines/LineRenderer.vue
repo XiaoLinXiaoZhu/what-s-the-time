@@ -19,7 +19,10 @@
     v-else-if="line.type === 'choice'"
     :line="line"
     :index="index"
-    @choice-select="(choice: any, lineIndex: number, choiceIndex: number) => $emit('choice-select', choice, lineIndex, choiceIndex)"
+    @choice-select="
+      (choice: ChoiceOption, lineIndex: number, choiceIndex: number) =>
+        $emit('choice-select', choice, lineIndex, choiceIndex)
+    "
   />
   <TimeChoiceLine
     v-else-if="line.type === 'timeChoice'"
@@ -44,12 +47,18 @@
     v-else-if="line.type === 'command'"
     :line="line"
     :index="index"
-    @command-execute="(cmd: any, idx: number) => $emit('command-execute', cmd, idx)"
+    @command-execute="
+      (cmd: CommandLineType, idx: number) => $emit('command-execute', cmd, idx)
+    "
   />
 </template>
 
 <script setup lang="ts">
-import type { DisplayedLine } from "@/types";
+import type {
+  ChoiceLine as ChoiceLineType,
+  CommandLine as CommandLineType,
+  DisplayedLine,
+} from "@/types";
 import ChoiceLine from "./ChoiceLine.vue";
 import CommandLine from "./CommandLine.vue";
 import DialogueLine from "./DialogueLine.vue";
@@ -57,6 +66,8 @@ import InputLine from "./InputLine.vue";
 import NarrationLine from "./NarrationLine.vue";
 import TimeChoiceLine from "./TimeChoiceLine.vue";
 import TimeDisplayLine from "./TimeDisplayLine.vue";
+
+type ChoiceOption = ChoiceLineType["choices"][0];
 
 defineProps<{
   line: DisplayedLine;
@@ -67,9 +78,9 @@ defineProps<{
 defineEmits<{
   "set-typing-ref": [el: unknown, index: number];
   "line-complete": [];
-  "choice-select": [choice: unknown, lineIndex: number, choiceIndex: number];
+  "choice-select": [choice: ChoiceOption, lineIndex: number, choiceIndex: number];
   "time-choice-complete": [time: string, lineIndex: number];
   "input-complete": [time: string, lineIndex: number];
-  "command-execute": [command: unknown, lineIndex: number];
+  "command-execute": [command: CommandLineType, lineIndex: number];
 }>();
 </script>
