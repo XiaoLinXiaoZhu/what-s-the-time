@@ -8,7 +8,7 @@
           v-for="(line, index) in displayState.displayedLines"
           :key="line.id"
         >
-          <ScriptLineRenderer
+          <LineRenderer
             v-if="shouldShowLine(line, index)"
             :ref="(el: any) => setLineRef(el, index)"
             :line="line"
@@ -52,7 +52,7 @@ import {
 } from "@/engine";
 import type { ChoiceLine, CommandLine, DisplayedLine } from "@/types";
 import BackToStartButton from "./BackToStartButton.vue";
-import ScriptLineRenderer from "./ScriptLineRenderer.vue";
+import LineRenderer from "./LineRenderer.vue";
 import WatchDisplay from "./WatchDisplay.vue";
 
 const displayState = computed(() => stateStore.displayState);

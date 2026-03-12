@@ -224,7 +224,7 @@ export function useAnimateText() {
       return currentText;
     }
 
-    // 如果没有状态，使用旧的索引方式（向后兼容）
+    // 动画尚未启动时，使用静态索引
     const animateIndex = animateTextIndices.value.get(nodeIndex) ?? 0;
     return node.animateTexts[animateIndex] || node.animateTexts[0];
   };

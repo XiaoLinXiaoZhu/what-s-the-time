@@ -64,7 +64,7 @@ dialogue
     expect(line).not.toHaveProperty("text");
   });
 
-  it("ChoiceLine 应该使用 targetSegments 而非 lines", () => {
+  it("ChoiceLine 应该使用内联 lines 而非 targetSegments", () => {
     const content = `
 ---
 id: TEST-004
@@ -87,9 +87,32 @@ narration
 
     expect(line.type).toBe("choice");
     expect(line.choices).toHaveLength(2);
-    expect(line.choices[0]).toHaveProperty("targetSegments");
-    expect(line.choices[0]).not.toHaveProperty("lines");
-    expect(line.choices[0].targetSegments[0]).toBe("TEST-004-sub1");
+    expect(line.choices[0]).toHaveProperty("lines");
+    expect(line.choices[0]).not.toHaveProperty("targetSegments");
+    expect(line.choices[0].lines).toHaveLength(1);
+    expect(line.choices[0].lines[0].type).toBe("narration");
+  });
+
+  it("ChoiceLine 应该支持 setFlag", () => {
+    const content = `
+---
+id: TEST-004b
+time: START
+---
+choice
+- [选项A](setFlag:FLAG_A)
+- [选项B](#sub1)
+
+# sub1
+narration
+选项B的内容
+`;
+    const segment = parseScript(content);
+    const line = segment.lines[0] as ChoiceLine;
+
+    expect(line.choices[0].setFlag).toBe("FLAG_A");
+    expect(line.choices[0].lines).toHaveLength(0);
+    expect(line.choices[1].lines).toHaveLength(1);
   });
 
   it("应该正确解析命令行", () => {
