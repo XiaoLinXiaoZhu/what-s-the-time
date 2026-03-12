@@ -62,7 +62,8 @@ export interface ChoiceLine {
   type: "choice";
   choices: Array<{
     text: string;
-    targetSegments: string[];
+    /** 选择后显示的后续内容 */
+    lines: ContentLine[];
     setFlag?: string;
   }>;
 }
@@ -72,7 +73,8 @@ export interface TimeChoiceLine {
   type: "timeChoice";
   choices: Array<{
     time: string;
-    targetSegments: string[];
+    /** 匹配后显示的后续内容 */
+    lines: ContentLine[];
     setFlag?: string;
   }>;
 }

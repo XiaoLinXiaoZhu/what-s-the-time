@@ -9,35 +9,38 @@ import { navigationService } from "./navigation-service";
 import { stateStore } from "./state-store";
 
 class CommandService {
-  /** 执行命令 */
   handleCommand(command: CommandLine, lineIndex: number): void {
     const { displayState } = stateStore._internal;
     const line = displayState.displayedLines[lineIndex];
-    if (line) {
-      stateStore.updateLineState(line.id, "completed");
-    }
+    if (line) stateStore.updateLineState(line.id, "completed");
 
     switch (command.command) {
       case "setFlag": {
-        const flags = new Set(stateStore._internal.gameState.unlockedFlags);
-        flags.add(command.params.flag);
-        stateStore.updateGameState({ unlockedFlags: flags });
+        if (command.params.flag) {
+          const flags = new Set(stateStore._internal.gameState.unlockedFlags);
+          flags.add(command.params.flag);
+          stateStore.updateGameState({ unlockedFlags: flags });
+        }
         break;
       }
       case "unsetFlag": {
-        const flags = new Set(stateStore._internal.gameState.unlockedFlags);
-        flags.delete(command.params.flag);
-        stateStore.updateGameState({ unlockedFlags: flags });
+        if (command.params.flag) {
+          const flags = new Set(stateStore._internal.gameState.unlockedFlags);
+          flags.delete(command.params.flag);
+          stateStore.updateGameState({ unlockedFlags: flags });
+        }
         break;
       }
-      case "jump":
-        navigationService.navigateToSegment(command.params.segmentId);
+      case "jump": {
+        if (command.params.segmentId) {
+          navigationService.navigateToSegment(command.params.segmentId);
+          return; // jump 会加载新片段，不需要推进
+        }
         break;
+      }
       case "end":
-        // 游戏结束
         break;
       case "return":
-        navigationService.returnToPrevious();
         break;
     }
 

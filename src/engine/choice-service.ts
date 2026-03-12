@@ -2,20 +2,18 @@
  * 选择服务
  *
  * 处理 choice 行的选择逻辑。
- * 选择后跳转到目标片段（引用式，非内联）。
+ * 选择后将内联行插入到当前显示列表中。
  */
 
-import type { ChoiceLine, DisplayedLine, LineStatus } from "@/types";
-import { navigationService } from "./navigation-service";
+import type { ChoiceLine, ContentLine, DisplayedLine, LineStatus } from "@/types";
 import { stateStore } from "./state-store";
 
 class ChoiceService {
-  /** 处理选择 */
-  async handleChoice(
+  handleChoice(
     choice: ChoiceLine["choices"][0],
     lineId: string,
     choiceIndex: number,
-  ): Promise<void> {
+  ): void {
     const { displayState, gameState, lineStates } = stateStore._internal;
 
     const status = lineStates.get(lineId);
@@ -40,7 +38,7 @@ class ChoiceService {
       timestamp: Date.now(),
     });
 
-    // 更新选中状态
+    // 更新选中状态 + 插入内联行
     const displayedLines = [...displayState.displayedLines];
     const line = displayedLines[lineIndex];
     if (line) {
@@ -51,15 +49,30 @@ class ChoiceService {
       } as DisplayedLine;
     }
 
+    // 将 choice.lines 转为 DisplayedLine 并插入
+    const newLines = this.createDisplayedLines(choice.lines, lineIndex);
+    displayedLines.splice(lineIndex + 1, 0, ...newLines);
+
+    // 初始化新行状态
+    const newLineStates = new Map<string, LineStatus>();
+    for (const l of newLines) {
+      newLineStates.set(l.id, "pending");
+    }
+    stateStore.updateLineStates(newLineStates);
+
     stateStore.updateDisplayState({
       displayedLines,
-      currentLineIndex: lineIndex,
+      currentLineIndex: lineIndex + 1,
+      pendingSideEffects: [{ type: "startTyping", target: lineIndex + 1, delay: 0 }],
     });
+  }
 
-    // 跳转到目标片段
-    if (choice.targetSegments.length > 0) {
-      await navigationService.navigateToSegment(choice.targetSegments[0]);
-    }
+  private createDisplayedLines(lines: ContentLine[], baseIndex: number): DisplayedLine[] {
+    return lines.map((line, index) => ({
+      ...line,
+      id: `inserted-${baseIndex}-${index}`,
+      status: "pending" as LineStatus,
+    }));
   }
 }
 
