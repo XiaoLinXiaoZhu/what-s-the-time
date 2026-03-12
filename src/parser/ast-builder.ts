@@ -248,18 +248,17 @@ export class ScriptAstBuilder {
         if (!subSegments.has(subId)) {
           throw new ParseError(`未找到子片段: #${subId}`, i, undefined, segmentId);
         }
-        choices.push({
-          text,
-          targetSegments: [`${segmentId}-${subId}`],
-        });
+        // 递归解析子片段的行内容
+        const subLines = this.parseLines(
+          subSegments.get(subId) as string[],
+          subSegments,
+          segmentId,
+        );
+        choices.push({ text, lines: subLines });
       } else {
         const flagMatch = target.match(/^setFlag:(.+)$/);
         if (flagMatch) {
-          choices.push({
-            text,
-            targetSegments: [],
-            setFlag: flagMatch[1],
-          });
+          choices.push({ text, lines: [], setFlag: flagMatch[1] });
         } else {
           throw new ParseError(`无效的选项目标: ${target}`, i);
         }

@@ -50,7 +50,7 @@ import {
   stateStore,
   timeChoiceService,
 } from "@/engine";
-import type { CommandLine, DisplayedLine } from "@/types";
+import type { ChoiceLine, CommandLine, DisplayedLine } from "@/types";
 import BackToStartButton from "./BackToStartButton.vue";
 import ScriptLineRenderer from "./ScriptLineRenderer.vue";
 import WatchDisplay from "./WatchDisplay.vue";
@@ -122,7 +122,7 @@ const handleChoice = (choice: unknown, lineIndex: number, choiceIndex: number) =
   const line = displayState.value.displayedLines[lineIndex];
   if (line) {
     choiceService.handleChoice(
-      choice as { text: string; targetSegments: string[]; setFlag?: string },
+      choice as ChoiceLine["choices"][0],
       line.id,
       choiceIndex,
     );

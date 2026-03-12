@@ -2,7 +2,7 @@
  * 输入服务
  *
  * 处理 input 行的完成逻辑。
- * 输入完成后直接将 input 行替换为 timeDisplay 行（无中间转接层）。
+ * 输入完成后直接替换为 timeDisplay 行，然后导航到对应时间片段。
  */
 
 import type { DisplayedLine, LineStatus } from "@/types";
@@ -10,7 +10,6 @@ import { navigationService } from "./navigation-service";
 import { stateStore } from "./state-store";
 
 class InputService {
-  /** 处理输入完成 */
   handleInputComplete(time: string, lineId: string): void {
     const { displayState } = stateStore._internal;
     const lineIndex = displayState.displayedLines.findIndex((l) => l.id === lineId);
@@ -19,7 +18,7 @@ class InputService {
     const line = displayState.displayedLines[lineIndex];
     if (line?.type !== "input") return;
 
-    // 直接替换为 timeDisplay 行（单一真相来源，无转接）
+    // 直接替换为 timeDisplay 行
     const displayedLines = [...displayState.displayedLines];
     displayedLines[lineIndex] = {
       type: "timeDisplay",
