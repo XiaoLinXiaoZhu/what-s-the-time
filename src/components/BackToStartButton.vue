@@ -8,8 +8,8 @@
 
 <script setup lang="ts">
 defineEmits<{
-  click: []
-}>()
+  click: [];
+}>();
 </script>
 
 <style scoped>

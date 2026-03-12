@@ -19,21 +19,24 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, nextTick } from 'vue'
-import { useTimeInput } from '@/composables/useTimeInput'
-import { TIME_INPUT_SEPARATOR_INDEX, INPUT_FOCUS_DELAY } from '@/constants'
+import { nextTick, onMounted } from "vue";
+import { useTimeInput } from "@/composables/useTimeInput";
+import { INPUT_FOCUS_DELAY, TIME_INPUT_SEPARATOR_INDEX } from "@/constants";
 
-const props = withDefaults(defineProps<{
-  disabled?: boolean
-  autoFocus?: boolean
-}>(), {
-  disabled: false,
-  autoFocus: true
-})
+const props = withDefaults(
+  defineProps<{
+    disabled?: boolean;
+    autoFocus?: boolean;
+  }>(),
+  {
+    disabled: false,
+    autoFocus: true,
+  },
+);
 
 const emit = defineEmits<{
-  complete: [time: string]
-}>()
+  complete: [time: string];
+}>();
 
 const {
   chars,
@@ -42,22 +45,22 @@ const {
   handleKeydown,
   handlePaste,
   setRef,
-  focus
+  focus,
 } = useTimeInput({
-  onComplete: (time) => emit('complete', time),
-  disabled: () => props.disabled
-})
+  onComplete: (time) => emit("complete", time),
+  disabled: () => props.disabled,
+});
 
 // 自动聚焦
 onMounted(() => {
   if (props.autoFocus) {
     nextTick(() => {
       setTimeout(() => {
-        focus(0)
-      }, INPUT_FOCUS_DELAY)
-    })
+        focus(0);
+      }, INPUT_FOCUS_DELAY);
+    });
   }
-})
+});
 </script>
 
 <style scoped>

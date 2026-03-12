@@ -1,5 +1,5 @@
-import { stateStore } from '@/stores/StateStore'
-import type { DisplayedLineV2, LineStatus } from '@/types'
+import { stateStore } from "@/stores/StateStore";
+import type { DisplayedLineV2, LineStatus } from "@/types";
 
 /**
  * 行转换服务
@@ -11,63 +11,81 @@ export class LineConversionService {
    * 将 input 行转换为 timeDisplay 行
    */
   convertInputToTimeDisplay(lineIndex: number, time: string): void {
-    console.log('[LineConversionService] convertInputToTimeDisplay called', {
+    console.log("[LineConversionService] convertInputToTimeDisplay called", {
       lineIndex,
       time,
-      timestamp: new Date().toISOString()
-    })
+      timestamp: new Date().toISOString(),
+    });
 
-    const displayState = stateStore._internalDisplayState
-    const line = displayState.displayedLines[lineIndex]
+    const displayState = stateStore._internalDisplayState;
+    const line = displayState.displayedLines[lineIndex];
 
-    console.log('[LineConversionService] Current input line:', {
+    console.log("[LineConversionService] Current input line:", {
       found: !!line,
       lineType: line?.type,
       lineId: line?.id,
       lineStatus: line?.status,
       lineIndex,
-      totalLines: displayState.displayedLines.length
-    })
+      totalLines: displayState.displayedLines.length,
+    });
 
-    if (line?.type === 'input') {
+    if (line?.type === "input") {
       // 创建新的 timeDisplay 行
       const timeDisplayLine: DisplayedLineV2 = {
         ...line,
-        type: 'timeDisplay',
+        type: "timeDisplay",
         value: time,
         id: line.id, // 保持相同的 ID，维持位置
-        status: 'completed' as LineStatus // 标记为已完成（输入已完成）
-      }
+        status: "completed" as LineStatus, // 标记为已完成（输入已完成）
+      };
 
-      console.log('[LineConversionService] Created timeDisplayLine from input:', {
-        id: timeDisplayLine.id,
-        type: timeDisplayLine.type,
-        value: (timeDisplayLine as any).value,
-        status: timeDisplayLine.status
-      })
+      console.log(
+        "[LineConversionService] Created timeDisplayLine from input:",
+        {
+          id: timeDisplayLine.id,
+          type: timeDisplayLine.type,
+          value: (timeDisplayLine as any).value,
+          status: timeDisplayLine.status,
+        },
+      );
 
       // 更新显示状态
-      const displayedLines = [...displayState.displayedLines]
-      displayedLines[lineIndex] = timeDisplayLine
+      const displayedLines = [...displayState.displayedLines];
+      displayedLines[lineIndex] = timeDisplayLine;
 
-      console.log('[LineConversionService] Updating display state (input->timeDisplay)', {
-        beforeType: displayState.displayedLines[lineIndex]?.type,
-        afterType: displayedLines[lineIndex]?.type,
-        beforeStatus: displayState.displayedLines[lineIndex]?.status,
-        afterStatus: displayedLines[lineIndex]?.status
-      })
+      console.log(
+        "[LineConversionService] Updating display state (input->timeDisplay)",
+        {
+          beforeType: displayState.displayedLines[lineIndex]?.type,
+          afterType: displayedLines[lineIndex]?.type,
+          beforeStatus: displayState.displayedLines[lineIndex]?.status,
+          afterStatus: displayedLines[lineIndex]?.status,
+        },
+      );
 
-      stateStore.updateDisplayState({ displayedLines })
+      stateStore.updateDisplayState({ displayedLines });
 
-      console.log('[LineConversionService] Display state updated (input->timeDisplay), verifying:', {
-        updatedType: stateStore._internalDisplayState.displayedLines[lineIndex]?.type,
-        updatedValue: (stateStore._internalDisplayState.displayedLines[lineIndex] as { value?: string })?.value,
-        updatedStatus: stateStore._internalDisplayState.displayedLines[lineIndex]?.status
-      })
+      console.log(
+        "[LineConversionService] Display state updated (input->timeDisplay), verifying:",
+        {
+          updatedType:
+            stateStore._internalDisplayState.displayedLines[lineIndex]?.type,
+          updatedValue: (
+            stateStore._internalDisplayState.displayedLines[lineIndex] as {
+              value?: string;
+            }
+          )?.value,
+          updatedStatus:
+            stateStore._internalDisplayState.displayedLines[lineIndex]?.status,
+        },
+      );
     } else {
-      console.log('[LineConversionService] Line is not input, skipping conversion', {
-        lineType: line?.type
-      })
+      console.log(
+        "[LineConversionService] Line is not input, skipping conversion",
+        {
+          lineType: line?.type,
+        },
+      );
     }
   }
 
@@ -76,64 +94,72 @@ export class LineConversionService {
    * timeChoice 完成后应该显示输入的时间，保持与 input 行一致的转换行为
    */
   convertTimeChoiceToTimeDisplay(lineIndex: number, time: string): void {
-    console.log('[LineConversionService] convertTimeChoiceToTimeDisplay called', {
-      lineIndex,
-      time,
-      timestamp: new Date().toISOString()
-    })
+    console.log(
+      "[LineConversionService] convertTimeChoiceToTimeDisplay called",
+      {
+        lineIndex,
+        time,
+        timestamp: new Date().toISOString(),
+      },
+    );
 
-    const displayState = stateStore._internalDisplayState
-    const line = displayState.displayedLines[lineIndex]
+    const displayState = stateStore._internalDisplayState;
+    const line = displayState.displayedLines[lineIndex];
 
-    console.log('[LineConversionService] Current line:', {
+    console.log("[LineConversionService] Current line:", {
       found: !!line,
       lineType: line?.type,
       lineId: line?.id,
       lineIndex,
-      totalLines: displayState.displayedLines.length
-    })
+      totalLines: displayState.displayedLines.length,
+    });
 
-    if (line?.type === 'timeChoice') {
+    if (line?.type === "timeChoice") {
       // 创建新的 timeDisplay 行
       const timeDisplayLine: DisplayedLineV2 = {
         ...line,
-        type: 'timeDisplay',
+        type: "timeDisplay",
         value: time,
         id: line.id, // 保持相同的 ID，维持位置
-        status: 'completed' as LineStatus // 标记为已完成
-      }
+        status: "completed" as LineStatus, // 标记为已完成
+      };
 
-      console.log('[LineConversionService] Created timeDisplayLine:', {
+      console.log("[LineConversionService] Created timeDisplayLine:", {
         id: timeDisplayLine.id,
         type: timeDisplayLine.type,
         value: (timeDisplayLine as any).value,
-        status: timeDisplayLine.status
-      })
+        status: timeDisplayLine.status,
+      });
 
       // 更新显示状态 - 创建新数组以确保响应式更新
-      const displayedLines = [...displayState.displayedLines]
-      displayedLines[lineIndex] = timeDisplayLine
+      const displayedLines = [...displayState.displayedLines];
+      displayedLines[lineIndex] = timeDisplayLine;
 
-      console.log('[LineConversionService] Updating display state', {
+      console.log("[LineConversionService] Updating display state", {
         beforeType: displayState.displayedLines[lineIndex]?.type,
         afterType: displayedLines[lineIndex]?.type,
-        arrayLength: displayedLines.length
-      })
+        arrayLength: displayedLines.length,
+      });
 
-      stateStore.updateDisplayState({ displayedLines })
+      stateStore.updateDisplayState({ displayedLines });
 
-      console.log('[LineConversionService] Display state updated, verifying:', {
-        updatedType: stateStore._internalDisplayState.displayedLines[lineIndex]?.type,
-        updatedValue: (stateStore._internalDisplayState.displayedLines[lineIndex] as any)?.value
-      })
+      console.log("[LineConversionService] Display state updated, verifying:", {
+        updatedType:
+          stateStore._internalDisplayState.displayedLines[lineIndex]?.type,
+        updatedValue: (
+          stateStore._internalDisplayState.displayedLines[lineIndex] as any
+        )?.value,
+      });
     } else {
-      console.log('[LineConversionService] Line is not timeChoice, skipping conversion', {
-        lineType: line?.type
-      })
+      console.log(
+        "[LineConversionService] Line is not timeChoice, skipping conversion",
+        {
+          lineType: line?.type,
+        },
+      );
     }
   }
 }
 
 // 单例
-export const lineConversionService = new LineConversionService()
-
+export const lineConversionService = new LineConversionService();

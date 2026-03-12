@@ -47,46 +47,55 @@
 </template>
 
 <script setup lang="ts">
-import { watch } from 'vue'
-import { computed } from 'vue'
-import type { TextNode } from '@/types'
-import { useSystemTime } from '@/composables/useSystemTime'
-import { useAnimateText } from '@/composables/useAnimateText'
+import { computed, watch } from "vue";
+import { useAnimateText } from "@/composables/useAnimateText";
+import { useSystemTime } from "@/composables/useSystemTime";
+import type { TextNode } from "@/types";
 
 const props = defineProps<{
-  nodes: TextNode[]  // ✅ V2: 直接接收已解析的 TextNode[]
-}>()
+  nodes: TextNode[]; // ✅ V2: 直接接收已解析的 TextNode[]
+}>();
 
 // ✅ 直接使用，无需解析
-const parsedNodes = computed(() => props.nodes)
+const parsedNodes = computed(() => props.nodes);
 
 // 使用全局系统时间
-const { systemTime, getCurrentSystemTime } = useSystemTime()
+const { systemTime, getCurrentSystemTime } = useSystemTime();
 
 // 确保始终有值
 const systemTimeDisplay = computed(() => {
-  return systemTime.value || getCurrentSystemTime()
-})
+  return systemTime.value || getCurrentSystemTime();
+});
 
 // 使用动画文本管理
-const { getAnimateText, getMaxLength, shouldShowCursor, startAnimation, cleanup } = useAnimateText()
+const {
+  getAnimateText,
+  getMaxLength,
+  shouldShowCursor,
+  startAnimation,
+  cleanup,
+} = useAnimateText();
 
 // 初始化动画文本的函数
 const initializeAnimateTexts = () => {
-  cleanup()
-  
+  cleanup();
+
   // 为新的 animateText 节点启动定时器
   parsedNodes.value.forEach((node, index) => {
-    if (node.type === 'animateText') {
-      startAnimation(node, index)
+    if (node.type === "animateText") {
+      startAnimation(node, index);
     }
-  })
-}
+  });
+};
 
 // 监听 nodes 的变化，重新初始化动画
-watch(parsedNodes, () => {
-  initializeAnimateTexts()
-}, { immediate: true })
+watch(
+  parsedNodes,
+  () => {
+    initializeAnimateTexts();
+  },
+  { immediate: true },
+);
 </script>
 
 <style scoped>

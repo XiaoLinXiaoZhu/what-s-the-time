@@ -30,36 +30,44 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref, watch, nextTick, type ComponentPublicInstance } from 'vue'
-import { stateStore } from '@/stores/StateStore'
-import { navigationService } from '@/services/NavigationService'
-import { choiceService } from '@/services/ChoiceService'
-import { timeChoiceService } from '@/services/TimeChoiceService'
-import { inputService } from '@/services/InputService'
-import { commandService } from '@/services/CommandService'
-import { displayService } from '@/services/DisplayService'
-import { sideEffectExecutor } from '@/services/SideEffectExecutor'
-import { useKeyboardNavigation } from '@/composables/useKeyboardNavigation'
-import WatchDisplay from './WatchDisplay.vue'
-import ScriptLineRenderer from './ScriptLineRenderer.vue'
-import BackToStartButton from './BackToStartButton.vue'
+import {
+  type ComponentPublicInstance,
+  computed,
+  nextTick,
+  onMounted,
+  onUnmounted,
+  ref,
+  watch,
+} from "vue";
+import { useKeyboardNavigation } from "@/composables/useKeyboardNavigation";
+import { choiceService } from "@/services/ChoiceService";
+import { commandService } from "@/services/CommandService";
+import { displayService } from "@/services/DisplayService";
+import { inputService } from "@/services/InputService";
+import { navigationService } from "@/services/NavigationService";
+import { sideEffectExecutor } from "@/services/SideEffectExecutor";
+import { timeChoiceService } from "@/services/TimeChoiceService";
+import { stateStore } from "@/stores/StateStore";
+import BackToStartButton from "./BackToStartButton.vue";
+import ScriptLineRenderer from "./ScriptLineRenderer.vue";
+import WatchDisplay from "./WatchDisplay.vue";
 
 // 响应式状态（只读）
-const displayState = computed(() => stateStore.displayState)
-const gameState = computed(() => stateStore.gameState)
+const displayState = computed(() => stateStore.displayState);
+const gameState = computed(() => stateStore.gameState);
 
 // 滚动相关
-const textContainerRef = ref<HTMLElement | null>(null)
-const lineRefs = ref<Map<number, ComponentPublicInstance>>(new Map())
+const textContainerRef = ref<HTMLElement | null>(null);
+const lineRefs = ref<Map<number, ComponentPublicInstance>>(new Map());
 
 // 计算显示时间
 const displayTime = computed(() => {
-  return gameState.value.currentTime || ''
-})
+  return gameState.value.currentTime || "";
+});
 
 /**
  * 判断是否应该显示行
- * 
+ *
  * 系统性规则（基于行状态，而非类型补丁）：
  * 1. 已完成的行（status === 'completed'）始终显示
  * 2. 其他行根据 currentLineIndex 显示（进度控制）
@@ -68,75 +76,87 @@ const displayTime = computed(() => {
 const shouldShowLine = (line: any, index: number) => {
   // 规则1：已完成的行始终显示
   // 这包括：转换后的 timeDisplay、已完成的 choice、已完成的 input 等
-  if (line.status === 'completed') {
-    return true
+  if (line.status === "completed") {
+    return true;
   }
-  
+
   // 规则2：所有行（包括 choice）根据 currentLineIndex 显示（进度控制）
   // choice 行会在上一行打字完成后，通过 currentLineIndex 递增而显示
-  const shouldShow = index <= displayState.value.currentLineIndex
-  
+  const shouldShow = index <= displayState.value.currentLineIndex;
+
   // 调试日志
-  if (line.type === 'timeDisplay' || line.type === 'timeChoice' || line.type === 'input' || line.type === 'choice') {
-    console.log('[GameView] shouldShowLine:', {
+  if (
+    line.type === "timeDisplay" ||
+    line.type === "timeChoice" ||
+    line.type === "input" ||
+    line.type === "choice"
+  ) {
+    console.log("[GameView] shouldShowLine:", {
       lineType: line.type,
       lineId: line.id,
       index,
       status: line.status,
       currentLineIndex: displayState.value.currentLineIndex,
       shouldShow,
-      reason: line.status === 'completed' ? 'completed' : 'currentLineIndex'
-    })
+      reason: line.status === "completed" ? "completed" : "currentLineIndex",
+    });
   }
-  
-  return shouldShow
-}
+
+  return shouldShow;
+};
 
 // 计算是否应该显示"回到开始"按钮
 const shouldShowBackButton = computed(() => {
-  return displayService.isAllLinesComplete() && displayState.value.currentSegment?.id !== 'START'
-})
+  return (
+    displayService.isAllLinesComplete() &&
+    displayState.value.currentSegment?.id !== "START"
+  );
+});
 
 // 设置行 ref
 const setLineRef = (el: any, index: number) => {
   if (el) {
-    lineRefs.value.set(index, el)
+    lineRefs.value.set(index, el);
   }
-}
+};
 
 // 滚动到指定行
 const scrollToLine = (lineIndex: number) => {
-  if (!textContainerRef.value) return
+  if (!textContainerRef.value) return;
 
-  const lineComponent = lineRefs.value.get(lineIndex)
-  if (!lineComponent) return
+  const lineComponent = lineRefs.value.get(lineIndex);
+  if (!lineComponent) return;
 
   // 获取行组件的 DOM 元素
   // ScriptLineRenderer 没有根元素，$el 会指向第一个子组件
-  let lineElement: HTMLElement | null = null
-  
+  let lineElement: HTMLElement | null = null;
+
   if (lineComponent.$el) {
-    lineElement = lineComponent.$el as HTMLElement
+    lineElement = lineComponent.$el as HTMLElement;
   } else if ((lineComponent as any).$el) {
-    lineElement = (lineComponent as any).$el as HTMLElement
+    lineElement = (lineComponent as any).$el as HTMLElement;
   }
-  
-  if (!lineElement) return
+
+  if (!lineElement) return;
 
   // 计算滚动位置
-  const container = textContainerRef.value
-  const containerRect = container.getBoundingClientRect()
-  const lineRect = lineElement.getBoundingClientRect()
-  
+  const container = textContainerRef.value;
+  const containerRect = container.getBoundingClientRect();
+  const lineRect = lineElement.getBoundingClientRect();
+
   // 计算目标滚动位置（让行显示在容器中间偏上的位置，留出 100px 的顶部空间）
-  const scrollTop = container.scrollTop + lineRect.top - containerRect.top - containerRect.height / 2
+  const scrollTop =
+    container.scrollTop +
+    lineRect.top -
+    containerRect.top -
+    containerRect.height / 2;
 
   // 平滑滚动
   container.scrollTo({
     top: Math.max(0, scrollTop),
-    behavior: 'smooth'
-  })
-}
+    behavior: "smooth",
+  });
+};
 
 // 监听 currentLineIndex 变化，自动滚动到当前行
 watch(
@@ -146,59 +166,59 @@ watch(
       // 等待 DOM 更新后再滚动
       nextTick(() => {
         setTimeout(() => {
-          scrollToLine(newIndex)
-        }, 100) // 稍微延迟，确保打字动画已开始
-      })
+          scrollToLine(newIndex);
+        }, 100); // 稍微延迟，确保打字动画已开始
+      });
     }
-  }
-)
+  },
+);
 
 // 监听片段变化，清理行 refs
 watch(
   () => displayState.value.currentSegment?.id,
   () => {
-    lineRefs.value.clear()
-  }
-)
+    lineRefs.value.clear();
+  },
+);
 
 // 事件处理
 const handleSetTypingRef = (el: any, index: number) => {
-  displayService.setTypingRef(el, index)
-}
+  displayService.setTypingRef(el, index);
+};
 
 const handleChoice = (choice: any, lineIndex: number, choiceIndex: number) => {
-  const line = displayState.value.displayedLines[lineIndex]
+  const line = displayState.value.displayedLines[lineIndex];
   if (line) {
-    choiceService.handleChoice(choice, line.id, choiceIndex)
+    choiceService.handleChoice(choice, line.id, choiceIndex);
   }
-}
+};
 
 const handleTimeChoice = (time: string, lineIndex: number) => {
-  const line = displayState.value.displayedLines[lineIndex]
+  const line = displayState.value.displayedLines[lineIndex];
   if (line) {
-    timeChoiceService.handleTimeChoice(time, line.id)
+    timeChoiceService.handleTimeChoice(time, line.id);
   }
-}
+};
 
 const handleInputComplete = (time: string, lineIndex: number) => {
-  const line = displayState.value.displayedLines[lineIndex]
+  const line = displayState.value.displayedLines[lineIndex];
   if (line) {
-    inputService.handleInputComplete(time, line.id)
+    inputService.handleInputComplete(time, line.id);
   }
-}
+};
 
 const handleCommandExecute = (command: any, lineIndex: number) => {
-  commandService.handleCommand(command, lineIndex)
-}
+  commandService.handleCommand(command, lineIndex);
+};
 
 const backToStart = () => {
-  navigationService.navigateToStart()
-}
+  navigationService.navigateToStart();
+};
 
 const onLineComplete = () => {
   // 当前行显示完成，可以在这里处理额外的逻辑
   // 副作用执行器会自动处理打字效果和聚焦
-}
+};
 
 // 键盘导航
 const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
@@ -206,27 +226,28 @@ const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
   backToStart,
   isAllLinesComplete: shouldShowBackButton,
   skipCurrentLine: () => displayService.skipCurrentLine(),
-  getTypingComponent: (index: number) => displayService.getTypingComponent(index),
+  getTypingComponent: (index: number) =>
+    displayService.getTypingComponent(index),
   currentLineIndex: computed(() => displayState.value.currentLineIndex),
-  displayedLines: computed(() => displayState.value.displayedLines)
-})
+  displayedLines: computed(() => displayState.value.displayedLines),
+});
 
 // 初始化
 onMounted(() => {
   // 初始化副作用执行器
-  sideEffectExecutor.init()
-  
+  sideEffectExecutor.init();
+
   // 导航到开始片段
-  navigationService.navigateToStart()
-  
+  navigationService.navigateToStart();
+
   // 添加键盘事件监听
-  window.addEventListener('keydown', handleGlobalKeyDown)
-})
+  window.addEventListener("keydown", handleGlobalKeyDown);
+});
 
 // 组件卸载时移除事件监听
 onUnmounted(() => {
-  window.removeEventListener('keydown', handleGlobalKeyDown)
-})
+  window.removeEventListener("keydown", handleGlobalKeyDown);
+});
 </script>
 
 <style scoped>

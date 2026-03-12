@@ -15,20 +15,20 @@
 </template>
 
 <script setup lang="ts">
-import type { NarrationTextLine } from '@/types'
-import TypingTextV2 from './TypingTextV2.vue'
-import FormattedTextV2 from './FormattedTextV2.vue'
+import type { NarrationTextLine } from "@/types";
+import FormattedTextV2 from "./FormattedTextV2.vue";
+import TypingTextV2 from "./TypingTextV2.vue";
 
 const props = defineProps<{
-  line: NarrationTextLine
-  index: number
-  currentLineIndex: number
-}>()
+  line: NarrationTextLine;
+  index: number;
+  currentLineIndex: number;
+}>();
 
 const emit = defineEmits<{
-  'set-typing-ref': [el: any, index: number]
-  'line-complete': []
-}>()
+  "set-typing-ref": [el: any, index: number];
+  "line-complete": [];
+}>();
 </script>
 
 <style scoped>

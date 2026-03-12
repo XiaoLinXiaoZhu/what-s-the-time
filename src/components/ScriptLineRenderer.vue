@@ -49,28 +49,28 @@
 </template>
 
 <script setup lang="ts">
-import type { DisplayedLineV2 } from '@/types'
-import NarrationLine from './NarrationLine.vue'
-import DialogueLine from './DialogueLine.vue'
-import ChoiceLine from './ChoiceLine.vue'
-import TimeChoiceLine from './TimeChoiceLine.vue'
-import InputLine from './InputLine.vue'
-import TimeDisplayLine from './TimeDisplayLine.vue'
-import CommandLine from './CommandLine.vue'
+import type { DisplayedLineV2 } from "@/types";
+import ChoiceLine from "./ChoiceLine.vue";
+import CommandLine from "./CommandLine.vue";
+import DialogueLine from "./DialogueLine.vue";
+import InputLine from "./InputLine.vue";
+import NarrationLine from "./NarrationLine.vue";
+import TimeChoiceLine from "./TimeChoiceLine.vue";
+import TimeDisplayLine from "./TimeDisplayLine.vue";
 
 defineProps<{
-  line: DisplayedLineV2
-  index: number
-  currentLineIndex: number
-}>()
+  line: DisplayedLineV2;
+  index: number;
+  currentLineIndex: number;
+}>();
 
 defineEmits<{
-  'set-typing-ref': [el: any, index: number]
-  'line-complete': []
-  'choice-select': [choice: any, lineIndex: number, choiceIndex: number]
-  'time-choice-complete': [time: string, lineIndex: number]
-  'input-complete': [time: string, lineIndex: number]
-  'command-execute': [command: any, lineIndex: number]
-}>()
+  "set-typing-ref": [el: any, index: number];
+  "line-complete": [];
+  "choice-select": [choice: any, lineIndex: number, choiceIndex: number];
+  "time-choice-complete": [time: string, lineIndex: number];
+  "input-complete": [time: string, lineIndex: number];
+  "command-execute": [command: any, lineIndex: number];
+}>();
 </script>
 
