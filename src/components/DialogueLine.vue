@@ -4,14 +4,14 @@
       {{ line.character }}
     </span>
     <span class="dialogue-text">
-      <TypingTextV2
+      <TypingText
         v-if="index === currentLineIndex"
         :nodes="line.nodes"
-        :ref="(el) => $emit('set-typing-ref', el, index)"
+        :ref="(el: any) => $emit('set-typing-ref', el, index)"
         :auto-start="false"
         @complete="$emit('line-complete')"
       />
-      <FormattedTextV2
+      <FormattedText
         v-else-if="index < currentLineIndex"
         :nodes="line.nodes"
       />
@@ -20,35 +20,35 @@
 </template>
 
 <script setup lang="ts">
-import type { DialogueTextLine } from "@/types";
-import FormattedTextV2 from "./FormattedTextV2.vue";
-import TypingTextV2 from "./TypingTextV2.vue";
+import type { DialogueLine } from "@/types";
+import FormattedText from "./FormattedText.vue";
+import TypingText from "./TypingText.vue";
 
-const props = defineProps<{
-  line: DialogueTextLine;
+defineProps<{
+  line: DialogueLine;
   index: number;
   currentLineIndex: number;
 }>();
 
-const emit = defineEmits<{
-  "set-typing-ref": [el: any, index: number];
+defineEmits<{
+  "set-typing-ref": [el: unknown, index: number];
   "line-complete": [];
 }>();
 </script>
 
 <style scoped>
 .dialogue {
-  margin-bottom: 25px;
+  margin: 16px 0;
 }
 
 .character-name {
-  display: inline-block;
-  color: #4a9eff;
-  font-weight: bold;
-  margin-right: 8px;
+  color: #aaa;
+  font-size: 14px;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .dialogue-text {
-  color: #fff;
+  color: #e0e0e0;
 }
 </style>

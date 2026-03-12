@@ -1,6 +1,6 @@
 <template>
   <span>
-    <template v-for="(node, index) in parsedNodes" :key="index">
+    <template v-for="(node, index) in nodes" :key="index">
       <br v-if="node.type === 'linebreak'" />
       <template v-else-if="node.type === 'delay'">
         <!-- delay节点不渲染任何内容 -->
@@ -50,13 +50,14 @@
 import { computed, watch } from "vue";
 import { useAnimateText } from "@/composables/useAnimateText";
 import { useSystemTime } from "@/composables/useSystemTime";
-import { parseText } from "@/utils/textParser";
+import type { TextNode } from "@/types";
 
 const props = defineProps<{
-  text: string;
+  nodes: TextNode[];
 }>();
 
-const parsedNodes = computed(() => parseText(props.text));
+// ✅ 直接使用，无需解析
+const parsedNodes = computed(() => props.nodes);
 
 // 使用全局系统时间
 const { systemTime, getCurrentSystemTime } = useSystemTime();
@@ -77,7 +78,6 @@ const {
 
 // 初始化动画文本的函数
 const initializeAnimateTexts = () => {
-  // 先清理旧的定时器
   cleanup();
 
   // 为新的 animateText 节点启动定时器
@@ -88,7 +88,7 @@ const initializeAnimateTexts = () => {
   });
 };
 
-// 监听 parsedNodes 的变化，重新初始化动画
+// 监听 nodes 的变化，重新初始化动画
 watch(
   parsedNodes,
   () => {
@@ -145,4 +145,3 @@ watch(
   }
 }
 </style>
-

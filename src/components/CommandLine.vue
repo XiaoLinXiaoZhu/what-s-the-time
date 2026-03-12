@@ -8,39 +8,34 @@
 
 <script setup lang="ts">
 import { computed, onMounted } from "vue";
-import type { CommandLineV2 } from "@/types/script-v2";
+import type { CommandLine } from "@/types";
 
 const props = defineProps<{
-  line: CommandLineV2;
+  line: CommandLine;
   index: number;
 }>();
 
 const emit = defineEmits<{
-  "command-execute": [command: CommandLineV2, lineIndex: number];
+  "command-execute": [command: CommandLine, lineIndex: number];
 }>();
 
-// 组件挂载时自动执行命令
 onMounted(() => {
   emit("command-execute", props.line, props.index);
 });
 
-/**
- * 生成命令描述文本（用于 debug 显示）
- */
 const commandDescription = computed(() => {
   const { command, params } = props.line;
-
   switch (command) {
     case "setFlag":
       return `设置 flag: ${params.flag || "N/A"}`;
     case "unsetFlag":
       return `取消 flag: ${params.flag || "N/A"}`;
     case "jump":
-      return `跳转到: ${params.segmentId || params.time || "N/A"}`;
+      return `跳转到: ${params.segmentId || "N/A"}`;
     case "end":
-      return `结束游戏${params.message ? `: ${params.message}` : ""}`;
+      return "结束游戏";
     case "return":
-      return `返回上一层`;
+      return "返回上一层";
     default:
       return `未知命令: ${command}`;
   }
@@ -56,8 +51,7 @@ const commandDescription = computed(() => {
   font-size: 11px;
   color: #888;
   font-style: italic;
-  font-family: 'Courier New', monospace;
+  font-family: "Courier New", monospace;
   opacity: 0.7;
 }
 </style>
-

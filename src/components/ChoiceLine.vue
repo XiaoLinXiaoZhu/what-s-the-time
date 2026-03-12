@@ -3,14 +3,14 @@
     <button
       v-for="(choice, choiceIndex) in line.choices"
       :key="choiceIndex"
-      @click.stop="handleChoiceClick(choice, choiceIndex)"
       :disabled="isDisabled"
-      class="choice-button"
       :class="{
+        'choice-button': true,
         'choice-button-disabled': isDisabled,
         'choice-button-selected': isSelected(choiceIndex),
-        'choice-button-unselected': isDisabled && !isSelected(choiceIndex)
+        'choice-button-unselected': isDisabled && !isSelected(choiceIndex),
       }"
+      @click.stop="handleChoiceClick(choice, choiceIndex)"
     >
       {{ choice.text }}
     </button>
@@ -19,35 +19,31 @@
 
 <script setup lang="ts">
 import { computed } from "vue";
-import type { ChoiceLineV2, DisplayedLineV2 } from "@/types";
+import type { ChoiceLine, DisplayedLine } from "@/types";
 
 const props = defineProps<{
-  line: DisplayedLineV2 & ChoiceLineV2;
+  line: DisplayedLine & ChoiceLine;
   index: number;
 }>();
 
 const emit = defineEmits<{
   "choice-select": [
-    choice: ChoiceLineV2["choices"][0],
+    choice: ChoiceLine["choices"][0],
     lineIndex: number,
     choiceIndex: number,
   ];
 }>();
 
-// 根据行状态决定是否禁用
 const isDisabled = computed(() => {
-  const status = props.line.status;
-  return status === "completed" || status === "disabled";
+  return props.line.status === "completed" || props.line.status === "disabled";
 });
 
-// 检查选项是否被选中（从 line.selectedChoiceIndex 读取）
 const isSelected = (choiceIndex: number): boolean => {
   return isDisabled.value && props.line.selectedChoiceIndex === choiceIndex;
 };
 
-// 处理选择点击
 const handleChoiceClick = (
-  choice: ChoiceLineV2["choices"][0],
+  choice: ChoiceLine["choices"][0],
   choiceIndex: number,
 ) => {
   if (!isDisabled.value) {
@@ -77,19 +73,16 @@ const handleChoiceClick = (
   font-family: inherit;
 }
 
-/* 未选中状态（可点击）的 hover - 必须在禁用样式之前 */
 .choice-button:hover {
   color: #999;
   border-color: #999;
   background: rgba(255, 255, 255, 0.05);
 }
 
-/* 已选中状态 */
 .choice-button-selected {
   color: #fff !important;
   border-color: #fff !important;
   background: transparent;
-  font-weight: normal;
 }
 
 .choice-button-selected:hover {
@@ -98,7 +91,6 @@ const handleChoiceClick = (
   background: transparent;
 }
 
-/* 未选中的选项（已禁用状态） */
 .choice-button-unselected {
   color: #444 !important;
   border-color: #333 !important;
@@ -111,11 +103,9 @@ const handleChoiceClick = (
   background: transparent;
 }
 
-/* 禁用状态 - 必须放在最后，覆盖其他样式 */
 .choice-button:disabled,
 .choice-button-disabled {
   cursor: not-allowed;
   pointer-events: none;
 }
 </style>
-
