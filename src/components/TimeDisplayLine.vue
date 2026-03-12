@@ -5,13 +5,13 @@
 </template>
 
 <script setup lang="ts">
-import type { TimeDisplayLineV2 } from '@/types'
-import TimeDisplay from './TimeDisplay.vue'
+import type { TimeDisplayLineV2 } from "@/types";
+import TimeDisplay from "./TimeDisplay.vue";
 
 defineProps<{
-  line: TimeDisplayLineV2
-  index: number
-}>()
+  line: TimeDisplayLineV2;
+  index: number;
+}>();
 </script>
 
 <style scoped>

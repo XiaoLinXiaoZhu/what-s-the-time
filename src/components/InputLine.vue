@@ -9,27 +9,27 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import type { DisplayedLineV2 } from '@/types'
-import TimeInput from './TimeInput.vue'
+import { computed } from "vue";
+import type { DisplayedLineV2 } from "@/types";
+import TimeInput from "./TimeInput.vue";
 
 const props = defineProps<{
-  line: DisplayedLineV2
-  index: number
-  currentLineIndex: number
-}>()
+  line: DisplayedLineV2;
+  index: number;
+  currentLineIndex: number;
+}>();
 
 defineEmits<{
-  'input-complete': [time: string]
-}>()
+  "input-complete": [time: string];
+}>();
 
-const shouldAutoFocus = computed(() => props.index === props.currentLineIndex)
+const shouldAutoFocus = computed(() => props.index === props.currentLineIndex);
 
 // 根据行状态决定是否禁用
 const isDisabled = computed(() => {
-  const status = props.line.status
-  return status === 'completed' || status === 'disabled'
-})
+  const status = props.line.status;
+  return status === "completed" || status === "disabled";
+});
 </script>
 
 <style scoped>

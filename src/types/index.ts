@@ -1,32 +1,42 @@
 /**
  * 行的状态
  */
-export type LineStatus = 'pending' | 'active' | 'completed' | 'disabled'
+export type LineStatus = "pending" | "active" | "completed" | "disabled";
 
 /**
  * 行状态映射（运行时状态，独立于静态数据）
  * key: lineId (格式: segmentId-index 或 inserted-baseIndex-index)
  * value: LineStatus
  */
-export type LineStateMap = Map<string, LineStatus>
+export type LineStateMap = Map<string, LineStatus>;
 
 /**
  * 文本格式类型
  */
-export type TextFormat = 'bold' | 'italic' | 'red' | 'blur' | 'strike'
+export type TextFormat = "bold" | "italic" | "red" | "blur" | "strike";
 
 /**
  * 解析后的文本节点（用于渲染）
  */
 export interface TextNode {
-  type: 'text' | 'bold' | 'italic' | 'red' | 'blur' | 'strike' | 'linebreak' | 'delay' | 'systemTime' | 'animateText'
-  content: string
+  type:
+    | "text"
+    | "bold"
+    | "italic"
+    | "red"
+    | "blur"
+    | "strike"
+    | "linebreak"
+    | "delay"
+    | "systemTime"
+    | "animateText";
+  content: string;
   /** 应用的格式数组（支持多个格式叠加，如同时应用 bold 和 red） */
-  formats?: TextFormat[]
+  formats?: TextFormat[];
   /** delay 类型的延时时间（秒） */
-  delayTime?: number
+  delayTime?: number;
   /** animateText 类型的文本数组 */
-  animateTexts?: string[]
+  animateTexts?: string[];
 }
 
 /**
@@ -34,28 +44,33 @@ export interface TextNode {
  */
 export interface GameState {
   /** 当前 Loop */
-  currentLoop: string
+  currentLoop: string;
   /** 已解锁的 flag */
-  unlockedFlags: Set<string>
+  unlockedFlags: Set<string>;
   /** 已观看的片段 ID */
-  viewedSegments: Set<string>
+  viewedSegments: Set<string>;
   /** 当前输入的时间 */
-  currentTime?: string
+  currentTime?: string;
   /** 选择历史（记录选择的内容） */
   choiceHistory: Array<{
-    choiceText: string
-    timestamp: number
-  }>
+    choiceText: string;
+    timestamp: number;
+  }>;
 }
 
 /**
  * 副作用类型
  */
 export interface SideEffect {
-  type: 'startTyping' | 'focusInput' | 'scrollToLine' | 'removeLine' | 'insertLines'
-  target: string | number
-  delay?: number
-  data?: any
+  type:
+    | "startTyping"
+    | "focusInput"
+    | "scrollToLine"
+    | "removeLine"
+    | "insertLines";
+  target: string | number;
+  delay?: number;
+  data?: any;
 }
 
 // ============================================================================
@@ -67,26 +82,26 @@ export interface SideEffect {
  */
 export class ParseError extends Error {
   /** 错误消息 */
-  message: string
+  message: string;
   /** 错误所在行号 */
-  lineNumber?: number
+  lineNumber?: number;
   /** 错误所在列号 */
-  columnNumber?: number
+  columnNumber?: number;
   /** 相关的片段ID */
-  segmentId?: string
+  segmentId?: string;
 
   constructor(
     message: string,
     lineNumber?: number,
     columnNumber?: number,
-    segmentId?: string
+    segmentId?: string,
   ) {
-    super(message)
-    this.name = 'ParseError'
-    this.message = message
-    this.lineNumber = lineNumber
-    this.columnNumber = columnNumber
-    this.segmentId = segmentId
+    super(message);
+    this.name = "ParseError";
+    this.message = message;
+    this.lineNumber = lineNumber;
+    this.columnNumber = columnNumber;
+    this.segmentId = segmentId;
   }
 }
 
@@ -95,15 +110,15 @@ export class ParseError extends Error {
  */
 export interface SegmentMetadata {
   /** 片段ID */
-  id: string
+  id: string;
   /** 时间点 */
-  time: string
+  time: string;
   /** 描述（可选） */
-  description?: string
+  description?: string;
   /** Loop ID（可选） */
-  loop?: string
+  loop?: string;
   /** 解锁的flag列表（可选） */
-  unlockFlags?: string[]
+  unlockFlags?: string[];
 }
 
 /**
@@ -112,11 +127,11 @@ export interface SegmentMetadata {
  */
 export interface TokenSegment {
   /** 片段元数据 */
-  metadata: SegmentMetadata
+  metadata: SegmentMetadata;
   /** 主内容（原始行数组） */
-  content: string[]
+  content: string[];
   /** 子片段映射（key: 子片段标识, value: 行数组） */
-  subSegments: Map<string, string[]>
+  subSegments: Map<string, string[]>;
 }
 
 /**
@@ -124,7 +139,7 @@ export interface TokenSegment {
  */
 export interface TokenizerOptions {
   /** 是否保留注释行（以 > 开头的行） */
-  keepComments?: boolean
+  keepComments?: boolean;
 }
 
 /**
@@ -132,9 +147,9 @@ export interface TokenizerOptions {
  */
 export interface ParserOptions {
   /** 是否启用缓存 */
-  enableCache?: boolean
+  enableCache?: boolean;
   /** 最大嵌套深度 */
-  maxNestingDepth?: number
+  maxNestingDepth?: number;
 }
 
 /**
@@ -142,11 +157,11 @@ export interface ParserOptions {
  */
 export interface ParseResult<T = any> {
   /** 解析后的片段 */
-  segment: T
+  segment: T;
   /** 解析耗时（毫秒） */
-  parseTime: number
+  parseTime: number;
   /** 源文件路径（可选） */
-  filePath?: string
+  filePath?: string;
 }
 
 /**
@@ -155,15 +170,15 @@ export interface ParseResult<T = any> {
  */
 export interface DisplayState {
   /** 当前片段（类型未知，可能是 V1 或 V2） */
-  currentSegment: any
+  currentSegment: any;
   /** 当前行索引 */
-  currentLineIndex: number
+  currentLineIndex: number;
   /** 已展示的行列表 */
-  displayedLines: any[]
+  displayedLines: any[];
   /** 打字动画引用映射 */
-  typingRefs: Map<number, any>
+  typingRefs: Map<number, any>;
   /** 待处理的副作用队列 */
-  pendingSideEffects: SideEffect[]
+  pendingSideEffects: SideEffect[];
 }
 
 // ============================================================================
@@ -180,16 +195,16 @@ export interface DisplayState {
 // ============================================================================
 
 export type {
-  ScriptSegmentV2,
-  ContentLine,
-  TextLine,
-  DialogueTextLine,
-  NarrationTextLine,
   ChoiceLineV2,
-  TimeChoiceLineV2,
-  InputLineV2,
   CommandLineV2,
-  TimeDisplayLineV2,
+  ContentLine,
+  DialogueTextLine,
   DisplayedLineV2,
-  SegmentRefLine
-} from './script-v2'
+  InputLineV2,
+  NarrationTextLine,
+  ScriptSegmentV2,
+  SegmentRefLine,
+  TextLine,
+  TimeChoiceLineV2,
+  TimeDisplayLineV2,
+} from "./script-v2";

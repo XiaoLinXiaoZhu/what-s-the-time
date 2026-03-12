@@ -7,44 +7,44 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted } from 'vue'
-import type { CommandLineV2 } from '@/types/script-v2'
+import { computed, onMounted } from "vue";
+import type { CommandLineV2 } from "@/types/script-v2";
 
 const props = defineProps<{
-  line: CommandLineV2
-  index: number
-}>()
+  line: CommandLineV2;
+  index: number;
+}>();
 
 const emit = defineEmits<{
-  'command-execute': [command: CommandLineV2, lineIndex: number]
-}>()
+  "command-execute": [command: CommandLineV2, lineIndex: number];
+}>();
 
 // 组件挂载时自动执行命令
 onMounted(() => {
-  emit('command-execute', props.line, props.index)
-})
+  emit("command-execute", props.line, props.index);
+});
 
 /**
  * 生成命令描述文本（用于 debug 显示）
  */
 const commandDescription = computed(() => {
-  const { command, params } = props.line
-  
+  const { command, params } = props.line;
+
   switch (command) {
-    case 'setFlag':
-      return `设置 flag: ${params.flag || 'N/A'}`
-    case 'unsetFlag':
-      return `取消 flag: ${params.flag || 'N/A'}`
-    case 'jump':
-      return `跳转到: ${params.segmentId || params.time || 'N/A'}`
-    case 'end':
-      return `结束游戏${params.message ? `: ${params.message}` : ''}`
-    case 'return':
-      return `返回上一层`
+    case "setFlag":
+      return `设置 flag: ${params.flag || "N/A"}`;
+    case "unsetFlag":
+      return `取消 flag: ${params.flag || "N/A"}`;
+    case "jump":
+      return `跳转到: ${params.segmentId || params.time || "N/A"}`;
+    case "end":
+      return `结束游戏${params.message ? `: ${params.message}` : ""}`;
+    case "return":
+      return `返回上一层`;
     default:
-      return `未知命令: ${command}`
+      return `未知命令: ${command}`;
   }
-})
+});
 </script>
 
 <style scoped>

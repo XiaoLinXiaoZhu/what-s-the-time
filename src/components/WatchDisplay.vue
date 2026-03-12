@@ -8,11 +8,11 @@
 </template>
 
 <script setup lang="ts">
-import watchImage from '@/img/watch.png'
+import watchImage from "@/img/watch.png";
 
 defineProps<{
-  displayTime?: string
-}>()
+  displayTime?: string;
+}>();
 </script>
 
 <style scoped>

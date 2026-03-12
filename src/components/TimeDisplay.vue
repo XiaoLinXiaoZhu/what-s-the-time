@@ -10,39 +10,39 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
-import { TIME_INPUT_SEPARATOR_INDEX } from '@/constants'
+import { computed } from "vue";
+import { TIME_INPUT_SEPARATOR_INDEX } from "@/constants";
 
 const props = defineProps<{
-  time: string
-}>()
+  time: string;
+}>();
 
 /**
  * 将时间字符串转换为字符数组用于显示
  * 例如: "20:42" -> ["2", "0", ":", "4", "2"]
  */
 const timeChars = computed(() => {
-  const time = props.time || ''
-  const chars: string[] = []
-  
+  const time = props.time || "";
+  const chars: string[] = [];
+
   if (time.length >= 5) {
     // HH:MM 格式
-    chars[0] = time[0] || ''
-    chars[1] = time[1] || ''
-    chars[2] = ':' // 分隔符
-    chars[3] = time[3] || ''
-    chars[4] = time[4] || ''
+    chars[0] = time[0] || "";
+    chars[1] = time[1] || "";
+    chars[2] = ":"; // 分隔符
+    chars[3] = time[3] || "";
+    chars[4] = time[4] || "";
   } else {
     // 如果格式不正确，填充空字符
-    chars[0] = ''
-    chars[1] = ''
-    chars[2] = ':'
-    chars[3] = ''
-    chars[4] = ''
+    chars[0] = "";
+    chars[1] = "";
+    chars[2] = ":";
+    chars[3] = "";
+    chars[4] = "";
   }
-  
-  return chars
-})
+
+  return chars;
+});
 </script>
 
 <style scoped>

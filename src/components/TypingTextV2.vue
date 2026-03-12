@@ -58,35 +58,35 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, watch, onMounted, onUnmounted } from 'vue'
-import type { TextNode } from '@/types'
-import { useSystemTime } from '@/composables/useSystemTime'
-import { useMechanicalSound } from '@/composables/useMechanicalSound'
-import { useAnimateText } from '@/composables/useAnimateText'
+import { computed, onMounted, onUnmounted, ref, watch } from "vue";
+import { useAnimateText } from "@/composables/useAnimateText";
+import { useMechanicalSound } from "@/composables/useMechanicalSound";
+import { useSystemTime } from "@/composables/useSystemTime";
+import type { TextNode } from "@/types";
 
 const props = defineProps<{
-  nodes: TextNode[]  // ✅ V2: 直接接收已解析的 TextNode[]
-  speed?: number
-  autoStart?: boolean
-}>()
+  nodes: TextNode[]; // ✅ V2: 直接接收已解析的 TextNode[]
+  speed?: number;
+  autoStart?: boolean;
+}>();
 
 const emit = defineEmits<{
-  complete: []
-}>()
+  complete: [];
+}>();
 
-const parsedNodes = computed(() => props.nodes)  // ✅ 直接使用，无需解析
-const displayTexts = ref<string[]>([])
-const currentIndex = ref(0)
-const currentCharIndex = ref(0)
-const isTyping = ref(false)
-const isComplete = ref(false)
-const typingTimer = ref<number | null>(null)
+const parsedNodes = computed(() => props.nodes); // ✅ 直接使用，无需解析
+const displayTexts = ref<string[]>([]);
+const currentIndex = ref(0);
+const currentCharIndex = ref(0);
+const isTyping = ref(false);
+const isComplete = ref(false);
+const typingTimer = ref<number | null>(null);
 
 // 使用全局系统时间
-const { systemTime, getCurrentSystemTime } = useSystemTime()
+const { systemTime, getCurrentSystemTime } = useSystemTime();
 
 // 使用机械音效
-const { playRandomSound } = useMechanicalSound()
+const { playRandomSound } = useMechanicalSound();
 
 // 使用动画文本管理
 const {
@@ -97,76 +97,76 @@ const {
   initTypingIndex,
   completeTyping,
   skipToComplete,
-  cleanup: cleanupAnimateText
-} = useAnimateText()
+  cleanup: cleanupAnimateText,
+} = useAnimateText();
 
 /**
  * 系统时间显示（用于打字效果）
  */
 const systemTimeDisplay = computed(() => {
-  const currentTime = systemTime.value || getCurrentSystemTime()
-  
-  const currentNode = parsedNodes.value[currentIndex.value]
-  const isSystemTimeNode = currentNode?.type === 'systemTime'
-  
+  const currentTime = systemTime.value || getCurrentSystemTime();
+
+  const currentNode = parsedNodes.value[currentIndex.value];
+  const isSystemTimeNode = currentNode?.type === "systemTime";
+
   if (isSystemTimeNode && isTyping.value) {
-    const displayLength = Math.min(currentCharIndex.value, 5)
-    return currentTime.substring(0, displayLength)
+    const displayLength = Math.min(currentCharIndex.value, 5);
+    return currentTime.substring(0, displayLength);
   }
-  
-  return currentTime
-})
+
+  return currentTime;
+});
 
 /**
  * 获取指定索引的 systemTime 节点显示值
  */
 const getSystemTimeDisplay = (index: number): string => {
-  const currentTime = systemTime.value || getCurrentSystemTime()
-  
+  const currentTime = systemTime.value || getCurrentSystemTime();
+
   if (isTyping.value && index === currentIndex.value) {
-    return systemTimeDisplay.value
+    return systemTimeDisplay.value;
   }
-  
-  return currentTime
-}
+
+  return currentTime;
+};
 
 /**
  * 获取 animateText 节点在打字时使用的文本内容
  */
 const getAnimateTextContentForTyping = (index: number): string => {
-  const node = parsedNodes.value[index]
+  const node = parsedNodes.value[index];
   return getAnimateTextContent(
     node,
     index,
     isTyping.value,
-    index === currentIndex.value
-  )
-}
+    index === currentIndex.value,
+  );
+};
 
 /**
  * 获取 animateText 节点的显示内容
  */
 const getAnimateTextDisplayForTyping = (index: number): string => {
-  const node = parsedNodes.value[index]
-  const isCompleted = index < currentIndex.value
+  const node = parsedNodes.value[index];
+  const isCompleted = index < currentIndex.value;
   return getAnimateTextDisplay(
     node,
     index,
-    displayTexts.value[index] || '',
+    displayTexts.value[index] || "",
     isTyping.value,
     index === currentIndex.value,
-    isCompleted
-  )
-}
+    isCompleted,
+  );
+};
 
 /**
  * 获取是否显示光标
  */
 const shouldShowCursorForTyping = (index: number): boolean => {
-  const node = parsedNodes.value[index]
-  const isCompleted = index < currentIndex.value
+  const node = parsedNodes.value[index];
+  const isCompleted = index < currentIndex.value;
   if (isTyping.value && index === currentIndex.value) {
-    return true
+    return true;
   }
   if (isCompleted) {
     return shouldShowCursorForTypingBase(
@@ -174,255 +174,262 @@ const shouldShowCursorForTyping = (index: number): boolean => {
       index,
       isTyping.value,
       index === currentIndex.value,
-      isCompleted
-    )
+      isCompleted,
+    );
   }
-  return false
-}
+  return false;
+};
 
 /**
  * 获取最大文本长度
  */
 const getMaxLengthForTyping = (index: number): number => {
-  const node = parsedNodes.value[index]
-  return getMaxLength(node, index)
-}
+  const node = parsedNodes.value[index];
+  return getMaxLength(node, index);
+};
 
 /**
  * 判断删除线是否应该激活
  */
 const isStrikeActive = (index: number): boolean => {
   if (index < currentIndex.value) {
-    return true
+    return true;
   }
   if (!isTyping.value && isComplete.value) {
-    return true
+    return true;
   }
-  return false
-}
+  return false;
+};
 
-const typingSpeed = computed(() => props.speed || 30)
+const typingSpeed = computed(() => props.speed || 30);
 
 // 开始显示
 const startTyping = () => {
-  if (isTyping.value || isComplete.value) return
-  
-  isTyping.value = true
-  isComplete.value = false
-  displayTexts.value = []
-  currentIndex.value = 0
-  currentCharIndex.value = 0
-  
+  if (isTyping.value || isComplete.value) return;
+
+  isTyping.value = true;
+  isComplete.value = false;
+  displayTexts.value = [];
+  currentIndex.value = 0;
+  currentCharIndex.value = 0;
+
   // 初始化显示数组
   parsedNodes.value.forEach((node, index) => {
-    if (node.type === 'linebreak') {
-      displayTexts.value[index] = ''
+    if (node.type === "linebreak") {
+      displayTexts.value[index] = "";
     } else {
-      displayTexts.value[index] = ''
+      displayTexts.value[index] = "";
     }
-  })
-  
-  typeNextChar()
-}
+  });
+
+  typeNextChar();
+};
 
 // 显示下一个字符
 const typeNextChar = () => {
   // 跳过换行和delay节点
   while (
     currentIndex.value < parsedNodes.value.length &&
-    (parsedNodes.value[currentIndex.value].type === 'linebreak' ||
-     parsedNodes.value[currentIndex.value].type === 'delay')
+    (parsedNodes.value[currentIndex.value].type === "linebreak" ||
+      parsedNodes.value[currentIndex.value].type === "delay")
   ) {
-    const node = parsedNodes.value[currentIndex.value]
-    if (node.type === 'linebreak') {
-      displayTexts.value[currentIndex.value] = ''
-    } else if (node.type === 'delay') {
-      const delayTime = (node.delayTime || 0) * 1000
-      currentIndex.value++
-      currentCharIndex.value = 0
+    const node = parsedNodes.value[currentIndex.value];
+    if (node.type === "linebreak") {
+      displayTexts.value[currentIndex.value] = "";
+    } else if (node.type === "delay") {
+      const delayTime = (node.delayTime || 0) * 1000;
+      currentIndex.value++;
+      currentCharIndex.value = 0;
       typingTimer.value = window.setTimeout(() => {
-        typeNextChar()
-      }, delayTime)
-      return
+        typeNextChar();
+      }, delayTime);
+      return;
     }
-    currentIndex.value++
-    currentCharIndex.value = 0
+    currentIndex.value++;
+    currentCharIndex.value = 0;
   }
-  
+
   if (currentIndex.value >= parsedNodes.value.length) {
-    isTyping.value = false
-    isComplete.value = true
-    emit('complete')
-    return
+    isTyping.value = false;
+    isComplete.value = true;
+    emit("complete");
+    return;
   }
-  
-  const currentNode = parsedNodes.value[currentIndex.value]
-  
+
+  const currentNode = parsedNodes.value[currentIndex.value];
+
   // 处理 systemTime 节点
-  if (currentNode.type === 'systemTime') {
+  if (currentNode.type === "systemTime") {
     if (currentCharIndex.value < 5) {
-      playRandomSound()
-      currentCharIndex.value++
+      playRandomSound();
+      currentCharIndex.value++;
       typingTimer.value = window.setTimeout(() => {
-        typeNextChar()
-      }, typingSpeed.value)
+        typeNextChar();
+      }, typingSpeed.value);
     } else {
-      currentIndex.value++
-      currentCharIndex.value = 0
-      typeNextChar()
+      currentIndex.value++;
+      currentCharIndex.value = 0;
+      typeNextChar();
     }
-    return
+    return;
   }
-  
+
   // 处理 animateText 节点
-  if (currentNode.type === 'animateText') {
-    initTypingIndex(currentIndex.value, 0)
-    
-    const currentText = getAnimateTextContentForTyping(currentIndex.value)
-    
+  if (currentNode.type === "animateText") {
+    initTypingIndex(currentIndex.value, 0);
+
+    const currentText = getAnimateTextContentForTyping(currentIndex.value);
+
     if (currentCharIndex.value < currentText.length) {
-      const newText = currentText.substring(0, currentCharIndex.value + 1)
-      displayTexts.value[currentIndex.value] = newText
-      const currentChar = currentText[currentCharIndex.value]
-      currentCharIndex.value++
-      
+      const newText = currentText.substring(0, currentCharIndex.value + 1);
+      displayTexts.value[currentIndex.value] = newText;
+      const currentChar = currentText[currentCharIndex.value];
+      currentCharIndex.value++;
+
       if (currentChar && !/[\s\t]/.test(currentChar)) {
         if (/[！？。，、；：]/.test(currentChar)) {
           if (Math.random() < 0.5) {
-            playRandomSound()
+            playRandomSound();
           }
         } else {
-          playRandomSound()
+          playRandomSound();
         }
       }
-      
-      let delay = typingSpeed.value
+
+      let delay = typingSpeed.value;
       if (/[！？]/.test(currentChar)) {
-        delay = typingSpeed.value * 4
+        delay = typingSpeed.value * 4;
       } else if (/[。]/.test(currentChar)) {
-        delay = typingSpeed.value * 3
+        delay = typingSpeed.value * 3;
       } else if (/[，、；：]/.test(currentChar)) {
-        delay = typingSpeed.value * 2
+        delay = typingSpeed.value * 2;
       }
-      
+
       typingTimer.value = window.setTimeout(() => {
-        typeNextChar()
-      }, delay)
+        typeNextChar();
+      }, delay);
     } else {
-      completeTyping(currentNode, currentIndex.value)
-      currentIndex.value++
-      currentCharIndex.value = 0
-      typeNextChar()
+      completeTyping(currentNode, currentIndex.value);
+      currentIndex.value++;
+      currentCharIndex.value = 0;
+      typeNextChar();
     }
-    return
+    return;
   }
-  
+
   if (currentCharIndex.value < currentNode.content.length) {
-    const newText = currentNode.content.substring(0, currentCharIndex.value + 1)
-    displayTexts.value[currentIndex.value] = newText
-    const currentChar = currentNode.content[currentCharIndex.value]
-    currentCharIndex.value++
-    
+    const newText = currentNode.content.substring(
+      0,
+      currentCharIndex.value + 1,
+    );
+    displayTexts.value[currentIndex.value] = newText;
+    const currentChar = currentNode.content[currentCharIndex.value];
+    currentCharIndex.value++;
+
     if (currentChar && !/[\s\t]/.test(currentChar)) {
       if (/[！？。，、；：]/.test(currentChar)) {
         if (Math.random() < 0.5) {
-          playRandomSound()
+          playRandomSound();
         }
       } else {
-        playRandomSound()
+        playRandomSound();
       }
     }
-    
-    let delay = typingSpeed.value
+
+    let delay = typingSpeed.value;
     if (/[！？]/.test(currentChar)) {
-      delay = typingSpeed.value * 4
+      delay = typingSpeed.value * 4;
     } else if (/[。]/.test(currentChar)) {
-      delay = typingSpeed.value * 3
+      delay = typingSpeed.value * 3;
     } else if (/[，、；：]/.test(currentChar)) {
-      delay = typingSpeed.value * 2
+      delay = typingSpeed.value * 2;
     }
-    
+
     typingTimer.value = window.setTimeout(() => {
-      typeNextChar()
-    }, delay)
+      typeNextChar();
+    }, delay);
   } else {
-    currentIndex.value++
-    currentCharIndex.value = 0
-    
+    currentIndex.value++;
+    currentCharIndex.value = 0;
+
     if (currentIndex.value > 0) {
-      const prevNode = parsedNodes.value[currentIndex.value - 1]
-      if (prevNode && prevNode.type !== 'linebreak') {
-        const prevLength = prevNode.content.length
-        const delay = Math.min(prevLength * 10, 500)
-        
+      const prevNode = parsedNodes.value[currentIndex.value - 1];
+      if (prevNode && prevNode.type !== "linebreak") {
+        const prevLength = prevNode.content.length;
+        const delay = Math.min(prevLength * 10, 500);
+
         typingTimer.value = window.setTimeout(() => {
-          typeNextChar()
-        }, delay)
+          typeNextChar();
+        }, delay);
       } else {
-        typeNextChar()
+        typeNextChar();
       }
     } else {
-      typeNextChar()
+      typeNextChar();
     }
   }
-}
+};
 
 // 自动开始
-watch(() => props.autoStart, (newValue) => {
-  if (newValue) {
-    startTyping()
-  }
-}, { immediate: true })
+watch(
+  () => props.autoStart,
+  (newValue) => {
+    if (newValue) {
+      startTyping();
+    }
+  },
+  { immediate: true },
+);
 
 // 跳过
 const skipToEnd = () => {
   if (typingTimer.value) {
-    clearTimeout(typingTimer.value)
+    clearTimeout(typingTimer.value);
   }
-  
+
   parsedNodes.value.forEach((node, index) => {
-    if (node.type !== 'linebreak' && node.type !== 'delay') {
-      if (node.type === 'systemTime') {
-        displayTexts.value[index] = ''
-      } else if (node.type === 'animateText') {
-        const content = getAnimateTextContent(node, index, false, false)
-        displayTexts.value[index] = content
+    if (node.type !== "linebreak" && node.type !== "delay") {
+      if (node.type === "systemTime") {
+        displayTexts.value[index] = "";
+      } else if (node.type === "animateText") {
+        const content = getAnimateTextContent(node, index, false, false);
+        displayTexts.value[index] = content;
       } else {
-        displayTexts.value[index] = node.content
+        displayTexts.value[index] = node.content;
       }
     } else {
-      displayTexts.value[index] = ''
+      displayTexts.value[index] = "";
     }
-  })
-  
-  isTyping.value = false
-  isComplete.value = true
-  
+  });
+
+  isTyping.value = false;
+  isComplete.value = true;
+
   // 初始化所有 animateText 节点
   parsedNodes.value.forEach((node, index) => {
-    if (node.type === 'animateText') {
-      completeTyping(node, index)
+    if (node.type === "animateText") {
+      completeTyping(node, index);
     }
-  })
-  
-  emit('complete')
-}
+  });
+
+  emit("complete");
+};
 
 // 清理
 onUnmounted(() => {
   if (typingTimer.value) {
-    clearTimeout(typingTimer.value)
+    clearTimeout(typingTimer.value);
   }
-  cleanupAnimateText()
-})
+  cleanupAnimateText();
+});
 
 // 暴露方法
 defineExpose({
   startTyping,
   skipToEnd,
   isComplete,
-  isTyping
-})
+  isTyping,
+});
 </script>
 
 <style scoped>
