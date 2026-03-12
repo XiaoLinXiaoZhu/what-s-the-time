@@ -52,8 +52,8 @@ import {
 } from "@/engine";
 import type { ChoiceLine, CommandLine, DisplayedLine } from "@/types";
 import BackToStartButton from "./BackToStartButton.vue";
-import LineRenderer from "./LineRenderer.vue";
-import WatchDisplay from "./WatchDisplay.vue";
+import LineRenderer from "@/ui/lines/LineRenderer.vue";
+import WatchDisplay from "@/ui/display/WatchDisplay.vue";
 
 const displayState = computed(() => stateStore.displayState);
 const gameState = computed(() => stateStore.gameState);

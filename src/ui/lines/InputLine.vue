@@ -10,7 +10,7 @@
 
 <script setup lang="ts">
 import type { DisplayedLine } from "@/types";
-import TimeInput from "./TimeInput.vue";
+import TimeInput from "@/ui/input/TimeInput.vue";
 
 defineProps<{
   line: DisplayedLine;

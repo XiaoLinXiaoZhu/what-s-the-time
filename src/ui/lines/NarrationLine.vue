@@ -16,8 +16,8 @@
 
 <script setup lang="ts">
 import type { NarrationLine } from "@/types";
-import FormattedText from "./FormattedText.vue";
-import TypingText from "./TypingText.vue";
+import FormattedText from "@/ui/shared/FormattedText.vue";
+import TypingText from "@/ui/shared/TypingText.vue";
 
 defineProps<{
   line: NarrationLine;

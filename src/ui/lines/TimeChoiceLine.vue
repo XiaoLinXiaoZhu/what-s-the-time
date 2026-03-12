@@ -11,7 +11,7 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import type { DisplayedLine, TimeChoiceLine } from "@/types";
-import TimeInput from "./TimeInput.vue";
+import TimeInput from "@/ui/input/TimeInput.vue";
 
 const props = defineProps<{
   line: DisplayedLine & TimeChoiceLine;

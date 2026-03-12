@@ -6,7 +6,7 @@
 
 <script setup lang="ts">
 import type { TimeDisplayLine } from "@/types";
-import TimeDisplay from "./TimeDisplay.vue";
+import TimeDisplay from "@/ui/display/TimeDisplay.vue";
 
 defineProps<{
   line: TimeDisplayLine;
