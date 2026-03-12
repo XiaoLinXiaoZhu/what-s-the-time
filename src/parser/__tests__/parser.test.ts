@@ -142,4 +142,48 @@ input
     expect(segment.lines).toHaveLength(1);
     expect(segment.lines[0].type).toBe("input");
   });
+
+  it("DialogueLine 不应将格式标记中的冒号误判为角色名", () => {
+    const content = `
+---
+id: TEST-007
+time: START
+---
+dialogue
+不，是{delay:1}  **他**  在问我。
+
+dialogue
+{red}时间是:{/red}
+`;
+    const segment = parseScript(content);
+
+    const line1 = segment.lines[0] as DialogueLine;
+    expect(line1.type).toBe("dialogue");
+    expect(line1.character).toBeUndefined();
+    expect(line1.nodes.length).toBeGreaterThan(0);
+    expect(line1.nodes.some((n) => n.type === "delay")).toBe(true);
+
+    const line2 = segment.lines[1] as DialogueLine;
+    expect(line2.type).toBe("dialogue");
+    expect(line2.character).toBeUndefined();
+    expect(line2.nodes[0].formats).toContain("red");
+  });
+
+  it("DialogueLine 应正确识别角色名", () => {
+    const content = `
+---
+id: TEST-008
+time: START
+---
+dialogue
+旁白:
+这是旁白内容
+`;
+    const segment = parseScript(content);
+    const line = segment.lines[0] as DialogueLine;
+
+    expect(line.type).toBe("dialogue");
+    expect(line.character).toBe("旁白");
+    expect(line.nodes[0].content).toBe("这是旁白内容");
+  });
 });

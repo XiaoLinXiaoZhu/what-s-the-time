@@ -132,9 +132,14 @@ export class ScriptAstBuilder {
 
     const firstLine = lines[i]?.trim();
     if (firstLine && !this.isTypeLine(firstLine) && !firstLine.startsWith("#") && !firstLine.startsWith(">")) {
-      const charMatch = firstLine.match(/^([^:]+):/);
-      if (charMatch) {
+      // 角色名检测：冒号前不能包含格式标记字符 { } * = |
+      const charMatch = firstLine.match(/^([^:{}*=|]+):/);
+      if (charMatch && charMatch[1].trim().length > 0) {
         character = charMatch[1].trim();
+        const rest = firstLine.slice(charMatch[0].length).trim();
+        if (rest) {
+          parts.push(rest);
+        }
         i++;
       } else {
         parts.push(firstLine);
