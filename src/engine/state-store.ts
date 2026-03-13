@@ -9,7 +9,7 @@ import type { DisplayState, GameState, LineStatus } from "@/types";
 
 class StateStore {
   private _gameState = reactive<GameState>({
-    currentLoop: "P0",
+    currentLoop: "A",
     unlockedFlags: new Set<string>(),
     viewedSegments: new Set<string>(),
     currentTime: undefined,
@@ -82,7 +82,7 @@ class StateStore {
 
   reset(): void {
     Object.assign(this._gameState, {
-      currentLoop: "P0",
+      currentLoop: "A",
       unlockedFlags: new Set<string>(),
       viewedSegments: new Set<string>(),
       currentTime: undefined,

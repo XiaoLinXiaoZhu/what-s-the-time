@@ -1,8 +1,8 @@
 ---
 id: BLANK
-time: *
+time: "*"
 description: 记忆空白
-loop: *
+loop: "*"
 ---
 narration
 那段时间对我来说，就是一片黑。

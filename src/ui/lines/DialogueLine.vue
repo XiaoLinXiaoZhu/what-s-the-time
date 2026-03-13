@@ -1,5 +1,5 @@
 <template>
-  <div class="dialogue">
+  <div class="dialogue" :class="{ 'has-character': !!line.character }">
     <span v-if="line.character" class="character-name">
       {{ line.character }}
     </span>
@@ -41,11 +41,17 @@ defineEmits<{
   margin: 16px 0;
 }
 
+.dialogue.has-character {
+  display: flex;
+  align-items: baseline;
+  gap: 8px;
+}
+
 .character-name {
-  color: #aaa;
+  color: #666;
   font-size: 14px;
-  display: block;
-  margin-bottom: 4px;
+  flex-shrink: 0;
+  white-space: nowrap;
 }
 
 .dialogue-text {
