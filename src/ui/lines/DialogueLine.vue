@@ -1,9 +1,9 @@
 <template>
-  <div class="dialogue" :class="{ 'has-character': !!line.character }">
+  <div class="dialogue">
     <span v-if="line.character" class="character-name">
       {{ line.character }}
     </span>
-    <span class="dialogue-text">
+    <div class="dialogue-text" :class="{ 'with-character': !!line.character }">
       <TypingText
         v-if="index === currentLineIndex"
         :nodes="line.nodes"
@@ -15,7 +15,7 @@
         v-else-if="index < currentLineIndex"
         :nodes="line.nodes"
       />
-    </span>
+    </div>
   </div>
 </template>
 
@@ -41,20 +41,18 @@ defineEmits<{
   margin: 16px 0;
 }
 
-.dialogue.has-character {
-  display: flex;
-  align-items: baseline;
-  gap: 8px;
-}
-
 .character-name {
   color: #666;
   font-size: 14px;
-  flex-shrink: 0;
-  white-space: nowrap;
+  display: block;
+  margin-bottom: 4px;
 }
 
 .dialogue-text {
   color: #e0e0e0;
+}
+
+.dialogue-text.with-character {
+  padding-left: 1.5em;
 }
 </style>

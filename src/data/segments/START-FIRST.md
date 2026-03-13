@@ -9,7 +9,7 @@ narration
 时间是……？
 
 dialogue
-不，是{delay:1}  **她** {typewriter}ta,她,他,它,祂{/typewriter}  在问我。
+不，是{delay:1}   {typewriter}ta,她,他,它,祂{/typewriter} 在问我。
 
 narration
 现在……现在……
