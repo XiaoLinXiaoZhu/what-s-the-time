@@ -19,6 +19,9 @@ choice
 narration
 测试完成。你可以尝试不同的选项来查看效果。
 
+command
+jump START
+
 
 # 1
 narration
@@ -54,3 +57,5 @@ dialogue
 dialogue
 系统:
 这个选项测试了格式标记和角色名显示。
+
+
