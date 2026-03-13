@@ -46,7 +46,7 @@ const initSystemTime = () => {
     systemTimeTimer = window.setTimeout(() => {
       updateSystemTime();
       // 之后每分钟更新一次
-      systemTimeTimer = window.setInterval(updateSystemTime, 60000) as any;
+      systemTimeTimer = window.setInterval(updateSystemTime, 60000);
     }, msUntilNextMinute);
   };
   updateTimer();

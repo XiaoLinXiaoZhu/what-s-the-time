@@ -192,8 +192,8 @@ export function useTimeInput(options: UseTimeInputOptions) {
   /**
    * 设置输入框 ref
    */
-  const setRef = (el: any, index: number) => {
-    if (el && el instanceof HTMLInputElement) {
+  const setRef = (el: HTMLInputElement | null, index: number) => {
+    if (el) {
       refs.value[index] = el;
     }
   };

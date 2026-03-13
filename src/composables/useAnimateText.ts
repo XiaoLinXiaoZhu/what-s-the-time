@@ -33,7 +33,7 @@ export function useAnimateText() {
   // 每个节点的动画索引（用于普通显示模式）
   const animateTextIndices = ref<Map<number, number>>(new Map());
   // 每个节点的定时器
-  const animateTextIntervals = ref<Map<number, number>>(new Map());
+  const animateTextIntervals = ref<Map<number, ReturnType<typeof setTimeout>>>(new Map());
   // 每个节点在打字时使用的文本索引（打字完成后会继续切换）
   const animateTextTypingIndices = ref<Map<number, number>>(new Map());
   // 每个节点的动画状态（用于删除-打字动画）
@@ -224,7 +224,7 @@ export function useAnimateText() {
       return currentText;
     }
 
-    // 如果没有状态，使用旧的索引方式（向后兼容）
+    // 动画尚未启动时，使用静态索引
     const animateIndex = animateTextIndices.value.get(nodeIndex) ?? 0;
     return node.animateTexts[animateIndex] || node.animateTexts[0];
   };
@@ -313,7 +313,7 @@ export function useAnimateText() {
           const interval = setTimeout(deleteChar, CHAR_INTERVAL);
           animateTextIntervals.value.set(
             nodeIndex,
-            interval as unknown as number,
+            interval,
           );
         } else {
           // 删除完成，切换到下一个文本
@@ -333,7 +333,7 @@ export function useAnimateText() {
       const delay = setTimeout(() => {
         deleteChar();
       }, ANIMATE_INTERVAL);
-      animateTextIntervals.value.set(nodeIndex, delay as unknown as number);
+      animateTextIntervals.value.set(nodeIndex, delay);
     };
 
     // 开始打字动画
@@ -354,7 +354,7 @@ export function useAnimateText() {
           const interval = setTimeout(typeChar, CHAR_INTERVAL);
           animateTextIntervals.value.set(
             nodeIndex,
-            interval as unknown as number,
+            interval,
           );
         } else {
           // 打字完成，等待后开始下一轮删除
@@ -364,7 +364,7 @@ export function useAnimateText() {
           }, ANIMATE_INTERVAL);
           animateTextIntervals.value.set(
             nodeIndex,
-            interval as unknown as number,
+            interval,
           );
         }
       };
