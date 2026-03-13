@@ -146,8 +146,14 @@ const handleCommandExecute = (command: CommandLine, lineIndex: number) => {
 const backToStart = () => navigationService.navigateToStart();
 
 const onLineComplete = () => {
-  // 检查下一行类型：command/input/choice/timeChoice/timeDisplay 自动推进
+  // 标记当前行为已完成
   const { displayedLines, currentLineIndex } = displayState.value;
+  const currentLine = displayedLines[currentLineIndex];
+  if (currentLine) {
+    displayService.completeLine(currentLine.id);
+  }
+
+  // 检查下一行类型：command/input/choice/timeChoice/timeDisplay 自动推进
   const nextIndex = currentLineIndex + 1;
   if (nextIndex >= displayedLines.length) return;
 

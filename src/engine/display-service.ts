@@ -11,8 +11,15 @@ class DisplayService {
   /** 显示下一行 */
   showNextLine(): void {
     const { displayState } = stateStore._internal;
-    const nextIndex = displayState.currentLineIndex + 1;
+    const currentIndex = displayState.currentLineIndex;
 
+    // 标记当前行为已完成
+    const currentLine = displayState.displayedLines[currentIndex];
+    if (currentLine) {
+      this.completeLine(currentLine.id);
+    }
+
+    const nextIndex = currentIndex + 1;
     if (nextIndex < displayState.displayedLines.length) {
       stateStore.updateDisplayState({
         currentLineIndex: nextIndex,
