@@ -300,6 +300,8 @@ const typeNextChar = () => {
         delay = typingSpeed.value * 4;
       } else if (/[。]/.test(currentChar)) {
         delay = typingSpeed.value * 3;
+      } else if (/[…]/.test(currentChar)) {
+        delay = typingSpeed.value * 3;
       } else if (/[，、；：]/.test(currentChar)) {
         delay = typingSpeed.value * 2;
       }
@@ -339,6 +341,8 @@ const typeNextChar = () => {
     if (/[！？]/.test(currentChar)) {
       delay = typingSpeed.value * 4;
     } else if (/[。]/.test(currentChar)) {
+      delay = typingSpeed.value * 3;
+    } else if (/[…]/.test(currentChar)) {
       delay = typingSpeed.value * 3;
     } else if (/[，、；：]/.test(currentChar)) {
       delay = typingSpeed.value * 2;
