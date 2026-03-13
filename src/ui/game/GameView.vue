@@ -146,7 +146,17 @@ const handleCommandExecute = (command: CommandLine, lineIndex: number) => {
 const backToStart = () => navigationService.navigateToStart();
 
 const onLineComplete = () => {
-  displayService.showNextLine();
+  // 检查下一行类型：command/input/choice/timeChoice/timeDisplay 自动推进
+  const { displayedLines, currentLineIndex } = displayState.value;
+  const nextIndex = currentLineIndex + 1;
+  if (nextIndex >= displayedLines.length) return;
+
+  const nextLine = displayedLines[nextIndex];
+  const autoAdvanceTypes = ["command", "input", "choice", "timeChoice", "timeDisplay"];
+  if (autoAdvanceTypes.includes(nextLine.type)) {
+    displayService.showNextLine();
+  }
+  // narration/dialogue 需要用户点击才推进
 };
 
 const { handleGlobalKeyDown, handleTextClick } = useKeyboardNavigation({
