@@ -23,3 +23,12 @@ dist-ssr
 *.sln
 *.sw?
 
+# AI tool workspace directories
+.cursor
+.pie
+.roo
+.rooignore
+.cursorignore
+.temp
+
+docs/wiki-docs/.annotations/
