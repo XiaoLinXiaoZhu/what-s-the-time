@@ -31,3 +31,4 @@ dist-ssr
 .cursorignore
 .temp
 
+docs/wiki-docs/.annotations/
